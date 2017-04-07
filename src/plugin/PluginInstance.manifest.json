@@ -1,0 +1,11 @@
+{
+    "label": "插件实例数据",
+    "groupId": "system",
+    "implementation": {
+        "type": "mongoose",
+        "options": {
+            "dao": "PluginInstanceDao",
+            "provider": "PluginInstanceProvider"
+        }
+    }
+}

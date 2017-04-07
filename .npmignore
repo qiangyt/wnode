@@ -1,0 +1,8 @@
+/.DS_Store
+/.vscode
+/build
+/dist
+/gen
+/logs
+/npm-debug.log
+

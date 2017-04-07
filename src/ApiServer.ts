@@ -1,0 +1,308 @@
+import Fs = require('fs');
+import Path = require('path');
+import ApiDefinition = require('./ApiDefinition');
+import Restify = require('restify');
+import ServerContext = require('./ctx/ServerContext');
+import ApiRole = require('./ApiRole');
+import Logger = require('./Logger');
+import Errors = require('./Errors');
+import CodePath = require('./util/CodePath');
+const CookieParser = require('restify-cookies');
+import StaticSupport = require('./StaticSupport');
+import JWTAuth = require('./auth/JWTAuth');
+
+
+export default class ApiServer {
+  
+    /**
+     * 
+     */
+    constructor() {
+        this.$id = 'ApiServer';
+        this.$proxy = false;
+        this.$SwaggerHelper = null;
+        this.$lazy = true;
+        this.$init = 'init';
+
+        this.logger = Logger.create(this);
+    }
+    
+    /**
+     * 
+     */
+    init() {
+        const cfg = global.config;
+
+        if( !cfg.server.name ) throw new Error( '<server.name> not configured' );
+        if( !cfg.server.httpPort ) throw new Error( '<server.httpPort> not configured' );
+
+        const errs = cfg.errors;
+        if( errs ) {
+            if( !errs.codeStart ) throw new Error( '<errors.codeStart> not configured' );
+            if( !errs.codeEnd ) throw new Error( '<errors.codeStart> not configured' );
+            if( errs.paths ) {
+                errs.paths.forEach( p => Errors.register( errs.codeStart, errs.codeEnd, CodePath.resolve(p) ) );
+            }
+        }
+
+        this.auth = JWTAuth.globalAuthBean();
+    }
+
+    /**
+     * 
+     */
+    initRestify() {
+        const cfg_server = global.config.server;
+
+        //TODO: formatters, log, HTTPS, versioning
+        const binaryFormatter = Restify.formatters['application/octet-stream; q=0.2'];
+        const textFormatter = Restify.formatters['text/plain; q=0.3'];
+
+        const restify = this.restify = Restify.createServer( {
+            name: cfg_server.name,
+            acceptable: 'application/json',
+            formatters: {
+                'image/bmp': binaryFormatter,
+                'image/jpeg': binaryFormatter,
+                'text/markdown': textFormatter,
+                'text/html': textFormatter
+            }
+        } );
+
+        //restify.use( Restify.acceptParser(restify.acceptable) );
+        //restify.use( Restify.requestLogger() );
+        restify.use( Restify.queryParser({mapParams: true}) );
+        restify.pre( Restify.pre.userAgentConnection() );
+        restify.use( Restify.bodyParser({
+            maxBodySize: cfg_server.maxBodySize ? cfg_server.maxBodySize : 1048576,
+            mapParams: true,
+            mapFiles: false,
+            overrideParams: true
+        }));
+        restify.use(CookieParser.parse);
+
+        this.restify.on('MethodNotAllowed', function(req, res) {
+            if (req.method.toLowerCase() === 'options') {
+                if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
+
+                if( global.config.server.cors ) {
+                    res.header('Access-Control-Allow-Credentials', true);
+                    res.header('Access-Control-Allow-Headers', 'aauth,Content-Type,Content-Length, Authorization, Accept,X-Requested-With');
+                    res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+                    res.header('Access-Control-Allow-Origin', '*');
+                    res.header('Access-Control-Max-Age', '3600');
+                }
+
+                return res.send(204);
+            }
+        
+            return res.send(new Restify.MethodNotAllowedError());
+        });
+    }
+
+    buildApi( apiDir ) {
+        this.buildApiDefinitions( apiDir, apiDir );
+    }
+
+
+    buildGraphQL() {
+        this.buildInternalApiDefinition('graphql/GraphQLAPI.js');
+        this.buildInternalApiDefinition('graphql/GraphiQLAPI.js');
+
+        const graphqlModuleDir = Path.parse(require('./').module.filename);
+
+        this.restify.get( new RegExp(`graphiql/?.*`), StaticSupport({
+                directory: graphqlModuleDir.dir,
+                default: 'index.html',
+                charSet: 'utf-8'
+            }));
+    }
+
+
+    buildApis() {
+        this.apiDefinitions = {};
+
+        const apiDir = CodePath.resolve( global.config.server.apiDir ? global.config.server.apiDir : './api' );
+        this.logger.info( 'service api directory: ' + apiDir );
+        this.buildApi(apiDir);
+
+        const graphql = global.config.graphql;
+        if( graphql && graphql.auto ) {
+            this.buildGraphQL();
+        }
+
+        this.buildInternalApiDefinition('swagger/GetSwaggerAPI.js');
+        this.buildInternalApiDefinition('blueprint/GetBlueprintAPI.js');
+    }
+
+
+    buildInternalApiDefinition( relative ) {
+        const anodeSrcDir = Path.dirname(module.filename);
+        this.buildApiDefinition(Path.join( anodeSrcDir, relative ));
+    }
+
+
+    /**
+     * 
+     */
+    initApi() {
+        this.buildApis();
+
+        const cfg = global.config.server;
+        const exposedToRootURL = (cfg.exposedToRootURL === undefined) ? false : cfg.exposedToRootURL;//是否同时把API放到根URL
+        const path = '/' + cfg.path + '/';
+
+        for( let apiName in this.apiDefinitions ) {
+            const def = this.apiDefinitions[apiName];
+            const spec = def.spec;
+
+            const handler = function( req, res, next ) {
+                const ctx = new ServerContext( this, def, req, res, next );
+
+                if( def.transactional ) {
+                    try {
+                        // 自动启动事务
+                        ctx.beginTx(def.transactionOptions);
+                    } catch( error ) {
+                        ctx.error( error );
+                        return;
+                    }
+                }
+
+                this.auth.auth( ctx, def, req )
+                .then( function() {
+                    def.respond( ctx, spec.parameters, req.params );
+                } ).catch( function( error ) {
+                    ctx.error( error );
+                } );
+            }.bind(this);
+
+            this.expose( def, path, handler );
+
+            if( exposedToRootURL ) this.expose( def, '/', handler );
+
+            const apiLog = [];
+            apiLog.push( def.method.toUpperCase() );
+            apiLog.push( ': ' );
+            apiLog.push( def.buildWebUrlSample(path, spec.parameters) );
+            apiLog.push( 'Roles: ' );
+            apiLog.push( ApiRole.byValueArray(def.roles) );
+
+            this.logger.info( apiLog.join('') );
+        }
+    }
+
+    /**
+     * 
+     */
+    expose( def, path, handler ) {
+        this.restify.post( path + def.name, handler );
+        this.restify.get( path + def.name, handler );
+
+        //this.restify[def.method]( path + def.name, handler );
+        //if( def.method.toLowerCase() !== 'get' ) {
+        //    this.restify.get( path + def.name, handler );
+        //}
+    }
+
+    /**
+     * 
+     */
+    start( listen ) {
+        this.logger.info('start server initialization');
+
+        this.initRestify();
+        this.initApi();
+        this.buildStaticWeb();
+
+        if( listen ) {
+            this.restify.listen( global.config.server.httpPort, function() {
+                this.logger.info('%s listening at %s', this.restify.name, this.restify.url);
+            }.bind(this) );
+        }
+
+        this.logger.info('finish server initialization');
+
+        this.validateApi();
+    }
+
+    /** blueprint has a swagger spec validator that we could easily reuse */
+    validateApi() {
+        const logger = this.logger;
+        const options = {
+            ignoreInternalApi: false,
+            ignoreGetBlueprintApi: true,
+            ignoreGetSwaggerApi: true,
+            ignoreNames: []
+        };
+        global.bearcat.getBean('BlueprintHelper').output( this, null, options, function(err/*, blueprint*/) {
+            if( err ) {
+                logger.fatal( err, 'validation failure by blueprint' );
+            } else {
+                logger.info( 'validation passed by blueprint' );
+            }
+        } );
+    }
+
+    buildStaticWeb() {
+        const cfg = global.config.server;
+        //const exposedToRootURL = (cfg.exposedToRootURL === undefined) ? false : cfg.exposedToRootURL;//是否同时把API放到根URL
+        
+        const dir = CodePath.resolve( cfg.staticDir ? cfg.staticDir : './static' );
+        try {
+            Fs.statSync(dir);
+        } catch( e ) {
+            this.logger.info( 'no static directory' );
+            return;
+        }
+        this.logger.info( 'static directory: ' + dir );
+        
+        for( const fileName of Fs.readdirSync(dir) ) {
+            const full = Path.join(dir, fileName);
+            const stat = Fs.statSync(full);
+            if( stat.isDirectory() ) {
+                this.restify.get( new RegExp('/' + cfg.path + '/' + fileName + '/?.*'), StaticSupport({
+                    directory: dir,
+                    default: 'index.html',
+                    charSet: 'utf-8'
+                }));
+            }
+        }
+        
+    }
+
+
+    buildApiDefinitions( apiDir, dir ) {
+        const relative = dir.substring(apiDir.length);
+         
+        /*eslint no-sync: "off"*/
+        for( const fileName of Fs.readdirSync(dir) ) {
+            const full = Path.join( dir, fileName );
+            const stat = Fs.statSync(full);
+            if( stat.isDirectory() ) {
+                this.buildApiDefinitions( apiDir, full );
+            } else {
+                this.buildApiDefinition( full, relative );
+            }
+        }
+    }
+
+
+    buildApiDefinition( full, relative ) {
+        const path = Path.parse( full );
+        if( '.js' === path.ext ) {
+            path.full = full;
+            path.relative = relative;
+                    
+            const def = ApiDefinition.build(path);
+            if( this.apiDefinitions[def.name] ) {
+               throw new Error( 'duplicated API: name=' + def.name + ', path=' + full );
+            }
+            this.apiDefinitions[def.name] = def;
+        }
+    }
+
+}
+
+//Object.freeze({});
+//test: mocha: should.js/expect/chai/better-assert
