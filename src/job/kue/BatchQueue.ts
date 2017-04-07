@@ -1,26 +1,41 @@
-import Kue = require('kue');
-import InternalContext = require( '../../ctx/InternalContext' );
-import Logger = require('../../Logger');
-import Domain = require('domain');
-import RedisManager = require('../../cache/RedisManager');
-import Cluster = require('cluster');
-import KueApp = require('./KueApp');
+import * as Kue from 'kue';
+import InternalContext from  '../../ctx/InternalContext';
+import BaseContext from  '../../ctx/BaseContext';
+import * as Logger from '../../Logger';
+import * as Domain from 'domain';
+import RedisManager from '../../cache/RedisManager';
+import * as Cluster from 'cluster';
+import KueApp from './KueApp';
+
+
+export class BatchItem {
+
+    public job:Kue.Job;
+    public done:Function;
+}
+
 
 
 export default class BatchQueue {
     
+    public $id:string;
+    public $lazy = true;
+    public $init = 'init';
+    public queue:Kue.Queue;
+    public config:any;
+    public logger:any;
+    public _batch:BatchItem[];
+    
 
-    constructor( id ) {
+    constructor( id:string ) {
         this.$id = id;
-        this.$lazy = true;
-        this.$init = 'init';
 
         this.logger = Logger.create(this);
     }
 
 
     /* eslint complexity:"off" */
-    _config( config, name ) {
+    _config( config:any, name:string ) {
         config.priority = config.priority || 'normal';
         config.attempts = config.attempts || 1;
         config.backoff = config.backoff || {delay: (60 * 1000), type:'fixed'};
@@ -39,27 +54,27 @@ export default class BatchQueue {
         const jobName = this.config.name;
 
         //// others are activeCount, completeCount, failedCount, delayedCount
-        q.inactiveCount( jobName, ( err, total ) => { 
+        q.inactiveCount( jobName, ( err:any, total:number ) => { 
             if( err ) this.logger.error( {err}, 'failed to call queue.inactiveCount()' );
             else this.logger.info( {inactiveCount: total}, 'queue report' );
         } );
         
-        q.activeCount( jobName, ( err, total ) => { 
+        q.activeCount( jobName, ( err:any, total:number ) => { 
             if( err ) this.logger.error( {err}, 'failed to call queue.activeCount()' );
             else this.logger.info( {activeCount: total}, 'queue report' );
         } );
 
-        q.completeCount( jobName, ( err, total ) => { 
+        q.completeCount( jobName, ( err:any, total:number ) => { 
             if( err ) this.logger.error( {err}, 'failed to call queue.completeCount()' );
             else this.logger.info( {completeCount: total}, 'queue report' );
         } );
 
-        q.failedCount( jobName, ( err, total ) => { 
+        q.failedCount( jobName, ( err:any, total:number ) => { 
             if( err ) this.logger.error( {err}, 'failed to call queue.failedCount()' );
             else this.logger.warn( {failedCount: total}, 'queue report' );
         } );
 
-        q.delayedCount( jobName, ( err, total ) => { 
+        q.delayedCount( jobName, ( err:any, total:number ) => { 
             if( err ) this.logger.error( {err}, 'failed to call queue.delayedCount()' );
             else this.logger.info( {delayedCount: total}, 'queue report' );
         } );
@@ -75,20 +90,20 @@ export default class BatchQueue {
             redis: redisInstance.config
         });
 
-        q.on( 'error', err => this.logger.error( {err}, 'error on queue' ) );
+        q.on( 'error', (err:any) => this.logger.error( {err}, 'error on queue' ) );
         
         return q;
     }
 
 
-    _init( config, name ) {
+    _init( config:any, name:string ) {
         this._config( config, name );
 
         const q = this.queue = this._createQueue();
 
-        q.process( config.name, config.batch, ( job, kueContext, done ) => {
+        q.process( config.name, config.batch, ( job:Kue.Job, kueContext:any, done:Function ) => {
             const dmn = Domain.create();
-            dmn.on( 'error', err => {
+            dmn.on( 'error', (err:any) => {
                 done(err);
                 this.logger.error( {err, job}, 'failed to process' );
             } );
@@ -115,13 +130,13 @@ export default class BatchQueue {
         this.queue.watchStuckJobs(this.config.watchStuckJobsInterval);
 
         // re-queue all stuck jobs:
-        this.queue.active( (err, jobIDs) => {
+        this.queue.active( (err:any, jobIDs:number[]) => {
             if( err ) {
                 this.logger.error( {err, jobIDs}, 'failed to re-queue stuck jobs' );
                 return;
             }
             jobIDs.forEach( jobID => {
-                Kue.Job.get( jobID, (err, job) => {
+                Kue.Job.get( jobID, (err:any, job:Kue.Job) => {
                     if( err ) {
                         this.logger.error( {err, jobID}, 'failed to get stuck job to re-queue' );
                         return;
@@ -134,7 +149,7 @@ export default class BatchQueue {
     }
 
 
-    _process( job, done ) {
+    _process( job:Kue.Job, done:Function ) {
         
         const batch = this._batch;
         batch.push( {job, done} );
@@ -145,7 +160,7 @@ export default class BatchQueue {
         }
 
         // 还没到批处理的上限
-        this.queue.activeCount( this.config.name, ( err, total ) => { 
+        this.queue.activeCount( this.config.name, ( err:any, total:number ) => { 
             if( err ) this.logger.error( {err}, 'failed to call queue.activeCount()' );
             else if( batch.length > 0 && total < this.config.batch ) {
                 this.logger.debug( 'not found more active job, start processing current batch right now' );
@@ -156,12 +171,12 @@ export default class BatchQueue {
 
 
     /* eslint no-unused-vars:'off' */
-    _prepareBatch( ctx, batch ) {
+    _prepareBatch( ctx:BaseContext, batch:BatchItem[] ):Promise<any>[] {
         throw new Error('need to overwrite');
     }
 
 
-    _processBatch() {
+    _processBatch():Promise<any> {
         const batch = this._batch;
         this._batch = [];
 
@@ -169,53 +184,16 @@ export default class BatchQueue {
             const ctx = new InternalContext();
             const promises = this._prepareBatch( ctx, batch );
 
-            return Promise.all(promises).catch( err => {
+            return Promise.all(promises).catch( (err:any) => {
                 batch.forEach( task => task.done(err) );
                 this.logger.error( {err}, 'failed to process task' );
             } );
         } catch( err ) {
             batch.forEach( task => task.done(err) );
             this.logger.error( {err}, 'failed to process task' );
+            return [];
         }
     }
 
-
-    _processBundle( ctx, bundle ) {
-        return this.$AliOpenSearch.batch( ctx, 
-                                          bundle.indexName, 
-                                          bundle.tableName, 
-                                          bundle.cmdArray, 
-                                          bundle.fieldsArray )
-            .then( () => {
-                bundle.dones.forEach( done => done() );
-            } )
-            .catch( err => {
-                bundle.dones.forEach( done => done(err) );
-                this.logger.error( {ctx, err}, 'failed to process task' );
-            } );
-    }
-
-
-    _putJob( ctx, jobData ) {
-
-        const c = this.config;
-
-        const job = this.queue.create( c.name, jobData );
-        job.priority(c.priority)
-            .attempts(c.attempts)
-            .backoff(c.backoff)
-            .removeOnComplete(c.removeOnComplete)
-            .save( err => {
-                const logObj = {ctx, jobData, job};
-                this.logger.debug( logObj, 'enque-ed job' );
-                if( !err ) {
-                    this.logger.debug( logObj, 'saved job' );
-                } else {
-                    this.logger.warn( logObj, 'failed to save job' );
-                }
-            } );
-
-        return Promise.resolve();
-    }
 
 }

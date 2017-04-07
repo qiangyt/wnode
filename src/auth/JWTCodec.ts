@@ -1,19 +1,21 @@
-import Jwt = require('jsonwebtoken');
-import JWToken = require('./JWToken');
-import ApiRole = require('../ApiRole');
-import uuid = require('node-uuid');
+import * as Jwt from 'jsonwebtoken';
+import JWToken from './JWToken';
+import * as ApiRole from '../ApiRole';
+import * as uuid from 'node-uuid';
+import AuthTokenCodec from './AuthTokenCodec';
+import AuthToken from './AuthToken';
+import BaseContext from '../ctx/BaseContext';
 
 
 /**
  * JWT编解码器
  */
-export default class JWTCodec {
+export default class JWTCodec extends AuthTokenCodec {
 
-    constructor() {
-        this.$id = 'JWTCodec';
-        this.$lazy = true;
-        this.$init = 'init';
-    }
+    public $id = 'JWTCodec';
+    public $lazy = true;
+    public $init = 'init';
+    public config:any;
 
     init() {
         let cfg = global.config.jwt;
@@ -28,7 +30,7 @@ export default class JWTCodec {
     /**
      * 编码
      */
-    encode( token ) {
+    encode( token:AuthToken ) {
         const cfg = this.config;
         const me = this;
 
@@ -46,8 +48,8 @@ export default class JWTCodec {
     /**
      * 生成编码用payload
      */
-    buildEncodePayload( token ) {
-        const r = {};
+    buildEncodePayload( token:AuthToken ) {
+        const r:any = {};
 
         if( token.userId ) r.uid = token.userId;
         if( token.roles ) r.rol = token.roles;
@@ -60,10 +62,10 @@ export default class JWTCodec {
     /**
      * 生成编码用options
      */
-    buildEncodeOptions( token ) {
+    buildEncodeOptions( token:AuthToken ) {
         const cfg = this.config;
 
-        const r = {
+        const r:any = {
             algorithm: cfg.algorithm
         };
 
@@ -77,7 +79,7 @@ export default class JWTCodec {
     /**
      * 解码
      */
-    decode( ctx, tokenText ) {
+    decode( ctx:BaseContext, tokenText:string ) {
         const cfg = this.config;
         const me = this;
         
@@ -97,7 +99,7 @@ export default class JWTCodec {
     buildDecodeOptions() {
         const cfg = this.config;
         
-        const r = {
+        const r:any = {
             algorithm: cfg.algorithm,
             ignoreExpiration: (cfg.ignoreExpiration === true) 
         };
@@ -111,8 +113,8 @@ export default class JWTCodec {
     /**
      * 解码成token对象（JWToken)
      */
-    decodeAsToken( ctx, decoded ) {
-        const expireByMinutes = undefined;//TODO
+    decodeAsToken( ctx:BaseContext, decoded:any ) {
+        const expireByMinutes:number = undefined;//TODO
 
         let userId = decoded.uid;
         if( userId ) userId = parseInt(userId, 10);

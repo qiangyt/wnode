@@ -1,4 +1,4 @@
-import InternalContext = require( '../ctx/InternalContext' );
+import InternalContext from '../ctx/InternalContext';
 
 
 export default class TestContext extends InternalContext {

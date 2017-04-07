@@ -1,7 +1,7 @@
-import MongooseManager = require('./MongooseManager');
-import Errors = require('../Errors');
-import Exception = require('../Exception');
-import Logger = require('../Logger');
+import MongooseManager from './MongooseManager';
+import * as Errors from '../Errors';
+import Exception from '../Exception';
+import * as Logger from '../Logger';
 
 
 export default class MongooseDao {

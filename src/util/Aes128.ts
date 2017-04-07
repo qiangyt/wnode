@@ -1,4 +1,4 @@
-import Crypto = require('crypto');
+import * as Crypto from 'crypto';
 
 
 export default class Aes128 {

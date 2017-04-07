@@ -1,8 +1,10 @@
+import MySqlPool from './MySqlPool';
+import BaseContext from '../ctx/BaseContext';
 
 
 export default class MySqlConnection {
 
-    constructor( pool, rawConnection ) {
+    constructor( public pool:MySqlPool, public rawConnection:any ) {
         this.pool = pool;
         this.rawConnection = rawConnection;
     }
@@ -10,18 +12,9 @@ export default class MySqlConnection {
     /**
      * 
      */
-    query( ctx, sql, values, callback ) {
+    query( ctx:BaseContext, sql:string, values ) {
         const me = this;
-        if( callback ) {
-            me.rawConnection.query( sql, values, function(err, result) {
-                if( err ) {
-                    me.release();
-                    return ctx.error(err);
-                } 
-                return ctx.callback(callback, result);
-            } );
-            return undefined; 
-        }
+        
         
         return new Promise( function( resolve, reject ) {
             me.rawConnection.query( sql, values, function(err, result) {
@@ -35,7 +28,7 @@ export default class MySqlConnection {
         } );
     }
 
-    insert( ctx, tableName, valuesMapByColumns, callback ) {
+    insert( ctx:BaseContext, tableName:string, valuesMapByColumns ) {
         const me = this;
         const columns = [];
         const values = [];
@@ -46,13 +39,6 @@ export default class MySqlConnection {
 
         const sql = this.pool.$SqlBuilder.insert( tableName, columns );
 
-        if( callback ) {
-            me.query( ctx, sql, values, function(result) {
-                ctx.callback(callback, result.insertId );
-            } );
-            return undefined;
-        }
-
         return me.query( ctx, sql, values )
         .then( function(result) {
                 return result.insertId;
@@ -60,7 +46,7 @@ export default class MySqlConnection {
         );
     }
 
-    update( ctx, tableName, valuesMapByColumns, conditionsMapByColumns, callback ) {
+    update( ctx:BaseContext, tableName:string, valuesMapByColumns, conditionsMapByColumns ) {
         const me = this;
         const values = [];
 
@@ -77,13 +63,6 @@ export default class MySqlConnection {
         }
 
         const sql = me.pool.$SqlBuilder.update( tableName, conditionColumns, valueColumns );
-
-        if( callback ) {
-            me.query( ctx, sql, values, function(result) {
-                ctx.callback(callback, result.affectedRows );
-            } );
-            return undefined;
-        }
 
         return me.query( ctx, sql, values )
         .then( function(result) {

@@ -1,8 +1,8 @@
-import Fs = require('fs');
-import Path = require('path');
-import CodePath = require('../util/CodePath');
-import Logger = require('../Logger');
-import Util = require('util');
+import * as Fs from 'fs';
+import * as Path from 'path';
+import CodePath from '../util/CodePath';
+import * as Logger from '../Logger';
+import * as Util from 'util';
 
 
 /**
@@ -87,7 +87,7 @@ export default class BaseSequelizer {
             return;
         }
         
-        const relationFunc = require(relationJsPath);
+        const relationFunc from relationJsPath);
         if( !Util.isFunction(relationFunc) ) throw new Error(relationJsPath + ' doesn\'t export a function');
 
         relationFunc( this.instance, this.instance.models );

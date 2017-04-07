@@ -2,10 +2,9 @@
 
 export default class SqlBuilder {
 
-    constructor() {
-        this.$id = 'SqlBuilder';
-        this.$lazy = true;
-    }
+    public $id = 'SqlBuilder';
+    public $lazy = true;
+    
 
     /**
      * 生成insert SQL语句：insert into <表名> (列1,列2,列3,...) values (?,?,?...)
@@ -13,7 +12,7 @@ export default class SqlBuilder {
      * @param tableName 表名
      * @param columns 列名数组
      */
-    insert( tableName, columns ) {
+    insert( tableName:string, columns:string[] ) {
         const placeholders = [];
 
         for( let i = 0; i < columns.length; i++ ) {
@@ -31,7 +30,7 @@ export default class SqlBuilder {
      * @param conditions 条件数组
      * @param columns 列名数组
      */
-    update( tableName, conditions, columns ) {
+    update( tableName:string, conditions:string[], columns:string[] ) {
         const valueSql = [];
         for( let column of columns ) valueSql.push( column + '=?' );
 

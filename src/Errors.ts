@@ -1,4 +1,4 @@
-import ErrorType = require('./ErrorType');
+import ErrorType from './ErrorType');
 
 
 const errorMapByCode = {};
@@ -21,7 +21,7 @@ export function register( codeStart, codeEnd, jsonFilePath ) {
         }
     }
 
-    const errors = require( jsonFilePath );
+    const errors = require(jsonFilePath );
 
     for( let key in errors ) {
         if( module.exports[key] ) throw new Error('duplicated error key: ' + key);

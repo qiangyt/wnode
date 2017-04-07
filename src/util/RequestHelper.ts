@@ -1,8 +1,9 @@
+import * as http from 'http';
 
 
 export default class RequestHelper {
 
-    static normalizeIpv4( ip ) {
+    static normalizeIpv4( ip:string ) {
         const pos = ip.lastIndexOf(':');
         if( pos < 0 ) return ip;
         return ip.substring(pos + 1);
@@ -35,7 +36,7 @@ export default class RequestHelper {
      * Proxy-Client-IP, WL-Proxy-Client-IP, HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR
      */
     /* eslint complexity: ["error", 11] */
-    static resolveClientIp( req ) {
+    static resolveClientIp( req:http.ServerRequest ) {
         let r;
 
         const headers = req.headers;
@@ -58,10 +59,6 @@ export default class RequestHelper {
         if( conn ) {
             r = conn.remoteAddress;//http
             if( r.length ) return RequestHelper.normalizeIpv4(r);
-            if( conn.socket ) {
-                r = conn.socket.remoteAddress;//tcp
-                if( r.length ) return RequestHelper.normalizeIpv4(r);
-            }
         }
         if( req.socket ) return RequestHelper.normalizeIpv4(req.socket.remoteAddress);//socket.io
         

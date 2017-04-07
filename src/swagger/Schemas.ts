@@ -1,10 +1,10 @@
-import Fs = require('fs');
-import Path = require('path');
-import CodePath = require('../util/CodePath');
-import Util = require('util');
-import Sequelize = require('sequelize');
-import SwaggerHelper = require('./SwaggerHelper');
-import SequelizerManager = require('../orm/SequelizerManager');
+import * as Fs from 'fs';
+import * as Path from 'path';
+import CodePath from '../util/CodePath';
+import * as Util from 'util';
+import * as Sequelize from 'sequelize';
+import SwaggerHelper from './SwaggerHelper';
+import SequelizerManager from '../orm/SequelizerManager';
 
 
 export default class Schemas {

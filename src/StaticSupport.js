@@ -3,12 +3,12 @@
 /*eslint no-var: "off"*/
 /*eslint no-unused-vars: "off"*/
 
-import fs = require('fs');
-import path = require('path');
+const fs = require('fs');
+const path = require('path');
 var escapeRE = require('escape-regexp-component');
 
-import assert = require('assert-plus');
-import mime = require('mime');
+const assert = require('assert-plus');
+const mime = require('mime');
 const errors = require('restify').errors;
 
 
@@ -31,7 +31,7 @@ var ResourceNotFoundError = errors.ResourceNotFoundError;
  *            ResourceNotFoundError}
  * @returns  {Function}
  */
-export default function serveStatic(opts) {
+module.exports = function serveStatic(opts) {
     opts = opts || {};
     assert.object(opts, 'options');
     assert.string(opts.directory, 'options.directory');
@@ -59,8 +59,8 @@ export default function serveStatic(opts) {
 
         var fstream = fs.createReadStream(file + (isGzip ? '.gz' : ''));
         var maxAge = opts.maxAge === undefined ? 3600 : opts.maxAge;
-        fstream.once('open', function (fd) {
-            res.cache({maxAge: maxAge});
+        fstream.once('open', function(fd) {
+            res.cache({ maxAge: maxAge });
             res.set('Content-Length', stats.size);
             res.set('Content-Type', mime.lookup(file));
             res.set('Last-Modified', stats.mtime);
@@ -76,18 +76,18 @@ export default function serveStatic(opts) {
             }
             res.writeHead(200);
             fstream.pipe(res);
-            fstream.once('end', function () {
+            fstream.once('end', function() {
                 next(false);
             });
         });
     }
 
     function serveNormal(file, req, res, next) {
-        fs.stat(file, function (err, stats) {
+        fs.stat(file, function(err, stats) {
             if (!err && stats.isDirectory() && opts.default) {
                 // Serve an index.html page or similar
                 file = path.join(file, opts.default);
-                fs.stat(file, function (dirErr, dirStats) {
+                fs.stat(file, function(dirErr, dirStats) {
                     serveFileFromStats(file,
                         dirErr,
                         dirStats,
@@ -110,7 +110,7 @@ export default function serveStatic(opts) {
 
     function trimFirstPathComponent(p) {
         const pos = p.indexOf('/', 1);
-        if( pos <= 0 ) return p;
+        if (pos <= 0) return p;
         return p.substring(pos + 1);
     }
 
@@ -142,7 +142,7 @@ export default function serveStatic(opts) {
         }
 
         if (opts.gzip && req.acceptsEncoding('gzip')) {
-            fs.stat(file + '.gz', function (err, stats) {
+            fs.stat(file + '.gz', function(err, stats) {
                 if (!err) {
                     res.setHeader('Content-Encoding', 'gzip');
                     serveFileFromStats(file,

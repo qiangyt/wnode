@@ -1,9 +1,10 @@
-import Redis = require('redis');
-import Logger = require('../Logger');
-import Errors = require('../Errors');
-import Exception = require('../Exception');
-import Bluebird = require('bluebird');
-import Util = require('util');
+import * as Redis from 'redis';
+import * as Logger from '../Logger';
+import * as Errors from '../Errors';
+import Exception from '../Exception';
+import * as Bluebird from 'bluebird';
+import * as Util from 'util';
+import BaseContext from '../ctx/BaseContext';
 
 
 Bluebird.promisifyAll(Redis.RedisClient.prototype);
@@ -14,11 +15,11 @@ Bluebird.promisifyAll(Redis.Multi.prototype);
 
 export default class RedisInstance {
 
-    constructor(instanceName, config) {
-        this.logger = Logger.create('RedisInstance/' + (instanceName ? instanceName : '') );
+    public logger:any;
+    public client:Redis.RedisClient;
 
-        this.config = config;
-        this.instanceName = instanceName;
+    constructor(public instanceName:string, public config:any) {
+        this.logger = Logger.create('RedisInstance/' + (instanceName ? instanceName : '') );
 
         this.connect();
     }
@@ -39,40 +40,40 @@ export default class RedisInstance {
 
         const client = this.client = Redis.createClient(cfg);
 
-        client.on( 'error', function(err) {
+        client.on( 'error', (err:any) => {
             if(err) this.logger.error( {err}, 'redis error' );
-        }.bind(this));
+        });
 
-        client.on( 'connect', function(err) {
+        client.on( 'connect', (err:any) => {
             if(err) this.logger.error( {err}, 'redis connect err' );
             else this.logger.info('connected to the server');
-        }.bind(this));
+        });
 
-        client.on( 'reconnecting', function(err) {
+        client.on( 'reconnecting', (err:any) => {
             if(err) this.logger.error( {err}, 'redis reconnecting error' );
             else this.logger.info('trying to reconnect to the Redis server after losing the connection');
-        }.bind(this));
+        });
 
-        client.on( 'ready', function(err) {
+        client.on( 'ready', (err:any) => {
             if(err) this.logger.error( {err}, 'redis ready error' );
             else this.logger.info('connection is established');
-        }.bind(this) );
+        });
 
-        client.on( 'end', function(err) {
+        client.on( 'end', (err:any) => {
             if(err) this.logger.error( {err}, 'redis end error' );
             else this.logger.info('an established Redis server connection has closed');
-        }.bind(this) );
+        } );
     }
 
     /**
      * JSON编码
      */
-    encodeValue( ctx, value ) {
+    encodeValue( ctx:BaseContext, value:any ) {
         return JSON.stringify(value);
     }
 
     /* eslint no-empty: "off" */
-    encodeObjectArray( ctx, objectArray ) {
+    encodeObjectArray( ctx:BaseContext, objectArray:any[] ) {
         const r = {};
         for( let key in objectArray ) {
 
@@ -82,7 +83,7 @@ export default class RedisInstance {
     /**
      * JSON解码
      */
-    decodeValue( ctx, value ) {
+    decodeValue( ctx:BaseContext, value:string ) {
         if( value === undefined || value === null ) return value;
 
         try {
@@ -93,16 +94,16 @@ export default class RedisInstance {
         }
     }
 
-    decodeValueArray( ctx, valueArray ) {
+    decodeValueArray( ctx:BaseContext, valueArray:string[] ) {
         if( valueArray === undefined || valueArray === null ) return valueArray;
 
-        return valueArray.map( value => this.decodeValue(value) );
+        return valueArray.map( value => this.decodeValue(ctx, value) );
     }
 
     /**
      *
      */
-    set( ctx, key, value, expireSeconds, encode ) {
+    set( ctx:BaseContext, key:string, value:any, expireSeconds:number, encode:boolean ) {
         const encodedValue = encode ? this.encodeValue( ctx, value ) : value;
         return this.client.setAsync( key, encodedValue )
         .then( res => {
@@ -116,7 +117,7 @@ export default class RedisInstance {
     /**
      *
      */
-    get( ctx, key, decode ) {
+    get( ctx:BaseContext, key:string, decode:boolean ) {
         return this.client.getAsync(key)
         .then( res => {
             const value = decode ? this.decodeValue( ctx, res ) : res;
@@ -127,26 +128,26 @@ export default class RedisInstance {
     /**
      *
      */
-    incrby( ctx, key, delta ) {
+    incrby( ctx:BaseContext, key:string, delta:number ) {
         return this.client.incrbyAsync( key, delta );
     }
 
     /**
      *
      */
-    decrby( ctx, key, delta ) {
+    decrby( ctx:BaseContext, key:string, delta:number ) {
         return this.client.decrbyAsync( key, delta );
     }
 
     /**
      * @param keyOrKeyArray 单个key，或key的数组
      */
-    del( ctx, keyOrKeyArray ) {
+    del( ctx:BaseContext, keyOrKeyArray:string|string[] ) {
         // 删除支持数组
         return this.client.delAsync( keyOrKeyArray );
     }
 
-    mget( ctx, keyOrKeyArray ) {
+    mget( ctx:BaseContext, keyOrKeyArray:string|string[] ) {
         let p;
         if( !Util.isArray(keyOrKeyArray) ) {
             keyOrKeyArray = arguments.slice(1);
@@ -157,7 +158,7 @@ export default class RedisInstance {
 
     /* eslint no-empty-function: "off" */
     /* eslint no-unused-vars: "off" */
-    mset( ctx, keyValueObjects ) {
+    mset( ctx:BaseContext, keyValueObjects:any[] ) {
 
     }
 

@@ -1,28 +1,28 @@
-import Errors = require('../Errors');
-import Logger = require('../Logger');
-import Restify = require('restify');
-import LocalClientContext = require('../ctx/LocalClientContext');
-import AuthToken = require('../auth/AuthToken');
-import JWTAuth = require('../auth/JWTAuth');
+import * as Errors from '../Errors';
+import * as Logger from '../Logger';
+import * as Restify from 'restify';
+import LocalClientContext from '../ctx/LocalClientContext';
+import AuthToken from '../auth/AuthToken';
+import JWTAuth from '../auth/JWTAuth';
+import ApiServer from '../ApiServer';
+import AuthTokenCodec from '../auth/AuthTokenCodec';
+import BaseContext from '../ctx/BaseContext';
 
 
 export default class MsClient {
 
-    constructor() {
-        this.$id = 'MsClient';
-        this.$lazy = true;
-        this.$init = 'init';
-        this.$ApiServer = null;
-
-        this.logger = Logger.create(this);
-    }
-
+    public $id = 'MsClient';
+    public $lazy = true;
+    public $init = 'init';
+    public $ApiServer:ApiServer = null;
+    public logger = Logger.create(this);
+    public authCodec:AuthTokenCodec;
+    public services:any = {};
 
     init() {
         this.authCodec = JWTAuth.globalAuthBean().codec();
 
         const cfg = global.config.service;
-        this.services = {};
 
         for( let sname in cfg ) {
             const scfg = cfg[sname];
@@ -30,7 +30,7 @@ export default class MsClient {
             const sbase = scfg.base;
             if( !sbase ) throw new Error( "bad service config: " + sname );
 
-            const s = this.services[sname] = {
+            const s:any = this.services[sname] = {
                 isLocal: (sbase === 'http://localhost:' + global.config.server.httpPort)
             };
 
@@ -47,13 +47,7 @@ export default class MsClient {
         }
     }
 
-    call( ctx, serviceName, apiName, parameters, callback ) {
-        if( callback ) {
-            this._call( ctx, serviceName, apiName, parameters, function( err, result ) {
-                if( err ) return ctx.error(err);
-                return callback(result);
-            } );
-        } else {
+    call( ctx:BaseContext, serviceName:string, apiName:string, parameters:any ) {
             const me = this;
             return new Promise( function( resolve, reject ) {
                 me._call( ctx, serviceName, apiName, parameters, function( err, result ) {
@@ -61,12 +55,11 @@ export default class MsClient {
                     else resolve(result);
                 } );
             } );
-        }
     }
 
-    _call( ctx, serviceName, apiName, parameters, callback ) {
-        let s;
-        let isLocal;
+    _call( ctx:BaseContext, serviceName:string, apiName:string, parameters:any, callback ) {
+        let s:any;
+        let isLocal:boolean;
         if( !serviceName ) isLocal = true;
         else {
             s = this.services[serviceName];
@@ -77,7 +70,7 @@ export default class MsClient {
         if( !parameters ) parameters = {};
 
         /* eslint func-style: "off" */
-        const func = function func( err, result ) {
+        const func = function func( err:any, result:any ) {
             if( err ) return callback( err );
             if( result.code === '0' ) return callback( null, result.data );
             return callback( result, null );
@@ -114,7 +107,7 @@ export default class MsClient {
     /**
      *
      */
-    resolveInternalAuthToken( ctx ) {
+    resolveInternalAuthToken( ctx:BaseContext ) {
         if( !ctx.$authInternal ) {
             ctx.$authInternal = ( ctx.$auth ) ? ctx.$auth.internalCopy() : new AuthToken( null, null, null, null, true );
         }

@@ -1,6 +1,6 @@
-import _ = require('lodash');
-import Mongoose = require('mongoose');
-import MongooseInstance = require('./MongooseInstance');
+import * as _ from 'lodash';
+import * as Mongoose from 'mongoose';
+import MongooseInstance from './MongooseInstance';
 
 // for backwards compatibility, Mongoose 4 uses mpromise (https://www.npmjs.com/package/mpromise) as built-in
 // promise library by default. However, Mongoose said it's better to replace it with system promises.

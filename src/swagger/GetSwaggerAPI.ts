@@ -1,5 +1,5 @@
-import ApiRole = require('../ApiRole');
-import Errors = require('../Errors');
+import * as ApiRole from '../ApiRole';
+import * as Errors from '../Errors';
 
 
 /**

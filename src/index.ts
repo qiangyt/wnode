@@ -1,4 +1,4 @@
-import Path = require('path');
+import * as Path from 'path';
 const Path_parse_old = Path.parse;
 Path.parse = function(full) {
     const r = Path_parse_old(full);
@@ -6,18 +6,18 @@ Path.parse = function(full) {
     return r;
 }
 
-const Internal = require('./Internal');
-const Config = require('./Config');
-const CodePath = require('./util/CodePath');
+import Internal from './Internal';
+import Config from './Config';
+import CodePath from './util/CodePath';
 const Bearcat = require('bearcat');
 const requireAsBean = Internal.requireAsBean;
-const SwaggerHelper = require('./swagger/SwaggerHelper');
-const Schemas = require('./swagger/Schemas');
+import SwaggerHelper from './swagger/SwaggerHelper';
+import Schemas from './swagger/Schemas';
 
 
 function startApp( appJsonPath, startCallback ) {
     // make bearcat global, for `bearcat.module()`
-    const bearcat = global.bearcat = require('bearcat');
+    const bearcat = global.bearcat from 'bearcat');
     bearcat.createApp([CodePath.resolve(appJsonPath)]);
 
     Internal.initBeans();

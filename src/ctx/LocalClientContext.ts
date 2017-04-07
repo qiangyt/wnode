@@ -1,11 +1,13 @@
-import BaseContext = require( './BaseContext' );
+import BaseContext from  './BaseContext';
+import ServerContext from  './ServerContext';
+import ApiDefinition from '../ApiDefinition';
 
 
 export default class LocalClientContext extends BaseContext {
 
-    constructor( parent, apiDefinition, cb ) {
+    constructor( public parent:ServerContext, apiDefinition:ApiDefinition, public cb:any ) {
         super(apiDefinition);
-        this.parent = parent;
+        
         if( parent ) {
             this.$auth = parent.$auth;
             this.req = parent.req;
@@ -14,18 +16,15 @@ export default class LocalClientContext extends BaseContext {
             this.correlationId = parent.correlationId;
             this.previousRequestId = parent.previousRequestId;
         }
-        this.cb = cb;
-        this.beginTime = new Date().getTime();
     }
 
     /**
      *
      */
     /* eslint 'no-unused-vars': 'off' */
-    done( failed, result, status ) {
+    done( failed:boolean, result:any, status:number ) {
         if( this.tryDone() ) return;
 
-        let error;
         if( failed ) {
             this.cb( result, null );
         } else {
@@ -36,7 +35,7 @@ export default class LocalClientContext extends BaseContext {
     /**
      *
      */
-    getCookie( cookieName ) {
+    getCookie( cookieName:string ) {
         if( !this.parent ) return undefined;
         return this.parent.getCookie( cookieName );
     }
@@ -44,7 +43,7 @@ export default class LocalClientContext extends BaseContext {
     /**
      *
      */
-    setCookie( cookieName, cookieValue, path, domain, maxAge, secure, httpOnly ) {
+    setCookie( cookieName:string, cookieValue, path, domain, maxAge, secure, httpOnly ) {
         if( !this.parent ) return;
         this.parent.setCookie( cookieName, cookieValue, path, domain, maxAge, secure, httpOnly );
     }
@@ -52,7 +51,7 @@ export default class LocalClientContext extends BaseContext {
     /**
      *
      */
-    clearCookie( cookieName ) {
+    clearCookie( cookieName:string ) {
         if( !this.parent ) return;
         this.parent.clearCookie( cookieName );
     }

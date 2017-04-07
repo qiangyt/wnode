@@ -12,7 +12,6 @@ export default {
     Hmac:       require('./Hmac'),
     RequestHelper:  require('./RequestHelper'),
     PasswordHelper: require('./PasswordHelper'),
-    Time:       require('./Time'),
-    VO:         require('./VO')
+    Time:       require('./Time')
 
 };

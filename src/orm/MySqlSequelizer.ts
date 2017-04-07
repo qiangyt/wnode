@@ -1,6 +1,6 @@
-import _ = require('lodash');
-import Sequelize = require('sequelize');
-import BaseSequelizer = require('./BaseSequelizer');
+import * as _ from 'lodash';
+import * as Sequelize from 'sequelize';
+import BaseSequelizer from './BaseSequelizer';
 
 
 export default class MySqlSequelizer extends BaseSequelizer {

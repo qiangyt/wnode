@@ -227,7 +227,7 @@ MetaUtil.resolveFuncAnnotation = function(func, fp, force) {
 
 	meta['func'] = func;
 	if (fp) {
-		meta['fpath'] = require('path').resolve(process.cwd(), fp);
+		meta['fpath'] from 'path').resolve(process.cwd(), fp);
 	}
 
 	var id = meta.id;

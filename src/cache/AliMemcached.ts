@@ -1,14 +1,12 @@
 const AliyunSdk = require('@wxcount/aliyun-sdk');
- 
+import Memcached from './Memcached';
+
 
 // See https://github.com/chylvina/node_memcached
 
-export default class AliMemcached extends require('./Memcached') {
+export default class AliMemcached extends Memcached {
 
-    constructor() {
-        super();
-        this.$id = 'AliMemcached';
-    }
+    public $id = 'AliMemcached';
 
     /**
      * 
@@ -18,7 +16,7 @@ export default class AliMemcached extends require('./Memcached') {
         super.init(cfg);
     }
 
-    createClient( cfg ) {
+    createClient( cfg:any ) {
          return AliyunSdk.MEMCACHED.createClient( cfg.port, cfg.host );
     }
   

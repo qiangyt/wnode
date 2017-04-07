@@ -1,7 +1,10 @@
-import ApiRole = require('../ApiRole');
+import * as ApiRole from '../ApiRole';
 const Errors = require('../Errors');
-import marked = require('marked');
-
+import * as marked from 'marked';
+import ApiServer from '../ApiServer';
+import SwaggerHelper from '../swagger/SwaggerHelper';
+import BlueprintHelper from './BlueprintHelper';
+import BaseContext from '../ctx/BaseContext';
 
 //hint: use MWeb Lite to view blueprint
 
@@ -10,14 +13,13 @@ import marked = require('marked');
  */
 export default class GetBlueprintAPI {
 
-    constructor() {
-        this.$id = 'GetBlueprintAPI';
-        this.$ApiServer = null;
-        this.$SwaggerHelper = null;
-        this.$BlueprintHelper = null;
-    }
+    public $id = 'GetBlueprintAPI';
+    public $ApiServer:ApiServer = null;
+    public $SwaggerHelper:SwaggerHelper = null;
+    public $BlueprintHelper:BlueprintHelper = null;
 
-    check( ctx, apiName /* required:false */ ) {
+
+    check( ctx:BaseContext, apiName:string /* required:false */ ) {
         if( apiName ) {
             if( !this.$ApiServer.apiDefinitions[apiName] ) {
                 return ctx.error( Errors.API_NOT_FOUND, apiName );
@@ -27,13 +29,13 @@ export default class GetBlueprintAPI {
         ctx.ok();
     }
 
-    exec( ctx, 
-        apiName /* required:false */, 
-        html /* type:'boolean', required:false, description:'true:输出html' */,
-        ignoreInternalApi /* required:false, type:'boolean', description:'是否忽略内部API，默认为true' */,
-        ignoreGetSwaggerApi /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
-        ignoreGetBlueprintApi /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
-        ignoreNames /* required:false, type:'array', items:{type:'string'}, description:'需忽略的API名字，默认无' */ ) {
+    exec( ctx:BaseContext, 
+        apiName:string /* required:false */, 
+        html:boolean /* type:'boolean', required:false, description:'true:输出html' */,
+        ignoreInternalApi:boolean /* required:false, type:'boolean', description:'是否忽略内部API，默认为true' */,
+        ignoreGetSwaggerApi:boolean /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
+        ignoreGetBlueprintApi:boolean /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
+        ignoreNames:boolean /* required:false, type:'array', items:{type:'string'}, description:'需忽略的API名字，默认无' */ ) {
         
         const options = this.$SwaggerHelper.buildOptions( ignoreInternalApi, ignoreGetSwaggerApi, ignoreGetBlueprintApi, ignoreNames );
 

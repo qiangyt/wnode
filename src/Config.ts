@@ -1,6 +1,6 @@
-import Fs = require('fs');
-import Path = require('path');
-import _ = require('lodash');
+import * as Fs from 'fs';
+import * as Path from 'path';
+import * as _ from 'lodash';
 
 const logger = require('./Logger').create('Config');
 
@@ -27,7 +27,7 @@ export default class Config {
         }
 
         logger.info( {path: basePath}, 'base config file' );
-        const r = require( basePath );
+        const r = require(basePath);
             
         /* eslint no-process-env: "off" */
         const env = process.env.NODE_ENV;

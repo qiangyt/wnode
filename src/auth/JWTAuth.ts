@@ -1,16 +1,14 @@
-import ApiRole = require('../ApiRole');
-import JWToken = require('./JWToken');
-import SimpleAuth = require('./SimpleAuth');
+import * as ApiRole from '../ApiRole';
+import JWToken from './JWToken';
+import SimpleAuth from './SimpleAuth';
+import JWTCodec from './JWTCodec';
 
 
 export default class JWTAuth extends SimpleAuth {
 
-    constructor() {
-        super();
-        this.$id = 'JWTAuth';
-        this.$JWTCodec = null;
-        this.$lazy = true;
-    }
+    public $id = 'JWTAuth';
+    public $JWTCodec:JWTCodec = null;
+    public $lazy = true;
 
     codec() {
         return this.$JWTCodec;
@@ -20,7 +18,7 @@ export default class JWTAuth extends SimpleAuth {
         return new JWToken( null, null, [ApiRole.any] );
     }
 
-    static globalAuthBean() {
+    static globalAuthBean():JWTAuth {
         const cfg = global.config;
         if( !cfg.server.auth ) cfg.server.auth = 'JWTAuth';
         return global.bearcat.getBean(cfg.server.auth);

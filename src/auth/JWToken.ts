@@ -1,4 +1,4 @@
-import AuthToken = require('./AuthToken');
+import AuthToken from './AuthToken';
 
 
 export default class JWToken extends AuthToken {

@@ -1,10 +1,10 @@
-import util = require('util');
-import fs = require('fs');
-import mkdirp = require('mkdirp');
-import path = require('path');
-import bunyan = require('bunyan');
-import Time = require('./util/Time');
-import _ = require('lodash');
+import * as util from 'util';
+import * as fs from 'fs';
+import * as mkdirp from 'mkdirp';
+import * as path from 'path';
+import * as bunyan from 'bunyan';
+import Time from './util/Time';
+import * as _ from 'lodash';
 
 
 const launchTime = new Date();
@@ -30,7 +30,7 @@ function loadConfiguration() {
 
     const basePath = path.join( dir, 'logger.json' );
     console.log( 'base logger config file: ' + basePath );
-    const r = require( basePath );
+    const r from  basePath );
 
     const envPath = path.join( dir, 'logger.' + env + '.json' );
     console.log( 'env logger config file: ' + envPath );
@@ -44,7 +44,7 @@ function loadConfiguration() {
     }
 
     if( envStat.isDirectory() ) throw new Error( envPath + ' should be a json file instead a directory' );
-    const envData = require(envPath);
+    const envData from envPath);
     _.merge( r, envData );
     
 

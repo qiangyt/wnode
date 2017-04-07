@@ -1,21 +1,40 @@
-import Errors = require( '../Errors' );
-import ErrorType = require('../ErrorType');
-import Exception = require( '../Exception.js' );
-import Util = require('util');
+import * as Errors from  '../Errors';
+import ErrorType from '../ErrorType';
+import Exception from  '../Exception.js';
+import * as Util from 'util';
 const logger = require('../Logger').create('ctx');
-import Transaction = require('./Transaction');
+import Transaction from './Transaction';
+import ApiDefinition from '../ApiDefinition';
+import JWTAuth from '../auth/JWTAuth';
+import AuthToken from '../auth/AuthToken';
+import * as http from 'http';
 
 
 export default class BaseContext {
 
-    constructor( apiDefinition ) {
-        this.apiDefinition = apiDefinition;
-        this.isTxOwner = false;
+    public $auth:AuthToken = JWTAuth.globalAuthBean().createEmptyToken();
+    public isTxOwner = false;
+    public logger;
+    public req:http.ServerRequest;
+    public next:any;
+    public tx:Transaction;
+    public isDone = false;
+    public values:any;
+    public result:any;
+    public hasError = false;
+    public errorCallback:any;
+    public requestId:string;
+    public correlationId:string;
+    public previousRequestId:string;
+    public beginTime = new Date().getTime();
+
+
+    constructor( public apiDefinition:ApiDefinition ) {
         this.logger = logger;
     }
 
 
-    callback( cb ) {
+    callback( cb:any ) {
         try {
             const args = Array.from(arguments).slice(1);
             cb.apply( null, args );
@@ -27,12 +46,12 @@ export default class BaseContext {
     }
 
 
-    beginTx( options ) {
+    beginTx( options:any ) {
         return this._beginTx(options);
     }
 
 
-    _beginTx( options ) {
+    _beginTx( options:any ) {
         if( !this.tx ) {
             this.tx = new Transaction( this, options );
             this.isTxOwner = true;
@@ -97,11 +116,11 @@ export default class BaseContext {
      *        data: <result的json编码>
      *    }
      */
-    ok( result ) {
+    ok( result:any ) {
         if( this.tx ) {
             return this.commitTx()
                 .then( () => this._ok(result) )
-                .catch( err => {
+                .catch( (err:any) => {
                     logger.error( {err, ctx:this}, 'more error during transaction commit' );
                     this._error.apply( this, arguments );
                 } );
@@ -111,7 +130,7 @@ export default class BaseContext {
     }
 
 
-    _ok( result ) {
+    _ok( result:any ) {
         if( !this.next ) {
             // 本次API调用结束
             const status = 200;
@@ -144,7 +163,7 @@ export default class BaseContext {
 
 
     /*eslint no-unused-vars: "off"*/
-    isJsonResponseValid( response ) {
+    isJsonResponseValid( response:any ) {
         return true;
     }
 
@@ -176,13 +195,13 @@ export default class BaseContext {
      *        time:     <错误发生时间点，长整数，毫秒值>
      *    }
      */
-    error() {
+    error(...params:any[]) {
         if( this.tx ) {
             return this.rollbackTx()
             .then( () => {
                 this._error.apply( this, arguments );
             } )
-            .catch( err => {
+            .catch( (err:any) => {
                 logger.warn( {err, ctx:this}, 'more error during transaction rollback' );
                 this._error.apply( this, arguments );
             } );
@@ -239,6 +258,11 @@ export default class BaseContext {
         if( this.errorCallback ) {
             this.errorCallback(labelOrError);
         }
+    }
+
+
+    done( failed:boolean, result:any, status:number ):void {
+        throw new Error('to be implemented');
     }
 
 

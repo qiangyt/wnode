@@ -1,10 +1,10 @@
-import _ = require('lodash');
-import SequelizerManager = require('./SequelizerManager');
-import Errors = require('../Errors');
-import Exception = require('../Exception');
-import Logger = require('../Logger');
-import SequelizerTx = require('./SequelizerTx');
-import Promise = require('bluebird');// 因为sequelizer使用bluebird的Promise，所以我们这里也必须使用bluebird
+import * as _ from 'lodash';
+import SequelizerManager from './SequelizerManager';
+import * as Errors from '../Errors';
+import Exception from '../Exception';
+import * as Logger from '../Logger';
+import SequelizerTx from './SequelizerTx';
+import * as Promise from 'bluebird';// 因为sequelizer使用bluebird的Promise，所以我们这里也必须使用bluebird
 
 
 export default class SequelizeDao {

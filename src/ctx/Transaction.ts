@@ -1,8 +1,8 @@
-import Errors = require('../Errors');
-import Exception = require('../Exception');
-import Logger = require('../Logger');
-import uuid = require('node-uuid');
-
+import * as Errors from '../Errors';
+import Exception from '../Exception';
+import * as Logger from '../Logger';
+import * as uuid from 'node-uuid';
+import BaseContext from './BaseContext';
 const logger = Logger.create('Transaction');
 
 
@@ -11,18 +11,18 @@ const logger = Logger.create('Transaction');
  */
 export default class Transaction {
 
-    constructor( ctx, options ) {
-        this.ctx = ctx;
-        this.resources = [];
-        this.txId = uuid.v4();
+    public resources:any[] = [];
+    public txId = uuid.v4();
 
-        this.finishing = false;
-        this.finished = false;
+    public finishing = false;
+    public finished = false;
 
-        this.rollbacked = false;
-        this.rollbacking = false;
-        
-        this.options = options;
+    public rollbacked = false;
+    public rollbacking = false;
+    public ignore = false;
+
+    constructor( public ctx:BaseContext, public options:any ) {
+        //
     }
 
 
@@ -52,7 +52,7 @@ export default class Transaction {
     }
 
 
-    toLogObject( detail ) {
+    toLogObject( detail:boolean ) {
         return {
             ctx: this.ctx,
             resources: this.resources.map( res => { 
@@ -72,7 +72,7 @@ export default class Transaction {
     /**
      * 把一个资源排入事务。
      */
-    enlist( instance ) {
+    enlist( instance:any ) {
 
         if( this.finished || this.finishing ) {
             const msg = 'transaction already finished/finishing';
@@ -108,7 +108,7 @@ export default class Transaction {
         }
 
         return instance.enlistTx(this.options)
-        .then( data => {
+        .then( (data:any) => {
             if( !data ) throw new Exception( Errors.INTERNAL_ERROR, 'enlisted data should be NOT undefined/null' );
             
             resources.push({instance, data});
@@ -121,7 +121,7 @@ export default class Transaction {
     }
 
 
-    _setFinishing( logObj, finishing ) {
+    _setFinishing( logObj:any, finishing:boolean ) {
         this.finishing = finishing;
         logObj.finishing = this.finishing;
 
@@ -130,7 +130,7 @@ export default class Transaction {
     }
 
 
-    _setRollbacking( logObj, rollbacking ) {
+    _setRollbacking( logObj:any, rollbacking:boolean ) {
         this.rollbacking = rollbacking;
         logObj.rollbacking = this.rollbacking;
 
@@ -169,7 +169,7 @@ export default class Transaction {
 
             logger.debug( logObj, 'commit-ed' );
          } )
-        .catch( err => {
+        .catch( (err:any) => {
             this._setFinishing( logObj, false );
             
             const msg = 'commit failed';
@@ -217,7 +217,7 @@ export default class Transaction {
 
             logger.info( logObj, 'rollbacked' );
          } )
-        .catch( err => {
+        .catch( (err:any) => {
             this._setFinishing( logObj, false );
             this._setRollbacking( logObj, false );
 

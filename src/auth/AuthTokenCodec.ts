@@ -1,18 +1,18 @@
-import AuthToken = require('./AuthToken');
+import AuthToken from './AuthToken';
+import Aes128 from '../util/Aes128';
+import BaseContext from '../ctx/BaseContext';
 
 
 export default class AuthTokenCodec {
 
-    constructor() {
-        this.$id = 'AuthTokenCodec';
-        this.$Aes128 = null;
-        this.$lazy = true;
-    }
+    public $id = 'AuthTokenCodec';
+    public $Aes128:Aes128 = null;
+    public $lazy = true;
 
     /**
      * 编码
      */
-    encode( token ) {
+    encode( token:AuthToken ) {
         const me = this;
         return new Promise( function(resolve) {
             const raw = {
@@ -30,7 +30,7 @@ export default class AuthTokenCodec {
     /**
      * 解码
      */
-    decode( ctx, tokenText ) {
+    decode( ctx:BaseContext, tokenText:string ) {
         const me = this;
         return new Promise( function( resolve ) {
             const json = me.$Aes128.decrypt(tokenText, 'base64');

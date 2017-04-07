@@ -1,8 +1,8 @@
-import ApiParameter = require('./ApiParameter');
-import ApiRole = require('./ApiRole');
-import Util = require('util');
-import Path = require('path');
-import SupportedMIME = require('./SupportedMIME');
+import ApiParameter from './ApiParameter';
+import * as ApiRole from './ApiRole';
+import * as Util from 'util';
+import * as Path from 'path';
+import SupportedMIME from './SupportedMIME';
 
 
 export default class ApiDefinition {
@@ -89,7 +89,7 @@ export default class ApiDefinition {
         let apiName = Path.join(path.relative, path.name);
         if( apiName.charAt(0) === '/' ) apiName = apiName.substring(1);
 
-        const mod = require(path.full);
+        const mod from path.full);
         
         if( mod.apiName ) {
             // 如果module里自定义了api名字

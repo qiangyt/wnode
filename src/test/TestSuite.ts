@@ -1,6 +1,6 @@
-import TestContext = require('./TestContext');
-import Util = require('util');
-import Sinon = require('sinon');
+import TestContext from './TestContext';
+import * as Util from 'util';
+import * as Sinon from 'sinon';
 
 
 export default class TestSuite {

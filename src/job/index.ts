@@ -1,8 +1,7 @@
-//const requireAsBean = require('../Internal').requireAsBean;
+//const requireAsBean from '../Internal').requireAsBean;
 export default {
 
     AliSearchJobQueue: require('./AliSearchJobQueue'),
-    //ToyJobQueue:    requireAsBean(module, './ToyJobQueue'),
     kue:            require('./kue')
 
 };

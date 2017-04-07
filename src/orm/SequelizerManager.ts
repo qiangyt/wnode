@@ -1,5 +1,5 @@
-import _ = require('lodash');
-import MySqlSequelizer = require('./MySqlSequelizer');
+import * as _ from 'lodash';
+import MySqlSequelizer from './MySqlSequelizer';
 
 
 /**

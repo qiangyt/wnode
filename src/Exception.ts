@@ -3,7 +3,10 @@
  */
 export default class Exception extends Error {
 
-    constructor( data ) {
+    public data:any[];
+    public args:any[];
+    
+    constructor( ...data:any[] ) {
         super('');
         this.data = data;
         this.args = ( arguments.length > 1 ) ? Array.from(arguments).slice(1) : [];

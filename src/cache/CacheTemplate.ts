@@ -1,9 +1,9 @@
 
 export default class CacheTemplate {
 
-    static get( cacheHitPromise, cacheMissPromise, cacheSetterPromise ) {
+    static get<T>( cacheHitPromise:Promise<T>, cacheMissPromise:Promise<T>, cacheSetterPromise:Promise<T> ) {
         return cacheHitPromise()
-            .then( function(result) {
+            .then( function(result:T) {
                 if( result !== undefined ) return result;// hit cache
 
                 return cacheMissPromise()

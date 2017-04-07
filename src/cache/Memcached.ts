@@ -1,23 +1,24 @@
 const NodeMemcached = require('node_memcached');
-import Logger = require('../Logger');
-import Errors = require('../Errors');
+import * as Logger from '../Logger';
+import * as Errors from '../Errors';
+import BaseContext from '../ctx/BaseContext';
 
 
 // See https://github.com/chylvina/node_memcached
 
 export default class Memcached {
 
-    constructor() {
-        this.$id = 'Memcached';
-        this.$init = 'init';
-        this.$lazy = true;
-        
-        this.logger = Logger.create(this);
-    }
+    public $id = 'Memcached';
+    public $init = 'init';
+    public $lazy = true;
+    public logger = Logger.create(this);
+    public config:any;
+    public client:any;
 
-    createClient( cfg ) {
+    createClient( cfg:any ) {
         return NodeMemcached.createClient( cfg.port, cfg.host );
     }
+
 
     init() {
         this.doInit(global.config.memcached);
@@ -26,7 +27,7 @@ export default class Memcached {
     /**
      * 
      */
-    doInit(cfg) {
+    doInit(cfg:any) {
         this.config = cfg;
 
         if( !cfg.host ) throw new Error( '<memcached.host> not configured' );
@@ -48,42 +49,42 @@ export default class Memcached {
         const client = this.client = this.createClient(cfg);
 
         // 如果 client 发送了这个事件而没有被侦听，那么将会导致 node 进程退出。因此必须在创建 client 的时候主动侦听该事件并作出相应处理
-        client.on( 'error', function(err) {
+        client.on( 'error', (err:any) => {
             if(err) this.logger.error( {err}, 'memcached error' );
-        }.bind(this));
+        });
 
-        client.on( 'warning', function(err) {
+        client.on( 'warning', (err:any) => {
             if(err) this.logger.error( {err}, 'memcached warning' );
             else this.logger.warn('password was set but none is needed and if a deprecated option / function / similar is used.');
-        }.bind(this));
+        });
 
-        client.on( 'connect', function(err) {
+        client.on( 'connect', (err:any) => {
             if(err) this.logger.error( {err}, 'memcached connect error' );
             else this.logger.info('the stream is connected to the server');
-        }.bind(this));
+        });
 
-        client.on( 'ready', function(err) {
+        client.on( 'ready', (err:any) => {
             if(err) this.logger.error( {err}, 'memcached ready error' );
             else this.logger.info('connection is established');
-        }.bind(this) );
+        });
 
-        client.on( 'end', function(err) {
+        client.on( 'end', (err:any) => {
             if(err) this.logger.error( {err}, 'memcached end error' );
             else this.logger.info('an established Memcached server connection has closed');
-        }.bind(this) );
+        });
     }
 
     /**
      * JSON编码
      */
-    encodeValue( ctx, value ) {
+    encodeValue( ctx:BaseContext, value:any ) {
         return JSON.stringify(value);
     }
 
     /**
      * JSON解码
      */
-    decodeValue( ctx, value ) {
+    decodeValue( ctx:BaseContext, value:any ) {
         if( value === undefined || value === null ) return value;
         
         try {
@@ -95,37 +96,27 @@ export default class Memcached {
     }
 
     // 向 OCS 中写入数据 
-    add( ctx, key, value, encode, callback ) {
+    add( ctx:BaseContext, key:string, value:any, encode:boolean ) {
         value = encode ? this.encodeValue( ctx, value ) : value;
 
         const client = this.client;
 
-        if( callback ) {
+        return new Promise(function( resolve, reject ) {
             client.add( key, value, function( err, res ) { 
-                if( err ) {
-                    if( ctx ) return ctx.error( Errors.INTERNAL_ERROR, err, key, value );
-                    return undefined;
+               if( err ) {
+                    if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key, value );
+                    reject(err);
+                   } else {
+                    resolve(res);
                 }
-                return callback(res);
             } );
-        } else {
-            return new Promise(function( resolve, reject ) {
-                client.add( key, value, function( err, res ) { 
-                    if( err ) {
-                        if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key, value );
-                        reject(err);
-                    } else {
-                        resolve(res);
-                    }
-                } );
-            });
-        }
+        });
     }
 
     /**
      * 
      */
-    set( ctx, key, value, expireSeconds, encode, callback ) {
+    set( ctx:BaseContext, key:string, value:any, expireSeconds:number, encode:boolean ) {
         const encodedValue = encode ? this.encodeValue( ctx, value ) : value;
 
         const client = this.client;
@@ -134,15 +125,6 @@ export default class Memcached {
             expireSeconds = this.config.expireSeconds;
         }
 
-        if( callback ) {
-            client.set( key, encodedValue, expireSeconds, function( err ) {
-                if( err ) {
-                    if( ctx ) return ctx.error( Errors.INTERNAL_ERROR, err, key, encodedValue );
-                    return undefined;
-                }
-                return callback(value);
-            } );
-        } else {
             return new Promise(function( resolve, reject ) {
                 client.set( key, encodedValue, expireSeconds, function( err ) {
                     if( err ) {
@@ -153,25 +135,14 @@ export default class Memcached {
                     }
                 } );
             } );
-        }
     }
 
     /**
      * 
      */
-    get( ctx, key, decode, callback ) {
+    get( ctx:BaseContext, key:string, decode:boolean ) {
         const me = this;
 
-        if( callback ) {
-            me.client.get( key, function(err, res) {
-                if( err ) {
-                    if( ctx ) return ctx.error( Errors.INTERNAL_ERROR, err, key );
-                    return undefined;
-                }
-                const value = decode ? me.decodeValue( ctx, res ) : res;
-                return callback(value);
-            } );
-        } else {
             return new Promise(function( resolve, reject ) {
                 me.client.get( key, function(err, res) {
                     if( err ) {
@@ -183,24 +154,14 @@ export default class Memcached {
                     }
                 } );
             });
-        }
     }
 
     /**
      * 
      */
-    increment( ctx, key, delta, callback ) {
+    increment( ctx:BaseContext, key:string, delta:number ) {
         const client = this.client;
 
-        if( callback ) {
-            client.increment( key, delta, function( err ) {
-                if( err ) {
-                    if( ctx ) return ctx.error( Errors.INTERNAL_ERROR, err, key, delta );
-                    return undefined;
-                }
-                callback();
-            } );
-        } else {
             return new Promise(function( resolve, reject ) {
                 client.increment( key, delta, function( err ) {
                     if( err ) {
@@ -211,24 +172,14 @@ export default class Memcached {
                     }
                 } );
             });
-        }
     }
 
     /**
      * 
      */
-    decrement( ctx, key, delta, callback ) {
+    decrement( ctx:BaseContext, key:string, delta:number ) {
         const client = this.client;
 
-        if( callback ) {
-            client.decrement( key, delta, function( err ) {
-                if( err ) {
-                    if( ctx ) return ctx.error( Errors.INTERNAL_ERROR, err, key, delta );
-                    return undefined;
-                }
-                return callback();
-            } );
-        } else {
             return new Promise(function( resolve, reject ) {
                 client.decrement( key, delta, function( err ) {
                     if( err ) {
@@ -239,25 +190,15 @@ export default class Memcached {
                     }
                 } );
             });
-        }
     }
 
 
     /**
      * 
      */
-    delete( ctx, key, callback ) {
+    delete( ctx:BaseContext, key:string ) {
         const me = this;
 
-        if( callback ) {
-            me.client.delete( key, function(err) {
-                if( err ) {
-                    if( ctx ) return ctx.error( Errors.INTERNAL_ERROR, err, key );
-                    return undefined;
-                }
-                return callback();
-            } );
-        } else {
             return new Promise(function( resolve, reject ) {
                 me.client.delete( key, function(err) {
                     if( err ) {
@@ -268,14 +209,13 @@ export default class Memcached {
                     }
                 } );
             });
-        }
     }
 
 
     /**
      * 
      */
-    replace( ctx, key, value, expireSeconds, encode, callback ) {
+    replace( ctx:BaseContext, key:string, value:any, expireSeconds:number, encode:boolean ) {
         const encodedValue = encode ? this.encodeValue( ctx, value ) : value;
 
         const client = this.client;
@@ -284,15 +224,7 @@ export default class Memcached {
             expireSeconds = this.config.expireSeconds;
         }
 
-        if( callback ) {
-            client.replace( key, encodedValue, expireSeconds, function( err ) {
-                if( err ) {
-                    if( ctx ) return ctx.error( Errors.INTERNAL_ERROR, err, key, encodedValue );
-                    return undefined;
-                }
-                return callback(value);
-            } );
-        } else {
+        
             return new Promise(function( resolve, reject ) {
                 client.set( key, encodedValue, expireSeconds, function( err ) {
                     if( err ) {
@@ -303,7 +235,6 @@ export default class Memcached {
                     }
                 } );
             } );
-        }
     }
   
 }

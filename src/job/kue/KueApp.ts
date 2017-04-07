@@ -1,11 +1,14 @@
-import Kue = require('kue');
-import Cluster = require('cluster');
+import * as Kue from 'kue';
+import * as Cluster from 'cluster';
 const BasicAuth = require('basic-auth-connect');
-import Express = require('express');
-import Logger = require('../../Logger');
+import * as Express from 'express';
+import * as Logger from '../../Logger';
 
 
 export default class KueApp {
+
+    public inited = false;
+    public static instance = new KueApp();
 
     constructor() {
         this.logger = Logger.create('KueApp');
@@ -49,6 +52,4 @@ export default class KueApp {
 
 }
 
-
-KueApp.instance = new KueApp();
 

@@ -2,6 +2,7 @@ const fury = require('fury');
 fury.use(require('fury-adapter-apib-serializer'));
 fury.use(require('fury-adapter-swagger'));
 
+import SwaggerHelper from '../swagger/SwaggerHelper';
 
 //hint: use MWeb Lite to view blueprint
 
@@ -10,15 +11,13 @@ fury.use(require('fury-adapter-swagger'));
  */
 export default class BlueprintHelper {
 
-    constructor() {
-        this.$id = 'BlueprintHelper';
-        this.$SwaggerHelper = null;
-    }
+    public $id = 'BlueprintHelper';
+    public $SwaggerHelper:SwaggerHelper = null;
 
     /**
      * 
      */
-    output( server, apiName, options, callback ) {
+    output( server, apiName:string, options:any, callback ) {
         const swagger = this.$SwaggerHelper.root( server, apiName, options );
         const swaggerJson = JSON.stringify(swagger);
 

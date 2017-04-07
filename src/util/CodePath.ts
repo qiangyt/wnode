@@ -1,4 +1,4 @@
-import Path = require('path');
+import * as Path from 'path';
 
 
 export default class CodePath {

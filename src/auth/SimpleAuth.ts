@@ -1,19 +1,22 @@
-import Errors = require('../Errors');
-import Exception = require('../Exception');
-import ApiRole = require('../ApiRole');
-import AuthToken = require('./AuthToken');
-import Logger = require('../Logger');
+import * as Errors from '../Errors';
+import Exception from '../Exception';
+import * as ApiRole from '../ApiRole';
+import AuthToken from './AuthToken';
+import * as Logger from '../Logger';
+import AuthTokenCodec from './AuthTokenCodec';
+import BaseContext from '../ctx/BaseContext';
+import ApiDefinition from '../ApiDefinition';
+import {ServerRequest} from 'http';
 
 
 export default class SimpleAuth {
 
-    constructor() {
-        this.$id = 'SimpleAuth';
-        this.$AuthTokenCodec = null;
-        this.$lazy = true;
-        
-        this.logger = Logger.create(this);
-    }
+    public $id = 'SimpleAuth';
+    public $AuthTokenCodec:AuthTokenCodec = null;
+    public $lazy = true;
+
+    public logger = Logger.create(this);
+
 
     codec() {
         return this.$AuthTokenCodec;
@@ -24,7 +27,7 @@ export default class SimpleAuth {
      * @param def the ApiDefinition object
      * @param req the request object
      */
-    auth( ctx, def, req ) {
+    auth( ctx:BaseContext, def:ApiDefinition, req:ServerRequest ) {
         const me = this;
         const token = this.resolveToken( ctx, req );
         this.logger.debug( {token, ctx}, 'decoding token' );
@@ -47,7 +50,7 @@ export default class SimpleAuth {
         } );
     }
 
-    resolveToken( ctx, req ) {
+    resolveToken( ctx:BaseContext, req:ServerRequest ) {
         const params = req.params;
 
         let token;
@@ -75,7 +78,7 @@ export default class SimpleAuth {
     /**
      * @param req the request object
      */
-    decode( ctx, token ) {
+    decode( ctx:BaseContext, token:string ) {
         if( !token ) return Promise.resolve(this.createEmptyToken());
         return this.codec().decode(ctx, token);
     }

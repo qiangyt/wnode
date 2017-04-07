@@ -1,9 +1,9 @@
-import Fs = require('fs');
-import Path = require('path');
-import CodePath = require('../util/CodePath');
-import Mongoose = require('mongoose');
-import Logger = require('../Logger');
-import _ = require('lodash');
+import * as Fs from 'fs';
+import * as Path from 'path';
+import CodePath from '../util/CodePath';
+import * as Mongoose from 'mongoose';
+import * as Logger from '../Logger';
+import * as _ from 'lodash';
 
 
 export default class MongooseInstance {
@@ -80,7 +80,7 @@ export default class MongooseInstance {
             const stat = Fs.statSync(full);
             if( stat.isDirectory() ) continue; // 跳过子目录
 
-            const schema = require(full);
+            const schema from full);
             const schemaName = Path.basename( full, '.js' );
             this.importSchema( schema, schemaName );
         }

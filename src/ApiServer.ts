@@ -1,15 +1,15 @@
-import Fs = require('fs');
-import Path = require('path');
-import ApiDefinition = require('./ApiDefinition');
-import Restify = require('restify');
-import ServerContext = require('./ctx/ServerContext');
-import ApiRole = require('./ApiRole');
-import Logger = require('./Logger');
-import Errors = require('./Errors');
-import CodePath = require('./util/CodePath');
+import * as Fs from 'fs';
+import * as Path from 'path';
+import ApiDefinition from './ApiDefinition';
+import * as Restify from 'restify';
+import ServerContext from './ctx/ServerContext';
+import * as ApiRole from './ApiRole';
+import * as Logger from './Logger';
+import * as Errors from './Errors';
+import CodePath from './util/CodePath';
 const CookieParser = require('restify-cookies');
-import StaticSupport = require('./StaticSupport');
-import JWTAuth = require('./auth/JWTAuth');
+import StaticSupport from './StaticSupport';
+import JWTAuth from './auth/JWTAuth';
 
 
 export default class ApiServer {

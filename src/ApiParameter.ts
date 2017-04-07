@@ -1,4 +1,4 @@
-import Errors = require( './Errors' );
+import * as Errors from  './Errors';
 
 
 /*

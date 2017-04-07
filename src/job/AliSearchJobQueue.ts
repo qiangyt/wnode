@@ -1,18 +1,20 @@
-import BatchQueue = require('./kue/BatchQueue');
+import BatchQueue from './kue/BatchQueue';
+import {BatchItem} from './kue/BatchQueue';
+import BaseContext from '../ctx/BaseContext';
+import AliOpenSearch from '../search/AliOpenSearch';
 
 
 export default class AliSearchJobQueue extends BatchQueue {
     
+    public $AliOpenSearch:AliOpenSearch = null;
 
-    constructor( id ) {
+    constructor( id:string ) {
         super(id);
-
-        this.$AliOpenSearch = null;
     }
 
 
-    _sortBatch( batch ) {
-        const r = {};
+    _sortBatch( batch:BatchItem[] ) {
+        const r:any = {};
 
         batch.forEach( task => {
             const job = task.job;
@@ -45,7 +47,7 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    _prepareBatch( ctx, batch ) {
+    _prepareBatch( ctx:BaseContext, batch:BatchItem[] ) {
         const bundlePerIndexName = this._sortBatch(batch);
         const promises = [];
 
@@ -54,10 +56,10 @@ export default class AliSearchJobQueue extends BatchQueue {
 
             const p = this._processBundle( ctx, bundle );
             p.then( () => {
-                bundle.dones.forEach( done => done() );
+                bundle.dones.forEach( (done:Function) => done() );
             } )
-            .catch( err => {
-                bundle.dones.forEach( done => done(err) );
+            .catch( (err:any) => {
+                bundle.dones.forEach( (done:Function) => done(err) );
                 this.logger.error( {ctx, err}, 'failed to process task' );
             } );
 
@@ -66,23 +68,23 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    _processBundle( ctx, bundle ) {
+    _processBundle( ctx:BatchItem, bundle:any ) {
         return this.$AliOpenSearch.batch( ctx, 
                                           bundle.indexName, 
                                           bundle.tableName, 
                                           bundle.cmdArray, 
                                           bundle.fieldsArray )
             .then( () => {
-                bundle.dones.forEach( done => done() );
+                bundle.dones.forEach( (done:Function) => done() );
             } )
-            .catch( err => {
-                bundle.dones.forEach( done => done(err) );
+            .catch( (err:any) => {
+                bundle.dones.forEach( (done:Function) => done(err) );
                 this.logger.error( {ctx, err}, 'failed to process task' );
             } );
     }
 
 
-    _put( ctx, cmd, data, indexName, tableName ) {
+    _put( ctx:BaseContext, cmd:string, data:any, indexName:string, tableName:string ) {
 
         // check arguments to low risk of invalid data stucked in job queue
         if( !cmd ) throw new Error('blank cmd');
@@ -96,12 +98,12 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    put( ctx, cmd, data, indexName, tableName ) {
+    put( ctx:BaseContext, cmd:string, data:any, indexName:string, tableName:string ) {
         return this._put( ctx, cmd, data, indexName, tableName );
     }
 
 
-    putArray( ctx, cmd, dataList, indexName, tableName ) {
+    putArray( ctx:BaseContext, cmd:string, dataList:any[], indexName:string, tableName:string ) {
         for( let data of dataList ) {
             this._put( ctx, cmd, data, indexName, tableName );
         }

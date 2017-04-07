@@ -1,5 +1,5 @@
-import _ = require('lodash');
-import RedisInstance = require('./RedisInstance');
+import * as _ from 'lodash';
+import RedisInstance from './RedisInstance';
 
 
 /**
@@ -9,18 +9,18 @@ import RedisInstance = require('./RedisInstance');
  */
 export default class RedisManager {
 
-    constructor() {
-        this.instances = {}; // 保存实例名字到实例对象的映射关系
-        this.defaultInstance = null; // 缺省实例
-    }
+    static instance = new RedisManager();
+
+    public instances:any = {}; // 保存实例名字到实例对象的映射关系
+    public defaultInstance:RedisInstance = null; // 缺省实例
 
     /**
      * 通过名字查找实例。
      * 
      * @param instanceName 实例名字。如果非空（大部分微服务只需要连接单一redis，所以通常不需要指定实例名字），那么取缺省实例。
      */
-    get( instanceName ) {
-        let r = instanceName ? this.instances[instanceName] : this.defaultInstance;
+    get( instanceName:string ) {
+        let r:RedisInstance = instanceName ? this.instances[instanceName] : this.defaultInstance;
 
         if( !r ) {
             // 如果指定名字的实例尚未创建，那么在这里创建它
@@ -52,4 +52,3 @@ export default class RedisManager {
 
 }
 
-RedisManager.instance = new RedisManager();

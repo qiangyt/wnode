@@ -1,21 +1,28 @@
-import Errors = require('../Errors.js');
-import BaseContext = require( './BaseContext' );
-import LocalClientContext = require( './LocalClientContext' );
-import Util = require('util');
-import CodePath = require('../util/CodePath');
+import * as Errors from '../Errors.js';
+import BaseContext from  './BaseContext';
+import LocalClientContext from  './LocalClientContext';
+import * as Util from 'util';
+import CodePath from '../util/CodePath';
 const Package = require(CodePath.resolve('../package.json'));
-import uuid = require('node-uuid');
-import Logger = require('../Logger');
+import * as uuid from 'node-uuid';
+import * as Logger from '../Logger';
+import ApiServer from '../ApiServer';
+import * as http from 'http';
+import ApiDefinition from '../ApiDefinition';
 
 
 export default class ServerContext extends BaseContext {
 
-    constructor( server, apiDefinition, req, res, final ) {
+    public produce:string;
+
+    constructor( public server:ApiServer, 
+                 apiDefinition:ApiDefinition, 
+                 public req:http.ServerRequest, 
+                 public res:http.ServerResponse, 
+                 public final:any ) {
+
         super(apiDefinition);
 
-        this.server = server;
-
-        this.req = req;
         this.requestId = uuid.v4();
 
         const params = req.params;
@@ -27,10 +34,7 @@ export default class ServerContext extends BaseContext {
             this.correlationId = uuid.v4();
         }
 
-        this.res = res;
-
         this.next = null;
-        this.final = final;
 
         this.logger.info( {
             ctx: this,
@@ -42,15 +46,15 @@ export default class ServerContext extends BaseContext {
     /**
      *
      */
-    getCookie( cookieName ) {
+    getCookie( cookieName:string ) {
         return this.req.cookies[cookieName];
     }
 
     /**
      *
      */
-    setCookie( cookieName, cookieValue, path, domain, maxAge, secure, httpOnly ) {
-        const opts = {};
+    setCookie( cookieName:string, cookieValue, path:string, domain, maxAge, secure, httpOnly:false ) {
+        const opts:any = {};
         if( path ) opts.path = path;
         if( domain ) opts.domain = domain;
         if( maxAge ) opts.maxAge = maxAge;
@@ -63,7 +67,7 @@ export default class ServerContext extends BaseContext {
     /**
      *
      */
-    clearCookie( cookieName ) {
+    clearCookie( cookieName:string ) {
         this.res.clearCookie(cookieName);
     }
 
@@ -78,7 +82,7 @@ export default class ServerContext extends BaseContext {
         res.setHeader('Access-Control-Max-Age', '3600');
     }
 
-    resolveContentType( isBinary ) {
+    resolveContentType( isBinary:boolean ):string {
         if( this.produce ) return this.produce;
 
         if( this.apiDefinition.produce ) return this.apiDefinition.produce;
@@ -91,7 +95,7 @@ export default class ServerContext extends BaseContext {
     /**
      *
      */
-    done( failed, result, status ) {
+    done( failed:boolean, result:any, status:number ) {
         if( this.tryDone() ) return;
 
         this.result = result;
@@ -137,7 +141,7 @@ export default class ServerContext extends BaseContext {
         this.logger.info( logObj, 'end ServerContext' );
     }
 
-    resolveCharset( isBinary ) {
+    resolveCharset( isBinary:boolean ):string {
         if( this.apiDefinition.charset ) return this.apiDefinition.charset;
 
         if( !isBinary ) return 'utf-8';
@@ -148,7 +152,7 @@ export default class ServerContext extends BaseContext {
     /**
      * @deprecated
      */
-    call( apiName, parameterValues, callback ) {
+    call( apiName:string, parameterValues:any, callback:any ) {
         const def = this.server.apiDefinitions[apiName];
         if( !def ) {
             callback( Errors.INTERNAL_ERROR.build(apiName + ' not found') );
@@ -161,7 +165,7 @@ export default class ServerContext extends BaseContext {
     /**
      * @deprecated
      */
-    static call2( parent, def, parameterValues, callback ) {
+    static call2( parent:ServerContext, def:ApiDefinition, parameterValues:any, callback:any ) {
         const ctx = new LocalClientContext( parent, def, callback );
         def.respond( ctx, def.spec.parameters, parameterValues );
     }
@@ -169,7 +173,7 @@ export default class ServerContext extends BaseContext {
     /** {@inheritedDoc} */
     /* eslint no-process-env: "off" */
     /* eslint no-unreachable: "off" */
-    isJsonResponseValid( response ) {
+    isJsonResponseValid( response:any ):boolean {
 
         // 如果全局关闭，则不进行 JSON 验证
         const cfg = global.config.server;

@@ -1,17 +1,17 @@
-import Base64 = require('./Base64');
-import Crypto = require('crypto');
+import Base64 from './Base64';
+import * as Crypto from 'crypto';
 
 
 export default class Crypt3Des {
 
-    constructor() {
-        this.$id = 'Crypt3Des';
-        this.$init = 'init';
-        this.$lazy = true;
-    }
+    public $id = 'Crypt3Des';
+    public $init = 'init';
+    public $lazy = true;
+    public key:string;
+    public iv:string;
 
     init() {
-        const cfg = global.config.Crypt3Des;
+        const cfg:any = global.config.Crypt3Des;
 
         this.key = cfg.key;
         this.iv = cfg.iv;

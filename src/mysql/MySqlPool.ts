@@ -1,16 +1,17 @@
-import Mysql = require('mysql');
-import MySqlConnection = require('./MySqlConnection');
+import * as Mysql from 'mysql';
+import MySqlConnection from './MySqlConnection';
+import SqlBuilder from '../dao/SqlBuilder';
+import BaseContext from '../ctx/BaseContext';
 
 
 export default class MySqlPool {
 
-    constructor() {
-        this.$id = 'MySqlPool';
-        this.$init = "init";
-        this.$proxy = false;
-        this.$SqlBuilder = null;
-        this.$lazy = true;
-    }
+    public $id = 'MySqlPool';
+    public $init = "init";
+    public $proxy = false;
+    public $SqlBuilder:SqlBuilder = null;
+    public $lazy = true;
+    public pool:Mysql.IPool;
 
     /**
      * 
@@ -34,17 +35,8 @@ export default class MySqlPool {
         this.pool = Mysql.createPool( opts );
     }
 
-    get( ctx, callback ) {
+    get( ctx:BaseContext ) {
         const me = this;
-        if( callback ) {
-            me.pool.getConnection( function( err, conn ) {
-                if( err ) {
-                    return ctx.error(err);
-                }
-                return ctx.callback( callback, new MySqlConnection(me, conn) );
-            } );
-            return undefined;
-        }
 
         return new Promise( function( resolve, reject ) {
             me.pool.getConnection( function( err, conn ) {

@@ -1,4 +1,4 @@
-import SequelizeDao = require('./SequelizeDao');
+import SequelizeDao from './SequelizeDao';
 
 
 /**

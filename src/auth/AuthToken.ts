@@ -1,16 +1,15 @@
-import ApiRole = require('../ApiRole');
-import Exception = require('../Exception');
-import Errors = require('../Errors');
+import * as ApiRole from '../ApiRole';
+import Exception from '../Exception';
+const Errors = require('../Errors');
 
 
 export default class AuthToken {
 
-    constructor( userId, expireByMinutes, roles, data, internal ) {
-        this.userId = userId;
-        this.expireByMinutes = expireByMinutes;
-        this.roles = ( roles && roles.length ) ? roles : [ApiRole.any];
-        this.data = data;
-        this.internal = internal;
+    constructor( public userId:any, 
+                 public expireByMinutes:number, 
+                 public roles = [ApiRole.any], 
+                 public data?:any, 
+                 public internal?:boolean ) {
 
         for( let role of this.roles ) {
             if( ApiRole.isInternal(role) ) {
@@ -22,14 +21,12 @@ export default class AuthToken {
     /**
      * 
      */
-    internalCopy() {
+    internalCopy():AuthToken {
         return new AuthToken( this.userId, this.expireByMinutes, this.roles, this.data, true );
     }
 
-    ensureSelfOrAdmin( userId ) {
-        if( !userId ) userId = this.userId;
-        
-        if( this.userid === userId ) return;
+    ensureSelfOrAdmin( userId:any = this.userId ):void {
+        if( this.userId === userId ) return;
 
         // 如果不是自己，那么当前用户必须是系统管理员
         if( !this.hasRole(ApiRole.admin) ) {
@@ -40,7 +37,7 @@ export default class AuthToken {
     /**
      * 
      */
-    hasRoles( expectedRoles ) {
+    hasRoles( expectedRoles:number[] ) {
         if( !expectedRoles || expectedRoles.length === 0 ) {
             // 如果expectedRoles为空，那么无需权限检查
             return {ok: true};
@@ -62,7 +59,7 @@ export default class AuthToken {
     /**
      * 
      */
-    hasRole( expectedRole ) {
+    hasRole( expectedRole:number ) {
         if( expectedRole === ApiRole.any ) return true;
 
         if( this.internal ) {
@@ -72,7 +69,7 @@ export default class AuthToken {
             }
             // 目标角色是某种internal角色的情况下，因为this.roles里保存的都是非internal roles，所以要把expectedRole里
             // 的internal标志位去除
-            expectedRole = ApiRole.regularRole(expectedRole);
+            expectedRole = ApiRole.getRegularRole(expectedRole);
             if( expectedRole === ApiRole.any ) return true;
         }
 

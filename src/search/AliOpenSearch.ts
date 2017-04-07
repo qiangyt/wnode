@@ -1,6 +1,6 @@
 const AliyunSdk = require('@wxcount/aliyun-sdk'); 
-import Logger = require('../Logger');
-import Errors = require('../Errors');
+import * as Logger from '../Logger';
+import * as Errors from '../Errors';
 
 
 export default class AliOpenSearch {

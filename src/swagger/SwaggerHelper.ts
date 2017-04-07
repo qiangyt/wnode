@@ -1,9 +1,9 @@
-import _ = require('lodash');
-import SupportedMIME = require('../SupportedMIME');
-import CodePath = require('../util/CodePath');
-import Package = require(CodePath.resolve('../package.json'));
-import ApiRole = require('../ApiRole');
-import Ajv = require('ajv');
+import * as _ from 'lodash';
+import SupportedMIME from '../SupportedMIME';
+import CodePath from '../util/CodePath';
+const Package = require(CodePath.resolve('../package.json'));
+import * as ApiRole from '../ApiRole';
+import * as Ajv from 'ajv';
 
 
 export default class SwaggerHelper {

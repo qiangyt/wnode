@@ -1,16 +1,13 @@
-import BaseContext = require( '../ctx/BaseContext' );
-import JWTAuth = require('../auth/JWTAuth');
-import ApiRole = require('../ApiRole');
+import BaseContext from  '../ctx/BaseContext';
+import * as ApiRole from '../ApiRole';
 
 
 export default class InternalContext extends BaseContext {
 
-    constructor( final ) {
-        super(undefined);
+    public next:any;
 
-        this.next = null;
-        this.final = final;
-        this.$auth = JWTAuth.globalAuthBean().createEmptyToken();
+    constructor( public final:any = undefined ) {
+        super(undefined);
 
         this.$auth.internal = true;
         this.$auth.roles = this.$auth.roles.concat([
@@ -22,15 +19,13 @@ export default class InternalContext extends BaseContext {
             ApiRole.org_user, 
             ApiRole.org_admin
         ]);
-        
-        this.beginTime = new Date().getTime();
     }
 
 
     /**
      * 
      */
-    done( failed, result ) {
+    done( failed:boolean, result:any, status:number ) {
         if( this.tryDone() ) return;
     
         this.result = result;
@@ -38,7 +33,7 @@ export default class InternalContext extends BaseContext {
         this.final();
     }
 
-    ok( result ) {
+    ok( result:any ) {
         if( !this.next ) {
             // 本次A调用结束
             return this.done( false, result, 200 );

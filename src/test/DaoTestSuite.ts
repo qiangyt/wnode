@@ -1,5 +1,5 @@
-import TestSuite = require('./TestSuite');
-import SequelizerManager = require('../orm/SequelizerManager');
+import TestSuite from './TestSuite';
+import SequelizerManager from '../orm/SequelizerManager';
 
 
 export default class DaoTestSuite extends TestSuite {
