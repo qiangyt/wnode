@@ -8,24 +8,30 @@ import * as Logger from './Logger';
 import * as Errors from './Errors';
 import CodePath from './util/CodePath';
 const CookieParser = require('restify-cookies');
-import StaticSupport from './StaticSupport';
 import JWTAuth from './auth/JWTAuth';
+import SwaggerHelper from './swagger/SwaggerHelper';
+import SimpleAuth from './auth/SimpleAuth';
+
+declare let StaticSupport:any;
+
+declare module global {
+    const config:any;
+    const bearcat:any;
+}
 
 
 export default class ApiServer {
   
-    /**
-     * 
-     */
-    constructor() {
-        this.$id = 'ApiServer';
-        this.$proxy = false;
-        this.$SwaggerHelper = null;
-        this.$lazy = true;
-        this.$init = 'init';
+    public $id = 'ApiServer';
+    public $proxy = false;
+    public $SwaggerHelper:SwaggerHelper = null;
+    public $lazy = true;
+    public $init = 'init';
+    public logger = Logger.create(this);
+    public auth:SimpleAuth;
+    public restify:Restify.Server;
+    public apiDefinitions:any = {};
 
-        this.logger = Logger.create(this);
-    }
     
     /**
      * 
@@ -41,7 +47,7 @@ export default class ApiServer {
             if( !errs.codeStart ) throw new Error( '<errors.codeStart> not configured' );
             if( !errs.codeEnd ) throw new Error( '<errors.codeStart> not configured' );
             if( errs.paths ) {
-                errs.paths.forEach( p => Errors.register( errs.codeStart, errs.codeEnd, CodePath.resolve(p) ) );
+                errs.paths.forEach( (p:string) => Errors.register( errs.codeStart, errs.codeEnd, CodePath.resolve(p) ) );
             }
         }
 
@@ -81,7 +87,7 @@ export default class ApiServer {
         }));
         restify.use(CookieParser.parse);
 
-        this.restify.on('MethodNotAllowed', function(req, res) {
+        this.restify.on('MethodNotAllowed', function(req:Restify.Request, res:Restify.Response) {
             if (req.method.toLowerCase() === 'options') {
                 if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
 
@@ -100,7 +106,7 @@ export default class ApiServer {
         });
     }
 
-    buildApi( apiDir ) {
+    buildApi( apiDir:string ) {
         this.buildApiDefinitions( apiDir, apiDir );
     }
 
@@ -120,8 +126,6 @@ export default class ApiServer {
 
 
     buildApis() {
-        this.apiDefinitions = {};
-
         const apiDir = CodePath.resolve( global.config.server.apiDir ? global.config.server.apiDir : './api' );
         this.logger.info( 'service api directory: ' + apiDir );
         this.buildApi(apiDir);
@@ -136,7 +140,7 @@ export default class ApiServer {
     }
 
 
-    buildInternalApiDefinition( relative ) {
+    buildInternalApiDefinition( relative:string ) {
         const anodeSrcDir = Path.dirname(module.filename);
         this.buildApiDefinition(Path.join( anodeSrcDir, relative ));
     }
@@ -172,7 +176,7 @@ export default class ApiServer {
                 this.auth.auth( ctx, def, req )
                 .then( function() {
                     def.respond( ctx, spec.parameters, req.params );
-                } ).catch( function( error ) {
+                } ).catch( function( error:any ) {
                     ctx.error( error );
                 } );
             }.bind(this);
@@ -195,7 +199,7 @@ export default class ApiServer {
     /**
      * 
      */
-    expose( def, path, handler ) {
+    expose( def:ApiDefinition, path:string, handler:Restify.RequestHandler ) {
         this.restify.post( path + def.name, handler );
         this.restify.get( path + def.name, handler );
 
@@ -208,7 +212,7 @@ export default class ApiServer {
     /**
      * 
      */
-    start( listen ) {
+    start( listen:boolean ) {
         this.logger.info('start server initialization');
 
         this.initRestify();
@@ -216,9 +220,9 @@ export default class ApiServer {
         this.buildStaticWeb();
 
         if( listen ) {
-            this.restify.listen( global.config.server.httpPort, function() {
+            this.restify.listen( global.config.server.httpPort, () => {
                 this.logger.info('%s listening at %s', this.restify.name, this.restify.url);
-            }.bind(this) );
+            } );
         }
 
         this.logger.info('finish server initialization');
@@ -233,9 +237,9 @@ export default class ApiServer {
             ignoreInternalApi: false,
             ignoreGetBlueprintApi: true,
             ignoreGetSwaggerApi: true,
-            ignoreNames: []
+            ignoreNames: <any[]>[]
         };
-        global.bearcat.getBean('BlueprintHelper').output( this, null, options, function(err/*, blueprint*/) {
+        global.bearcat.getBean('BlueprintHelper').output( this, null, options, function(err:any/*, blueprint*/) {
             if( err ) {
                 logger.fatal( err, 'validation failure by blueprint' );
             } else {
@@ -272,7 +276,7 @@ export default class ApiServer {
     }
 
 
-    buildApiDefinitions( apiDir, dir ) {
+    buildApiDefinitions( apiDir:string, dir:string ) {
         const relative = dir.substring(apiDir.length);
          
         /*eslint no-sync: "off"*/
@@ -288,7 +292,7 @@ export default class ApiServer {
     }
 
 
-    buildApiDefinition( full, relative ) {
+    buildApiDefinition( full:string, relative:string ) {
         const path = Path.parse( full );
         if( '.js' === path.ext ) {
             path.full = full;

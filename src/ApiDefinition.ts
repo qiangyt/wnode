@@ -3,7 +3,7 @@ import * as ApiRole from './ApiRole';
 import * as Util from 'util';
 import * as Path from 'path';
 import SupportedMIME from './SupportedMIME';
-import BaseContext from 'ctx/BaseContext';
+import ServerContext from './ctx/ServerContext';
 
 
 declare module global {
@@ -17,10 +17,23 @@ export default class ApiDefinition {
 
     public roles:number[] = [];
     public specs:any;
+    public method:string;
+    public spec:any;
+    public openApi:boolean;
+    public timeout:number;
+    public summary:string;
+    public description:string;
+    public transactional:boolean;
+    public transactionOptions:any;
     public bean:any;
     public auths:any;
     public execs:any;
     public checks:any;
+    public produce:string;
+    public isJson:boolean;
+    public result:any;
+    public customizeJsonResponse:boolean;
+    public validateResponse:boolean;
 
 
     constructor( public name:string ) {
@@ -142,7 +155,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    respond( ctx:BaseContext, parameters:any, valueTexts:any ) {
+    respond( ctx:ServerContext, parameters:any, valueTexts:any ) {
         // prepare all parameter values
         const allValues:any = {};
 
@@ -173,7 +186,7 @@ export default class ApiDefinition {
     /**
      * call step method
      */
-    callStep( ctx:BaseContext, stage:any, step:Function, next:Function ) {
+    callStep( ctx:ServerContext, stage:any, step:Function, next:Function ) {
         const values = ctx.values;
 
         ctx.next = next;
@@ -210,14 +223,14 @@ export default class ApiDefinition {
     /**
      * call auth() method
      */
-    callAuth( ctx:BaseContext ) {
+    callAuth( ctx:ServerContext ) {
         this.callStep( ctx, this.auths, ctx.bean.auth, this.callCheck );
     }
 
     /**
      * call exec() method
      */
-    callExec( ctx:BaseContext ) {
+    callExec( ctx:ServerContext ) {
         // the exec is the final step, so the next step is null
         this.callStep( ctx, this.execs, ctx.bean.exec, null );
     }
@@ -225,7 +238,7 @@ export default class ApiDefinition {
     /**
      * call check() method
      */
-    callCheck( ctx:BaseContext ) {
+    callCheck( ctx:ServerContext ) {
         const bean = ctx.bean;
         if( !bean.check ) {
             this.callExec( ctx );

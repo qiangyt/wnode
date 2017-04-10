@@ -14,6 +14,7 @@ import ApiDefinition from '../ApiDefinition';
 export default class ServerContext extends BaseContext {
 
     public produce:string;
+    public bean:any;
 
     constructor( public server:ApiServer, 
                  apiDefinition:ApiDefinition, 

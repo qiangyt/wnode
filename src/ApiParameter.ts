@@ -1,5 +1,5 @@
 import * as Errors from  './Errors';
-
+import ServerContext from './ctx/ServerContext';
 
 /*
  *
@@ -12,31 +12,24 @@ import * as Errors from  './Errors';
  */
 export default class ApiParameter {
 
-    constructor( apiName, parameterName ) {
-        this.apiName = apiName;
-
-        // string.
-        // The name of the parameter
-        this.name = parameterName;
-
-        // string. see http://swagger.io/specification/#parameterIn
+    // string. see http://swagger.io/specification/#parameterIn
         // The location of the parameter.
         // Now we only support subset of swagger spec: "query", "body", "cookie", "internal"
-        this['in'] = 'query';
+    public in = 'query';
 
         // string.
         // A brief description of the parameter.
         // This could contain examples of use.
         // GFM(https://help.github.com/articles/github-flavored-markdown)
         // syntax can be used for rich text representation
-        this.description = '';
+   public description = '';
 
         // boolean.
         // Determines whether this parameter is mandatory.
         // If the parameter is in "path", this property is required and its
         // value MUST be true. Otherwise, the property MAY be included and its
         // default value is false.
-        this.required = true;
+   public required = true;
 
         // string.
         // If 'in' is not 'body', then the type of the parameter.
@@ -48,16 +41,25 @@ export default class ApiParameter {
         //      1) For simplicity, we don't support 'file' by swagger. File
         //          should be uploaded then be url.
         //      2) We don't yet support 'array' by swagger.
-        this.type = 'string';
+   public type = 'string';
 
-        this.method = 'get';
+   public method = 'get';
+
+   public items:any[];
+
+   public format:string;
+
+    /**
+     * @param name parameter name
+     */
+    constructor( public apiName:string, public name:string ) {
     }
 
     /**
      *
      */
     /* eslint complexity: ["error", 16] */
-    parseThenCheckValue( ctx, value ) {
+    parseThenCheckValue( ctx:ServerContext, value:any ) {
         // step 1, required check
         if( undefined === value ) {
             if( this.in === 'cookie' ) value = ctx.getCookie(this.name);
@@ -131,7 +133,7 @@ export default class ApiParameter {
     /**
      *
      */
-    assign( attrs ) {
+    assign( attrs:any ) {
         if( attrs.name ) throw new Error(this.fqName()+ ": should not specify name attribute");
 
         if( attrs['in'] ) this['in'] = this.checked_in( attrs['in'] );
@@ -152,7 +154,7 @@ export default class ApiParameter {
      * The location of the parameter.
      * Now we only support subset of swagger spec: "path", "body".
     */
-    checked_in( value ) {
+    checked_in( value:string ) {
         if( typeof value !== 'string' ) throw new Error(this.fqName() + ".in: '" + value + "' is not a string");
 
         if( value === 'path' ) return value;
@@ -170,7 +172,7 @@ export default class ApiParameter {
      * value MUST be true. Otherwise, the property MAY be included and its
      * default value is false.
      */
-    checked_required( value ) {
+    checked_required( value:boolean ) {
         if( typeof value !== 'boolean' ) throw new Error(this.fqName() + ".required: '" + value + "' is not a boolean");
 
         if( false === value ) {
@@ -195,8 +197,8 @@ export default class ApiParameter {
      *          should be uploaded then be url.
      *      2) We don't support 'array' yet.
      */
-    checked_type( value ) {
-        if( 'body' === this['in'] ) throw new Error(this.fqName() + ".type: invalid if in == 'body");
+    checked_type( value:string ) {
+        if( 'body' === this.in ) throw new Error(this.fqName() + ".type: invalid if in == 'body");
         if( typeof value !== 'string' ) throw new Error(this.fqName() + ".type: '" + value + "' is not a string");
 
         if( value === 'string' ) return value;
@@ -210,7 +212,7 @@ export default class ApiParameter {
         throw new Error(this.fqName() + ".type: '" + value + "' is invalid. Should be: 'array', 'object', 'date', 'string', 'number', 'integer', 'boolean'");
     }
 
-    checked_method( value ) {
+    checked_method( value:string ) {
         const lcValue = value.toLowerCase();
         if( 'get' === lcValue ) return lcValue;
         if( 'post' === lcValue ) return lcValue;
@@ -224,35 +226,35 @@ export default class ApiParameter {
     /* eslint complexity: ["error", 24] */
     /* eslint 'max-depth': ["error", 6], */
     /* eslint 'max-statements': ["error", 80] */
-    static parseAll( apiName, prototype ) {
+    static parseAll( apiName:string, prototype:any ) {
         // parse the methods: exec(), auth(), check().
         // the result is [{name, comment}]
 
-        let execRaws;
+        let execRaws:any[];
         if( prototype.exec ) {
             execRaws = ApiParameter.parseMethod(apiName, prototype.exec);
-            if( !execRaws.find( p=>p.name==='ctx' ) ) throw new Error("exec() must have a 'ctx' parameter in api: " + apiName);
+            if( !execRaws.find( (p:any)=>p.name==='ctx' ) ) throw new Error("exec() must have a 'ctx' parameter in api: " + apiName);
         } else {
             throw new Error('missing exec() in api: ' + apiName);
         }
 
-        let authRaws;
+        let authRaws:any[];
         if( prototype.auth ) {
             authRaws = ApiParameter.parseMethod(apiName, prototype.auth);
-            if( !authRaws.find( p=>p.name==='ctx' ) ) throw new Error("auth() must have a 'ctx' parameter in api: " + apiName);
+            if( !authRaws.find( (p:any)=>p.name==='ctx' ) ) throw new Error("auth() must have a 'ctx' parameter in api: " + apiName);
         } else {
             authRaws = [];
         }
 
-        let checkRaws;
+        let checkRaws:any[];
         if( prototype.check ) {
             checkRaws = ApiParameter.parseMethod(apiName, prototype.check);
-            if( !checkRaws.find( p=>p.name==='ctx' ) ) throw new Error("check() must have a 'ctx' parameter in api: " + apiName);
+            if( !checkRaws.find( (p:any)=>p.name==='ctx' ) ) throw new Error("check() must have a 'ctx' parameter in api: " + apiName);
         } else {
             checkRaws = [];
         }
 
-        const rawAll = {}; // name => {name, comment}
+        const rawAll:any = {}; // name => {name, comment}
 
         // merge the parameters by name
         for( let newRaw of execRaws.concat( authRaws, checkRaws ) ) {
@@ -268,10 +270,10 @@ export default class ApiParameter {
             }
         }
 
-        const auths = [];
-        const checks = [];
-        const execs = [];
-        const all = {}; // name => ApiParameter
+        const auths:any[] = [];
+        const checks:any[] = [];
+        const execs:any[] = [];
+        const all:any = {}; // name => ApiParameter
         let method;
 
         // parse parameter comments
@@ -341,7 +343,7 @@ export default class ApiParameter {
      *
      */
     /* eslint complexity: ["error", 32] */
-    static parseMethod( apiName, method ) {
+    static parseMethod( apiName:string, method:string ) {
         const methodBody = method.toString();
 
         // first, extract the parameter declaration text
@@ -350,8 +352,8 @@ export default class ApiParameter {
         // then, a simple DSM-based parameter parser, it assumes the input declaration text conforms to javascript syntax
         const ST_END = -1, ST_INIT = 0, ST_IN_NAME = 1, ST_IN_CMT = 2;
         let state = ST_INIT;
-        const params = [];
-        let param;
+        const params:any[] = [];
+        let param:any;
         let beginOfName = -1, beginOfCmt = -1;
         const length = decl.length;
 
