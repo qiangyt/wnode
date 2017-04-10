@@ -1,5 +1,10 @@
 import * as _ from 'lodash';
 import MySqlSequelizer from './MySqlSequelizer';
+import BaseSequelizer from './BaseSequelizer';
+
+declare module global {
+    const config:any;
+}
 
 
 /**
@@ -9,18 +14,19 @@ import MySqlSequelizer from './MySqlSequelizer';
  */
 export default class SequelizerManager {
 
-    constructor() {
-        this.sequelizers = {}; // 保存sequelize实例名字到sequelize实例对象的映射关系
-        this.defaultSequelizer = null; // 缺省实例
-    }
+    public static instance = new SequelizerManager();
+
+    public sequelizers:any = {}; // 保存sequelize实例名字到sequelize实例对象的映射关系
+    public defaultSequelizer:BaseSequelizer; // 缺省实例
+
 
     /**
      * 通过名字查找sequelize实例。
      * 
      * @param instanceName 实例名字。如果非空（大部分微服务只需要连接单一数据库，所以通常不需要指定实例名字），那么取缺省实例。
      */
-    get( instanceName ) {
-        let r = instanceName ? this.sequelizers[instanceName] : this.defaultSequelizer;
+    get( instanceName:string ) {
+        let r:BaseSequelizer = instanceName ? this.sequelizers[instanceName] : this.defaultSequelizer;
 
         if( !r ) {
             // 如果指定名字的实例尚未创建，那么在这里创建它
@@ -34,7 +40,7 @@ export default class SequelizerManager {
     /**
      * 创建一个实例
      */
-    create( instanceName ) {
+    create( instanceName:string ) {
         // 实例名字不可以是sequelize，因为我们约定根配置数据的结构如下：
         // mysql: {
         //    host: '...', // 非sequelize特定的mysql配置数据，以便其它ORM根据重用这个配置数据
@@ -79,6 +85,4 @@ export default class SequelizerManager {
     }
 
 }
-
-SequelizerManager.instance = new SequelizerManager();
 

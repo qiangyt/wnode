@@ -53,7 +53,7 @@ export default class ServerContext extends BaseContext {
     /**
      *
      */
-    setCookie( cookieName:string, cookieValue, path:string, domain, maxAge, secure, httpOnly:false ) {
+    setCookie( cookieName:string, cookieValue:string, path:string, domain:string, maxAge:number, secure:boolean, httpOnly:false ) {
         const opts:any = {};
         if( path ) opts.path = path;
         if( domain ) opts.domain = domain;

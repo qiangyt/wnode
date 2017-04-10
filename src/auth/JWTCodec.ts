@@ -6,6 +6,10 @@ import AuthTokenCodec from './AuthTokenCodec';
 import AuthToken from './AuthToken';
 import BaseContext from '../ctx/BaseContext';
 
+declare module global {
+    const config:any;
+}
+
 
 /**
  * JWT编解码器

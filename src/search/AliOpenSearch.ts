@@ -1,17 +1,20 @@
 const AliyunSdk = require('@wxcount/aliyun-sdk'); 
 import * as Logger from '../Logger';
 import * as Errors from '../Errors';
+import BaseContext from '../ctx/BaseContext';
+
+declare module global {
+    const config:any;
+}
 
 
 export default class AliOpenSearch {
 
-    constructor() {
-        this.$id = 'AliOpenSearch';
-        this.$init = 'init';
-        this.$lazy = true;
-        
-        this.logger = Logger.create(this);
-    }
+    public $id = 'AliOpenSearch';
+    public $init = 'init';
+    public $lazy = true;
+    public logger = Logger.create(this);
+    public instance:any;
 
     /**
      * 
@@ -20,18 +23,8 @@ export default class AliOpenSearch {
         this.instance = new AliyunSdk.OpenSearch( global.config.aliyun.search );
     }
 
-    _invoke( ignoreFailStatus, methodName, func, ctx, params, callback ) {
+    _invoke( ignoreFailStatus:boolean, methodName:string, func:Function, ctx:BaseContext, params ) {
         const me = this;
-
-        if( callback ) {
-            func.call( me.instance, params, function(err, res) {
-                const resErr = me._hasError( ctx, ignoreFailStatus, methodName, err, res );
-                if(resErr) return ctx.error(resErr);
-
-                return ctx.callback( callback, res );
-            } );
-            return undefined;
-        }
 
         return new Promise( function(resolve, reject) {
             func.call( me.instance, params, function(err, res) {
@@ -45,22 +38,22 @@ export default class AliOpenSearch {
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    _push( ctx, cmd, methodName, indexName, tableName, fieldsArray, callback ) {
+    _push( ctx:BaseContext, cmd:string, methodName:string, indexName:string, table_name:string, fieldsArray:string[][] ) {
         const timestamp = (new Date()).getTime();
         const items = fieldsArray.map( fields => ({cmd, timestamp, fields}) );
 
         const params = {
             "app_name": indexName,
             "action": "push",
-            "table_name": tableName,
+            table_name,
             items
         };
 
-        return this._invoke( false, methodName, this.instance.uploadDoc, ctx, params, callback );
+        return this._invoke( false, methodName, this.instance.uploadDoc, ctx, params );
     }
 
 
-    batch( ctx, indexName, tableName, cmdArray, fieldsArray, callback ) {
+    batch( ctx:BaseContext, indexName:string, table_name:string, cmdArray:string[], fieldsArray:string[][] ) {
         if( cmdArray.length !== fieldsArray.length ) {
             throw new Error('unmatched cmd and fields');
         }
@@ -77,15 +70,15 @@ export default class AliOpenSearch {
         const params = {
             "app_name": indexName,
             "action": "push",
-            "table_name": tableName,
+            table_name,
             items
         };
 
-        return this._invoke( false, 'batch', this.instance.uploadDoc, ctx, params, callback );
+        return this._invoke( false, 'batch', this.instance.uploadDoc, ctx, params );
     }
 
 
-    _hasError( ctx, ignoreFailStatus, methodName, err, res ) {
+    _hasError( ctx:BaseContext, ignoreFailStatus:boolean, methodName:string, err:any, res:any ) {
         if(err) return err;
 
         const statusIsOk = (res.status === 'OK');
@@ -107,38 +100,38 @@ export default class AliOpenSearch {
     }
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    add( ctx, indexName, tableName, fields, callback ) {
-        return this.addByArray( ctx, indexName, tableName, [fields], callback );
+    add( ctx:BaseContext, indexName:string, tableName:string, fields:string ) {
+        return this.addByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    addByArray( ctx, indexName, tableName, fieldsArray, callback ) {
-        return this._push( ctx, 'add', 'add', indexName, tableName, fieldsArray, callback );
+    addByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:string[][] ) {
+        return this._push( ctx, 'add', 'add', indexName, tableName, fieldsArray );
     }
 
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    update( ctx, indexName, tableName, fields, callback ) {
-        return this.updateByArray( ctx, indexName, tableName, [fields], callback );
+    update( ctx:BaseContext, indexName:string, tableName:string, fields:string[] ) {
+        return this.updateByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    updateByArray( ctx, indexName, tableName, fieldsArray, callback ) {
-        return this._push( ctx, 'update', 'updateByArray', indexName, tableName, fieldsArray, callback );
+    updateByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:string[][] ) {
+        return this._push( ctx, 'update', 'updateByArray', indexName, tableName, fieldsArray );
     }
 
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    delete( ctx, indexName, tableName, fields, callback ) {
-        return this.deleteByArray( ctx, indexName, tableName, [fields], callback );
+    delete( ctx:BaseContext, indexName:string, tableName:string, fields:string[] ) {
+        return this.deleteByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    deleteByArray( ctx, indexName, tableName, fieldsArray, callback ) {
-        return this._push( ctx, 'delete', 'deleteByArray', indexName, tableName, fieldsArray, callback );
+    deleteByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:string[][] ) {
+        return this._push( ctx, 'delete', 'deleteByArray', indexName, tableName, fieldsArray );
     }
 
 
@@ -146,8 +139,8 @@ export default class AliOpenSearch {
      * 列出有哪些index
      * 
      */
-    listIndices( ctx, callback ) {
-        return this._invoke( false, 'listIndices', this.instance.listApp, ctx, {}, callback );
+    listIndices( ctx:BaseContext ) {
+        return this._invoke( false, 'listIndices', this.instance.listApp, ctx, {} );
     }
 
     /**
@@ -155,13 +148,10 @@ export default class AliOpenSearch {
      * 
      * @param query query子句，详细格式请参考ALI open search API文档
      */
-    search( ctx, indexName, query, callback ) {
-        const params = {
-            'index_name': indexName,
-            'query': query
-        };
+    search( ctx:BaseContext, index_name:string, query:string ) {
+        const params = {index_name, query};
 
-        return this._invoke( true, 'search', this.instance.search, ctx, params, callback );
+        return this._invoke( true, 'search', this.instance.search, ctx, params );
     }
 
     /**
@@ -169,15 +159,10 @@ export default class AliOpenSearch {
      * 
      * @param indexName 
      */
-    suggest( ctx, indexName, query, suggestName, hit, callback ) {
-        const params = {
-            'index_name': indexName,
-            'query': query,
-            'suggest_name': suggestName,
-            'hit': hit
-        };
+    suggest( ctx:BaseContext, index_name:string, query:string, suggest_name:string, hit:number ) {
+        const params = {index_name, query, suggest_name, hit};
 
-        return this._invoke( false, 'suggest', this.instance.suggest, ctx, params, callback );
+        return this._invoke( false, 'suggest', this.instance.suggest, ctx, params );
     }
 
 }

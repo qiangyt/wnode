@@ -12,12 +12,12 @@ export default class MySqlConnection {
     /**
      * 
      */
-    query( ctx:BaseContext, sql:string, values ) {
+    query( ctx:BaseContext, sql:string, values:any[] ) {
         const me = this;
         
         
         return new Promise( function( resolve, reject ) {
-            me.rawConnection.query( sql, values, function(err, result) {
+            me.rawConnection.query( sql, values, function(err:any, result:any) {
                 if( err ) {
                     me.release();
                     reject(err);
@@ -28,7 +28,7 @@ export default class MySqlConnection {
         } );
     }
 
-    insert( ctx:BaseContext, tableName:string, valuesMapByColumns ) {
+    insert( ctx:BaseContext, tableName:string, valuesMapByColumns:any ) {
         const me = this;
         const columns = [];
         const values = [];
@@ -40,13 +40,13 @@ export default class MySqlConnection {
         const sql = this.pool.$SqlBuilder.insert( tableName, columns );
 
         return me.query( ctx, sql, values )
-        .then( function(result) {
+        .then( function(result:any) {
                 return result.insertId;
             } 
         );
     }
 
-    update( ctx:BaseContext, tableName:string, valuesMapByColumns, conditionsMapByColumns ) {
+    update( ctx:BaseContext, tableName:string, valuesMapByColumns:any, conditionsMapByColumns:any ) {
         const me = this;
         const values = [];
 
@@ -65,7 +65,7 @@ export default class MySqlConnection {
         const sql = me.pool.$SqlBuilder.update( tableName, conditionColumns, valueColumns );
 
         return me.query( ctx, sql, values )
-        .then( function(result) {
+        .then( function(result:any) {
                 return result.affectedRows;
             } 
         );

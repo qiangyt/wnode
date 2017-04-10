@@ -5,6 +5,10 @@ import * as uuid from 'node-uuid';
 import BaseContext from './BaseContext';
 const logger = Logger.create('Transaction');
 
+declare module global {
+    const config:any;
+}
+
 
 /**
  * 

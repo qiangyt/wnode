@@ -1,4 +1,5 @@
 import MongooseManager from './MongooseManager';
+import MongooseInstance from './MongooseInstance';
 import * as Errors from '../Errors';
 import Exception from '../Exception';
 import * as Logger from '../Logger';
@@ -6,15 +7,11 @@ import * as Logger from '../Logger';
 
 export default class MongooseDao {
 
-    constructor( schemaName, instanceName ) {
-        if( !schemaName ) throw new Error('schema name not specified');
-        this.schemaName = schemaName;
+    public $init = 'init';
+    public $lazy = true;
+    public instance:MongooseInstance;
 
-        this.instanceName = instanceName;
-
-        this.$init = 'init';
-        this.$lazy = true;
-        
+    constructor( public schemaName:string, public instanceName:string ) {
         this.logger = Logger.create('Mongoose.' + (instanceName ? instanceName : '<default>') + '.' + schemaName);
     }
 

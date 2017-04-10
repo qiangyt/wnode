@@ -3,6 +3,11 @@ import * as Path from 'path';
 import CodePath from '../util/CodePath';
 import * as Logger from '../Logger';
 import * as Util from 'util';
+import * as Sequelize from 'sequelize';
+
+declare module global {
+    const config:any;
+}
 
 
 /**
@@ -10,12 +15,12 @@ import * as Util from 'util';
  */
 export default class BaseSequelizer {
 
-    constructor( instanceName, config ) {
-        this.logger = Logger.create('Sequelizer.' + (instanceName ? instanceName : '<default>') );
+    public instance:Sequelize.Sequelize;
+    public modelDir:string;
 
-        this.config = config;
-        this.instanceName = instanceName;
-        
+
+    constructor( public instanceName:string, public config:any ) {
+        this.logger = Logger.create('Sequelizer.' + (instanceName ? instanceName : '<default>') );
         this.init();
     }
 
@@ -39,7 +44,7 @@ export default class BaseSequelizer {
     /**
      * 初始化实例
      */
-    createInstance() {
+    createInstance():Sequelize.Sequelize {
         throw new Error('please init the sequelize here');
     }
 
@@ -87,7 +92,7 @@ export default class BaseSequelizer {
             return;
         }
         
-        const relationFunc from relationJsPath);
+        const relationFunc = require(relationJsPath);
         if( !Util.isFunction(relationFunc) ) throw new Error(relationJsPath + ' doesn\'t export a function');
 
         relationFunc( this.instance, this.instance.models );

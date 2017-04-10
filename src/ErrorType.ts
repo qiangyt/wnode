@@ -6,17 +6,12 @@ const vsprintf = require("sprintf-js").vsprintf;
  */
 export default class ErrorType {
 
-    constructor( key, code, formaters ) {
+    constructor( public key:string, public code:number, public formaters:any ) {
         if( !formaters['en_US'] ) throw new Error("Error '" + code + "': missing formater for locale 'en_US'");
         if( !formaters['zh_CN'] ) throw new Error("Error '" + code + "': missing formater for locale 'zh_CN'");
-        
-        this.key = key;
-        this.code = code;
-        this.formaters = formaters;
     }
 
-    build( args, locale ) {
-        if( !locale ) locale = 'zh_CN';
+    build( args:any[], locale = 'zh_CN' ) {
         let formater = this.formaters[locale];
         if( !formater ) formater = this.formaters['en_US'];
 

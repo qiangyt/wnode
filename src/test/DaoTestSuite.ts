@@ -1,12 +1,15 @@
 import TestSuite from './TestSuite';
 import SequelizerManager from '../orm/SequelizerManager';
+import * as Sequelize from 'sequelize';
 
 
 export default class DaoTestSuite extends TestSuite {
 
-    constructor(sequelizerName) {
+    public _sequelizer:Sequelize.Sequelize;
+
+
+    constructor(public sequelizerName:string) {
         super();
-        this.sequelizerName = sequelizerName;
     }
 
 

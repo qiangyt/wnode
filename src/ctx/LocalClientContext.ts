@@ -43,7 +43,7 @@ export default class LocalClientContext extends BaseContext {
     /**
      *
      */
-    setCookie( cookieName:string, cookieValue, path, domain, maxAge, secure, httpOnly ) {
+    setCookie( cookieName:string, cookieValue:string, path:string, domain:string, maxAge:number, secure:boolean, httpOnly:boolean ) {
         if( !this.parent ) return;
         this.parent.setCookie( cookieName, cookieValue, path, domain, maxAge, secure, httpOnly );
     }

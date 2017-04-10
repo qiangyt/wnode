@@ -1,9 +1,18 @@
 import TestContext from './TestContext';
 import * as Util from 'util';
 import * as Sinon from 'sinon';
+import BaseContext from '../ctx/BaseContext';
+
+declare module global {
+    const bearcat:any;
+}
 
 
 export default class TestSuite {
+
+    public ctx:BaseContext;
+    public sinons:any[];
+
 
     constructor() {
         this.ctx = null;
@@ -17,13 +26,13 @@ export default class TestSuite {
         return Promise.resolve();
     }
 
-    stubWithMethod( object, methodName, func ) {
+    stubWithMethod( object:any, methodName:string, func:Function ) {
         const r = Sinon.stub( object, methodName, func );
         this.sinons.push(r);
         return r;
     }
 
-    spyWithMethod( object, methodName ) {
+    spyWithMethod( object:any, methodName:string ) {
         const r = Sinon.spy( object, methodName );
         this.sinons.push(r);
         return r;
@@ -37,13 +46,13 @@ export default class TestSuite {
     }
 
 
-    static exportsClass( suiteClass ) {
+    static exportsClass( suiteClass:any ) {
         const pt = suiteClass.prototype;
 
         global.bearcat.module(suiteClass);
         const test = global.bearcat.getBean(suiteClass.name);
 
-        const suite = {
+        const suite:any = {
             //before: before,
             beforeEach: pt.beforeEach.bind(test),
             afterEach: pt.afterEach.bind(test)
@@ -58,9 +67,9 @@ export default class TestSuite {
             }
         }
 
-        const result = {};
-        result[suiteClass.name] = suite;
-        return result;
+        return {
+            [suiteClass.name]: suite
+        };
     }
 
 }

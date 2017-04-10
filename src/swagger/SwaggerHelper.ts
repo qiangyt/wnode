@@ -4,28 +4,31 @@ import CodePath from '../util/CodePath';
 const Package = require(CodePath.resolve('../package.json'));
 import * as ApiRole from '../ApiRole';
 import * as Ajv from 'ajv';
+import Schemas from './Schemas';
+import ApiServer from '../ApiServer';
+import ApiDefinition from '../ApiDefinition';
+import ApiParameter from '../ApiParameter';
+
+
+declare module global {
+    const config:any;
+}
 
 
 export default class SwaggerHelper {
 
-    constructor() {
-        this.$id = 'SwaggerHelper';
-        this.$Schemas = null;
-    }
+    public $id = 'SwaggerHelper';
+    public $Schemas:Schemas = null;
 
-    buildOptions( ignoreInternalApi, ignoreGetSwaggerApi, ignoreGetBlueprintApi, ignoreNames ) {
-        if( ignoreInternalApi === undefined ) ignoreInternalApi = true;
-        if( ignoreGetBlueprintApi === undefined ) ignoreGetBlueprintApi = true;
-        if( ignoreGetSwaggerApi === undefined ) ignoreGetSwaggerApi = true;
-        if( ignoreNames === undefined ) ignoreNames = [];
 
+    buildOptions( ignoreInternalApi = true, ignoreGetSwaggerApi = true, ignoreGetBlueprintApi = true, ignoreNames:string[] = [] ) {
         return {ignoreInternalApi, ignoreGetBlueprintApi, ignoreGetSwaggerApi, ignoreNames};
     }
 
     /**
      *
      */
-     typeFormat( type, format ) {
+     typeFormat( type:string, format:string ) {
          if( type === 'integer' ) {
              if (format) {
                  return format;
@@ -39,7 +42,7 @@ export default class SwaggerHelper {
     /**
      *
      */
-    root( apiServer, apiName, options ) {
+    root( apiServer:ApiServer, apiName:string, options:any ) {
         const defs = apiServer.apiDefinitions;
         let targetDefs;
         if( apiName ) targetDefs = [defs[apiName]];
@@ -64,7 +67,7 @@ export default class SwaggerHelper {
         };
     }
 
-    definitions( defs, options ) {
+    definitions( defs:ApiDefinition[], options:any ) {
         const r = {};
 
         const schemaMapByName = this.$Schemas.all();
@@ -109,8 +112,8 @@ export default class SwaggerHelper {
     /**
      *
      */
-    paths( defs, options ) {
-        const r = {};
+    paths( defs:ApiDefinition[], options:any ) {
+        const r:any = {};
         for( let d of defs ) {
             if( this.shouldIgnore( d, options ) ) continue;
 
@@ -119,7 +122,7 @@ export default class SwaggerHelper {
         return r;
     }
 
-    shouldIgnore(def, options) {
+    shouldIgnore(def:ApiDefinition, options:any) {
         const name = def.name;
 
         if( options.ignoreGetSwaggerApi && name === 'GetSwagger' ) return true;
@@ -147,7 +150,7 @@ export default class SwaggerHelper {
     /**
      *
      */
-    info() {
+    info(options:any) {
         const r = {
             title: global.config.server.name,
             description: Package.description,
@@ -166,10 +169,10 @@ export default class SwaggerHelper {
     /**
      *
      */
-    parameter( p ) {
-        const r = {
+    parameter( p:ApiParameter ) {
+        const r:any = {
             name: p.name,
-             "in": p["in"],
+            in: p.in,
             description: p.description,
             required: p.required,
             format: this.typeFormat( p.type, p.format ),
@@ -188,7 +191,7 @@ export default class SwaggerHelper {
         }
         r.type = type;
 
-        let inValue = p['in'];
+        let inValue = p.in;
         if( inValue === 'cookie' ) {
             // swagger 'in' doesn't support cookie, so we should extend it
             r['x-in'] = inValue;
@@ -202,8 +205,8 @@ export default class SwaggerHelper {
     /**
      *
      */
-    path( d, options ) {
-        const r = {};
+    path( d:ApiDefinition, options:any ) {
+        const r:any = {};
 
         const parameters = [];
         for( let name in d.spec.parameters ) {
@@ -233,7 +236,7 @@ export default class SwaggerHelper {
     /**
      *
      */
-    response( d, options ) {
+    response( d:ApiDefinition, options:any ) {
         return {
             '200': {
                 description: '成功时返回code="0"，和data',
@@ -262,21 +265,21 @@ export default class SwaggerHelper {
         };
     }
 
-    localResponseSchemaName( def ) {
+    localResponseSchemaName( def:ApiDefinition ) {
         return def.name + 'Response';
     }
 
-    responseSchemaName( def, options, prefixWithServiceName) {
+    responseSchemaName( def:ApiDefinition, options:any, prefixWithServiceName:boolean) {
         const localName = this.localResponseSchemaName( def, options );
         return SwaggerHelper.schemaName( localName, prefixWithServiceName );
     }
 
-    responseSchemaRef( def, options, prefixWithServiceName ) {
+    responseSchemaRef( def:ApiDefinition, options:any, prefixWithServiceName:boolean ) {
         const localName = this.localResponseSchemaName( def, options );
         return SwaggerHelper.schemaRef( localName, prefixWithServiceName );
     }
 
-    static schemaName(localName, prefixWithServiceName) {
+    static schemaName(localName:string, prefixWithServiceName:boolean) {
         localName = localName.replace('/', '');
         if( prefixWithServiceName === undefined || prefixWithServiceName !== false ) {
             return _.upperFirst(global.config.server.name) + _.upperFirst(localName);
@@ -284,7 +287,7 @@ export default class SwaggerHelper {
         return localName;
     }
 
-    static schemaRef(localName, prefixWithServiceName) {
+    static schemaRef(localName:string, prefixWithServiceName?:boolean) {
         const fqName = SwaggerHelper.schemaName(localName, prefixWithServiceName);
         return '#/definitions/' + fqName;
     }
@@ -329,7 +332,7 @@ export default class SwaggerHelper {
     }
 
 
-    validateResponse( def, data ) {
+    validateResponse( def:ApiDefinition, data:any ) {
         const responseSchemaName = this.responseSchemaName( def, {}, true );
         const dataSchemaName = SwaggerHelper.schemaRef(responseSchemaName, false) + 'Data';
         const valid = this.ajv.validate(dataSchemaName, data);

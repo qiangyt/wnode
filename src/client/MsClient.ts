@@ -8,6 +8,10 @@ import ApiServer from '../ApiServer';
 import AuthTokenCodec from '../auth/AuthTokenCodec';
 import BaseContext from '../ctx/BaseContext';
 
+declare module global {
+    const config:any;
+}
+
 
 export default class MsClient {
 

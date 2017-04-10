@@ -5,16 +5,21 @@ import * as Mongoose from 'mongoose';
 import * as Logger from '../Logger';
 import * as _ from 'lodash';
 
+declare module global {
+    const config:any;
+}
+
 
 export default class MongooseInstance {
 
-    constructor( instanceName, config ) {
-        this.logger = Logger.create('Mongoose.' + (instanceName ? instanceName : '<default>'));
+    public schemas:any = {};
+    public models:any = {};
+    public connection:Mongoose.Connection;
+    public schemaDir:string;
 
-        this.config = config;
-        this.instanceName = instanceName;
-        this.schemas = {};
-        this.models = {};
+
+    constructor( public instanceName:string, public config:any ) {
+        this.logger = Logger.create('Mongoose.' + (instanceName ? instanceName : '<default>'));
     }
 
     /**
@@ -80,14 +85,14 @@ export default class MongooseInstance {
             const stat = Fs.statSync(full);
             if( stat.isDirectory() ) continue; // 跳过子目录
 
-            const schema from full);
+            const schema = require(full);
             const schemaName = Path.basename( full, '.js' );
             this.importSchema( schema, schemaName );
         }
     }
 
 
-    importSchema( schema, schemaName ) {
+    importSchema( schema:any, schemaName:string ) {
         const collectionName = _.snakeCase(schemaName);
         const model = this.connection.model( schemaName, schema, collectionName );
 

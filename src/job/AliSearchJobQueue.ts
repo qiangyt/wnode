@@ -68,7 +68,7 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    _processBundle( ctx:BatchItem, bundle:any ) {
+    _processBundle( ctx:BaseContext, bundle:any ) {
         return this.$AliOpenSearch.batch( ctx, 
                                           bundle.indexName, 
                                           bundle.tableName, 

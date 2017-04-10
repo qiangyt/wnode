@@ -1,7 +1,7 @@
-import ErrorType from './ErrorType');
+import ErrorType from './ErrorType';
 
 
-const errorMapByCode = {};
+const errorMapByCode:any = {};
 const SYS_CODE_START = 1;
 const SYS_CODE_END = 1000;
 
@@ -13,7 +13,7 @@ let sysErrorInited = false;
  * 
  * @param jsonFilePath error定义的json文件的路径
  */
-export function register( codeStart, codeEnd, jsonFilePath ) {
+export function register( codeStart:number, codeEnd:number, jsonFilePath:string ) {
     if( codeStart >= codeEnd ) throw new Error('code start value (' + codeStart + ') must be less than code end value (' + codeEnd + ')');
     if( sysErrorInited ) {
         if( codeStart <= SYS_CODE_END ) {

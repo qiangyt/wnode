@@ -1,3 +1,4 @@
+import * as Sequelize from 'sequelize';
 
 
 /**
@@ -5,23 +6,25 @@
  */
 export default class SequelizerTx {
 
-    constructor(sequelizer) {
-        this.sequelizer = sequelizer;
+    public key:string;
+
+
+    constructor(public sequelizer:Sequelize.Sequelize) {
         this.key = 'sequelizer-' + (sequelizer.instanceName ? sequelizer.instanceName : 'default');
     }
 
 
-    enlistTx( options ) {
+    enlistTx( options:Sequelize.TransactionOptions ) {
         return this.sequelizer.transaction(options);
     }
 
 
-    commitTx( txData ) {
+    commitTx( txData:Sequelize.Transaction ) {
         return txData.commit();
     }
 
 
-    rollbackTx( txData ) {
+    rollbackTx( txData:Sequelize.Transaction ) {
         return txData.rollback();
     }
 

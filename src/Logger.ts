@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as bunyan from 'bunyan';
 import Time from './util/Time';
 import * as _ from 'lodash';
+import BaseContext from './ctx/BaseContext';
 
 
 const launchTime = new Date();
@@ -30,7 +31,7 @@ function loadConfiguration() {
 
     const basePath = path.join( dir, 'logger.json' );
     console.log( 'base logger config file: ' + basePath );
-    const r from  basePath );
+    const r = require(basePath);
 
     const envPath = path.join( dir, 'logger.' + env + '.json' );
     console.log( 'env logger config file: ' + envPath );
@@ -44,7 +45,7 @@ function loadConfiguration() {
     }
 
     if( envStat.isDirectory() ) throw new Error( envPath + ' should be a json file instead a directory' );
-    const envData from envPath);
+    const envData = require(envPath);
     _.merge( r, envData );
     
 
@@ -63,12 +64,14 @@ const pid = process.pid; // pid is used to append to log file path to survive cl
 const logFilePrefix = cfg.name + '_' + Time.formatDate(launchTime) + (isLocal ? '': ('_' + pid));
 
 
-function contextSerializer(ctx) {
+function contextSerializer(ctx:BaseContext) {
     const r = {
         apiName: ctx.apiDefinition ? ctx.apiDefinition.name : undefined,
         requestId: ctx.requestId,
         correlationId: ctx.correlationId,
-        previousRequestId: ctx.previousRequestId
+        previousRequestId: ctx.previousRequestId,
+        txId:<any>(undefined),
+        isTxOwner:<boolean>(undefined)
     };
 
     if( ctx.tx ) {
@@ -122,7 +125,7 @@ const rootLoggerOptions = {
 const rootLogger = bunyan.createLogger(rootLoggerOptions);
 
 
-process.on( 'uncaughtException', err => {
+process.on( 'uncaughtException', (err:Error) => {
   rootLogger.fatal(err, 'uncaught exception. exiting...');
   process.exit(1);/* eslint no-process-exit: 'off' */
 } );
@@ -140,7 +143,7 @@ process.on('SIGUSR2', function () {
 /**
  * 对bunyan日志库的简单封装，以便统一日志设置
  */
-export function create(idOrBean) {
+export function create(idOrBean:string|any) {
     const id = util.isString(idOrBean) ? idOrBean : idOrBean.$id ;
     return rootLogger.child( {id} );
 }

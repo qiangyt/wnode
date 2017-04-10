@@ -1,14 +1,22 @@
 import Base64 from './Base64';
 import * as Crypto from 'crypto';
 
+declare module global {
+    const config:any;
+}
+
+
 
 export default class Crypt3Des {
 
     public $id = 'Crypt3Des';
     public $init = 'init';
     public $lazy = true;
+    
     public key:string;
     public iv:string;
+    public base64DecodedKey:string;
+
 
     init() {
         const cfg:any = global.config.Crypt3Des;
@@ -25,7 +33,7 @@ export default class Crypt3Des {
     /**
      * 3DES/CBC加密
      */
-    encrypt_cbc_base64( input ) {
+    encrypt_cbc_base64( input:string ) {
         input = Crypt3Des.padding( input );
 
         const cipher = Crypto.createCipheriv( 'des-ede3-cbc', this.base64DecodedKey, this.iv );
@@ -53,7 +61,7 @@ export default class Crypt3Des {
     /**
      * 用\0补齐字符串，使其长度是8的倍数
      */
-    static padding( str ) {
+    static padding( str:string ) {
         const len = 8 - (str.length % 8);
         const result = [str];
 
@@ -65,7 +73,7 @@ export default class Crypt3Des {
     /**
      * 去除补齐用的\0。
      */
-    static removePadding( str ) {
+    static removePadding( str:string ) {
         let last = str.length - 1;
         for( ; last >= 0; last-- ) {
             if( str[last] !== '\0' ) break;
@@ -76,7 +84,7 @@ export default class Crypt3Des {
 	/**
      * 去除回车符(\r, \n)
      */
-    static removeBR( str ) {
+    static removeBR( str:string ) {
         let len = str.length;
         const result = [];
         for( let i = 0; i < len; i++ ) {

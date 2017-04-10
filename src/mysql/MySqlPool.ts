@@ -3,6 +3,10 @@ import MySqlConnection from './MySqlConnection';
 import SqlBuilder from '../dao/SqlBuilder';
 import BaseContext from '../ctx/BaseContext';
 
+declare module global {
+    const config:any;
+}
+
 
 export default class MySqlPool {
 

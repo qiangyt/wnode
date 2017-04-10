@@ -1,4 +1,4 @@
-const requireAsBean require('../Internal').requireAsBean;
+const requireAsBean = require('../Internal').requireAsBean;
 
 
 export default {

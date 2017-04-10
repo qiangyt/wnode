@@ -3,14 +3,28 @@ import * as ApiRole from './ApiRole';
 import * as Util from 'util';
 import * as Path from 'path';
 import SupportedMIME from './SupportedMIME';
+import BaseContext from 'ctx/BaseContext';
+
+
+declare module global {
+    const config:any;
+    const bearcat:any;
+}
+
 
 
 export default class ApiDefinition {
 
-    constructor( name ) {
-        this.name = name;
+    public roles:number[] = [];
+    public specs:any;
+    public bean:any;
+    public auths:any;
+    public execs:any;
+    public checks:any;
+
+
+    constructor( public name:string ) {
         this.specs = {operationId: name};
-        this.roles = [];
 
         this.callCheck = this.callCheck.bind(this);
         this.callExec = this.callExec.bind(this);
@@ -20,7 +34,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    static validatedApiRoles( apiName, mod ) {
+    static validatedApiRoles( apiName:string, mod:any ) {
         const modRole = mod.role;
 
         if( modRole === undefined ) return [ApiRole.user];
@@ -39,7 +53,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    static validatedApiRole( apiName, role ) {
+    static validatedApiRole( apiName:string, role:number ) {
         if( ApiRole.hasValue(role) ) return role;
         throw new Error( 'API ' + apiName + ': unknown role value: ' + role );
     }
@@ -47,7 +61,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    static validatedApiSummary( apiName, summary ) {
+    static validatedApiSummary( apiName:string, summary:string ) {
         if( summary === null || summary === undefined || summary === '' ) {
             throw new Error( 'API ' + apiName + ': summary could NOT be blank' );
         }
@@ -60,7 +74,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    static validatedApiProduce( apiName, produce ) {
+    static validatedApiProduce( apiName:string, produce:string ) {
         if( produce ) {
             if( SupportedMIME.indexOf(produce) < 0 ) {
                 throw new Error( 'API ' + apiName + ': ' + produce +
@@ -75,7 +89,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    static validatedResult( apiName, result ) {
+    static validatedResult( apiName:string, result:any ) {
         //TODO
         return result;
     }
@@ -83,13 +97,13 @@ export default class ApiDefinition {
     /**
      *
      */
-    static build( path ) {
+    static build( path:Path.ParsedPath ) {
         if( !path.relative ) path.relative = '';
 
         let apiName = Path.join(path.relative, path.name);
         if( apiName.charAt(0) === '/' ) apiName = apiName.substring(1);
 
-        const mod from path.full);
+        const mod = require(path.full);
         
         if( mod.apiName ) {
             // 如果module里自定义了api名字
@@ -128,9 +142,9 @@ export default class ApiDefinition {
     /**
      *
      */
-    respond( ctx, parameters, valueTexts ) {
+    respond( ctx:BaseContext, parameters:any, valueTexts:any ) {
         // prepare all parameter values
-        const allValues = {};
+        const allValues:any = {};
 
         for( let paramName in parameters ) {
             if( 'ctx' === paramName ) {
@@ -159,7 +173,7 @@ export default class ApiDefinition {
     /**
      * call step method
      */
-    callStep( ctx, stage, step, next ) {
+    callStep( ctx:BaseContext, stage:any, step:Function, next:Function ) {
         const values = ctx.values;
 
         ctx.next = next;
@@ -175,9 +189,9 @@ export default class ApiDefinition {
                 if( r.then && r.catch ) {
                     // we use 'r.then && r.catch' to tell if r is a promise instead of 'instanceof Promise',
                     // because old dependent library perhaps uses non-standard 3rd-party promise tools
-                    r.then( function(result) {
+                    r.then( function(result:any) {
                         ctx.ok(result);
-                    } ).catch( function(err) {
+                    } ).catch( function(err:any) {
                         ctx.error(err);
                     } );
                 } else {
@@ -196,14 +210,14 @@ export default class ApiDefinition {
     /**
      * call auth() method
      */
-    callAuth( ctx ) {
+    callAuth( ctx:BaseContext ) {
         this.callStep( ctx, this.auths, ctx.bean.auth, this.callCheck );
     }
 
     /**
      * call exec() method
      */
-    callExec( ctx ) {
+    callExec( ctx:BaseContext ) {
         // the exec is the final step, so the next step is null
         this.callStep( ctx, this.execs, ctx.bean.exec, null );
     }
@@ -211,11 +225,10 @@ export default class ApiDefinition {
     /**
      * call check() method
      */
-    callCheck( ctx ) {
+    callCheck( ctx:BaseContext ) {
         const bean = ctx.bean;
-        const values = ctx.values;
         if( !bean.check ) {
-            this.callExec( ctx, bean, values );
+            this.callExec( ctx );
         } else {
             this.callStep( ctx, this.checks, ctx.bean.check, this.callExec );
         }
@@ -224,7 +237,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    buildWebUrlSample( path, parameters ) {
+    buildWebUrlSample( path:string, parameters:any ) {
         const query = [];
 
         for( let paramName in parameters ) {

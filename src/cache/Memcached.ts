@@ -3,6 +3,10 @@ import * as Logger from '../Logger';
 import * as Errors from '../Errors';
 import BaseContext from '../ctx/BaseContext';
 
+declare module global {
+    const config:any;
+}
+
 
 // See https://github.com/chylvina/node_memcached
 

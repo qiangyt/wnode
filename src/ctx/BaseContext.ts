@@ -9,6 +9,10 @@ import JWTAuth from '../auth/JWTAuth';
 import AuthToken from '../auth/AuthToken';
 import * as http from 'http';
 
+declare module global {
+    const config:any;
+}
+
 
 export default class BaseContext {
 

@@ -3,6 +3,11 @@ import JWToken from './JWToken';
 import SimpleAuth from './SimpleAuth';
 import JWTCodec from './JWTCodec';
 
+declare module global {
+    const config:any;
+    const bearcat:any;
+}
+
 
 export default class JWTAuth extends SimpleAuth {
 

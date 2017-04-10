@@ -1,6 +1,11 @@
 import * as _ from 'lodash';
 import RedisInstance from './RedisInstance';
 
+declare module global {
+    const config:any;
+    const bearcat:any;
+}
+
 
 /**
  * redis实例管理类。
@@ -34,7 +39,7 @@ export default class RedisManager {
     /**
      * 创建一个实例
      */
-    create( instanceName ) {
+    create( instanceName:string ) {
         let instanceConfig;
         const globalConfig = global.config.redis;
         if( !instanceName ) {

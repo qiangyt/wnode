@@ -39,7 +39,7 @@ export default class GetBlueprintAPI {
         
         const options = this.$SwaggerHelper.buildOptions( ignoreInternalApi, ignoreGetSwaggerApi, ignoreGetBlueprintApi, ignoreNames );
 
-        this.$BlueprintHelper.output( this.$ApiServer, apiName, options, function(err, blueprint) {
+        this.$BlueprintHelper.output( this.$ApiServer, apiName, options, function(err:any, blueprint:any) {
             if( err ) return ctx.error( err );
 
             if( !html ) return ctx.ok(blueprint);

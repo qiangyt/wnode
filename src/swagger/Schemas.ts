@@ -6,17 +6,19 @@ import * as Sequelize from 'sequelize';
 import SwaggerHelper from './SwaggerHelper';
 import SequelizerManager from '../orm/SequelizerManager';
 
+declare module global {
+    const config:any;
+}
+
+
 
 export default class Schemas {
 
-    constructor() {
-        this.$id = 'Schemas';
-        this.$init = 'init';
-    }
+    public $id = 'Schemas';
+    public $init = 'init';
+    public mapByName:any = {};
 
     init() {
-        this.mapByName = {};
-        
         this.mapByName['Error'] = SwaggerHelper.errorSchema();
 
         const schemaDir = this.resolveSchemaDirectory();
@@ -47,7 +49,7 @@ export default class Schemas {
     }
 
     /*eslint no-sync: "off"*/
-    scanSchemas(schemaDir, prefixWithServiceName) {
+    scanSchemas(schemaDir:string, prefixWithServiceName:boolean) {
         for( const fileName of Fs.readdirSync(schemaDir) ) {
             const full = Path.join(schemaDir, fileName);
             this.addSchema( Path.parse(full).name, require(full), prefixWithServiceName );
@@ -55,7 +57,7 @@ export default class Schemas {
     }
 
 
-    addSchema( name, schema, prefixWithServiceName ) {
+    addSchema( name:string, schema:string, prefixWithServiceName:boolean ) {
         if( prefixWithServiceName ) {
             name = SwaggerHelper.schemaName( name, prefixWithServiceName );
         }
@@ -66,15 +68,15 @@ export default class Schemas {
     }
 
 
-    static buildSchemaFromSequelizer( modelName, instanceName ) {
+    static buildSchemaFromSequelizer( modelName:string, instanceName:string ) {
         const sequelizer = SequelizerManager.instance.get(instanceName);
         if( !sequelizer ) throw new Error('sequelizer "' + instanceName + '" not found');
         
         const model = sequelizer.instance.models[modelName];
         if( !model ) throw new Error('model "' + modelName + '" not found in sequelizer "' + instanceName + '"');
         
-        const properties = {};
-        const attrs = model.attributes;
+        const properties:any = {};
+        const attrs:any = (<any>model).attributes;
         for( let attrName in attrs ) {
             const attr = attrs[attrName];
             properties[attrName] = Schemas.propertyFromSequelizerAttribute(attr);
@@ -87,9 +89,10 @@ export default class Schemas {
     }
 
     /* eslint complexity: "off" */
-    static propertyFromSequelizerAttribute( attr ) {
+    static propertyFromSequelizerAttribute( attr:any ) {
         const r = {
-            description: attr.comment
+            description: attr.comment,
+            type:<string>(undefined)
         };
 
         const attrType = attr.type;
@@ -148,7 +151,7 @@ export default class Schemas {
     }
 
 
-    get(name) {
+    get(name:string) {
         return this.mapByName[name];
     }
 

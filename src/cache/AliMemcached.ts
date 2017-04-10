@@ -1,6 +1,10 @@
 const AliyunSdk = require('@wxcount/aliyun-sdk');
 import Memcached from './Memcached';
 
+declare module global {
+    const config:any;
+}
+
 
 // See https://github.com/chylvina/node_memcached
 
@@ -12,8 +16,7 @@ export default class AliMemcached extends Memcached {
      * 
      */
     init() {
-        const cfg = global.config.aliyun.memcached;
-        super.init(cfg);
+        this.doInit(global.config.aliyun.memcached);
     }
 
     createClient( cfg:any ) {

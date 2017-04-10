@@ -1,6 +1,6 @@
 import * as Path from 'path';
 const Path_parse_old = Path.parse;
-Path.parse = function(full) {
+Path.parse = function(full:string) {
     const r = Path_parse_old(full);
     r.full = full;
     return r;
@@ -14,10 +14,15 @@ const requireAsBean = Internal.requireAsBean;
 import SwaggerHelper from './swagger/SwaggerHelper';
 import Schemas from './swagger/Schemas';
 
+declare module global {
+    let config:any;
+    let bearcat:any;
+}
 
-function startApp( appJsonPath, startCallback ) {
+
+function startApp( appJsonPath:string, startCallback:Function ) {
     // make bearcat global, for `bearcat.module()`
-    const bearcat = global.bearcat from 'bearcat');
+    const bearcat = global.bearcat = require('bearcat');
     bearcat.createApp([CodePath.resolve(appJsonPath)]);
 
     Internal.initBeans();
@@ -30,10 +35,8 @@ function startApp( appJsonPath, startCallback ) {
 }
 
 
-function startFunc( starter, configDir, appJsonPath, configCallback, startCallback ) {
-    if( !configDir ) configDir = '../config';
-    if( !appJsonPath ) appJsonPath = './app.json';
-
+function startFunc( starter:Function, configDir = '../config', appJsonPath = './app.json', configCallback?:Function, startCallback?:Function ) {
+    
     module.exports.config = global.config = new Config( CodePath.resolve(configDir) );
 
     if( configCallback ) {
@@ -49,15 +52,11 @@ function startFunc( starter, configDir, appJsonPath, configCallback, startCallba
 
 let _mochaLaunched = false;
 
-function launchMocha(before, done, srcDir, configDir, appJsonPath) {
+function launchMocha(before:Function, done:Function, srcDir = '../../../../src', configDir = '../config', appJsonPath = './app.json') {
     if( _mochaLaunched ) {
         if( done ) done();
         return;
     }
-
-    if( !srcDir ) srcDir = '../../../../src';
-    if( !configDir ) configDir = '../config';
-    if( !appJsonPath ) appJsonPath = './app.json';
 
     _mochaLaunched = true;
 
@@ -91,7 +90,7 @@ export default {
     ApiServer:      requireAsBean(module, './ApiServer'),
     auth:           require('./auth'),
 
-    bean: function bean(beanName) {
+    bean: function bean(beanName:string) {
         global.bearcat.getBean(beanName);
     },
     blueprint:      require('./blueprint'),
@@ -125,17 +124,17 @@ export default {
     orm:            require('./orm'),
     plugin:         require('./plugin'),
     
-    schemaFromSequelizer: function buildSchemaFromSequelizer( modelName, instanceName ) {
+    schemaFromSequelizer: function buildSchemaFromSequelizer( modelName:string, instanceName:string ) {
         return Schemas.buildSchemaFromSequelizer( modelName, instanceName );
     },
 
-    schemaRef: function(name) {
+    schemaRef: function(name:string) {
         return SwaggerHelper.schemaRef(name);
     },
     
     search:         require('./search'),
     
-    start: function start( configDir, appJsonPath, configCallback, startCallback ) {
+    start: function start( configDir:string, appJsonPath:string, configCallback:Function, startCallback:Function ) {
         startFunc( startApp, configDir, appJsonPath, configCallback, startCallback );
     },
     

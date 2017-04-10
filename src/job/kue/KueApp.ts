@@ -4,6 +4,10 @@ const BasicAuth = require('basic-auth-connect');
 import * as Express from 'express';
 import * as Logger from '../../Logger';
 
+declare module global {
+    const config:any;
+}
+
 
 export default class KueApp {
 

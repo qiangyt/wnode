@@ -7,7 +7,7 @@ const logger = require('./Logger').create('Config');
 
 export default class Config {
 
-    constructor( dir ) {
+    constructor( dir:string ) {
         const jsonBasePath = Path.join( dir, 'config.json' );
         const jsBasePath = Path.join( dir, 'config.js' );
         let basePath = jsonBasePath;

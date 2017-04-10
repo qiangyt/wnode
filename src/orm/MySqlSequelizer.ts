@@ -11,7 +11,7 @@ export default class MySqlSequelizer extends BaseSequelizer {
     createInstance() {
         let cfg = this.config;
         
-        const options = {
+        const options:any = {
             host: cfg.host,
             port: cfg.port,
             dialect: 'mysql',

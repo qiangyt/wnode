@@ -1,5 +1,8 @@
 import * as ApiRole from '../ApiRole';
 import * as Errors from '../Errors';
+import SwaggerHelper from './SwaggerHelper';
+import ApiServer from '../ApiServer';
+import BaseContext from '../ctx/BaseContext';
 
 
 /**
@@ -7,14 +10,12 @@ import * as Errors from '../Errors';
  */
 export default class GetSwaggerAPI {
 
-    constructor() {
-        this.$id = 'GetSwaggerAPI';
-        this.$SwaggerHelper = null;
-        this.$ApiServer = null;
-    }
+    public $id = 'GetSwaggerAPI';
+    public $SwaggerHelper:SwaggerHelper = null;
+    public $ApiServer:ApiServer = null;
+    
 
-    check( ctx,
-        apiName ) {
+    check( ctx:BaseContext, apiName:string ) {
 
         if( apiName ) {
             if( !this.$ApiServer.apiDefinitions[apiName] ) {
@@ -25,12 +26,12 @@ export default class GetSwaggerAPI {
         ctx.ok();
     }
 
-    exec( ctx,
-        apiName/* required:false, description:'指定输出的API名字。未指定的话输出全部API' */,
-        ignoreInternalApi /* required:false, type:'boolean', description:'是否忽略内部API，默认为true' */,
-        ignoreGetSwaggerApi /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
-        ignoreGetBlueprintApi /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
-        ignoreNames /* required:false, type:'array', items:{type:'string'}, description:'需忽略的API名字，默认无' */ ) {
+    exec( ctx:BaseContext,
+        apiName?:string/* required:false, description:'指定输出的API名字。未指定的话输出全部API' */,
+        ignoreInternalApi=true /* required:false, type:'boolean', description:'是否忽略内部API，默认为true' */,
+        ignoreGetSwaggerApi=true /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
+        ignoreGetBlueprintApi=true /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
+        ignoreNames?:string[] /* required:false, type:'array', items:{type:'string'}, description:'需忽略的API名字，默认无' */ ) {
 
         const options = this.$SwaggerHelper.buildOptions( ignoreInternalApi, ignoreGetSwaggerApi, ignoreGetBlueprintApi, ignoreNames );
 

@@ -191,7 +191,7 @@ export default class BatchQueue {
         } catch( err ) {
             batch.forEach( task => task.done(err) );
             this.logger.error( {err}, 'failed to process task' );
-            return [];
+            return Promise.resolve();
         }
     }
 

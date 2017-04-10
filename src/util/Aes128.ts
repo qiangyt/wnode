@@ -1,13 +1,20 @@
 import * as Crypto from 'crypto';
 
 
+declare module global {
+    const config:any;
+}
+
+
 export default class Aes128 {
 
-    constructor() {
-        this.$id = 'Aes128';
-        this.$init = 'init';
-        this.$lazy = true;
-    }
+    public $id = 'Aes128';
+    public $init = 'init';
+    public $lazy = true;
+    
+    public key:string;
+    public iv:string;
+    
 
     init() {
         const cfg = global.config.Aes128;
@@ -22,7 +29,7 @@ export default class Aes128 {
     /**
      * 
      */
-    encrypt( input, encode ) {
+    encrypt( input:Buffer, encode:string ) {
         if( !encode ) encode = 'base64';
 
         const cipher = Crypto.createCipheriv( 'aes-128-ecb', this.key, this.iv );
@@ -34,7 +41,7 @@ export default class Aes128 {
     /**
      * 
      */
-    decrypt( encrypted, encode ) {
+    decrypt( encrypted:Buffer, encode:string ) {
         if( !encode ) encode = 'base64';
         
         const decipher = Crypto.createDecipheriv('aes-128-ecb', this.key, this.iv);
