@@ -49,7 +49,7 @@ function loadConfiguration() {
     _.merge( r, envData );
     
 
-    if( !r.name ) r.name = 'anode';
+    if( !r.name ) r.name = 'wnode';
     if( !r.level ) r.level = isProd ? 'info' : 'debug';
     if( !r.src ) r.src = !isProd;
     if( !r.rotationPeriod ) r.rotationPeriod = '1d';// daily rotation
