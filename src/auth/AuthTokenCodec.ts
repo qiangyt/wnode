@@ -12,7 +12,7 @@ export default class AuthTokenCodec {
     /**
      * 编码
      */
-    encode( token:AuthToken ) {
+    encode( token:AuthToken ):Promise<string> {
         const me = this;
         return new Promise( function(resolve) {
             const raw = {

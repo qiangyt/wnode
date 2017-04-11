@@ -29,11 +29,11 @@ export default class Aes128 {
     /**
      * 
      */
-    encrypt( input:Buffer, encode:string ) {
+    encrypt( input:string, encode:string ) {
         if( !encode ) encode = 'base64';
 
         const cipher = Crypto.createCipheriv( 'aes-128-ecb', this.key, this.iv );
-        let result = cipher.update( input, 'utf8', encode );
+        let result = (<any>cipher).update( input, 'utf8', encode );
         result += cipher.final(encode);
         return result;
     }
@@ -41,11 +41,11 @@ export default class Aes128 {
     /**
      * 
      */
-    decrypt( encrypted:Buffer, encode:string ) {
+    decrypt( encrypted:string, encode:string ) {
         if( !encode ) encode = 'base64';
         
         const decipher = Crypto.createDecipheriv('aes-128-ecb', this.key, this.iv);
-        let result = decipher.update(encrypted, encode, 'utf8');
+        let result:string = (<any>decipher).update(encrypted, encode, 'utf8');
         result += decipher.final('utf8');
         return result;
     }

@@ -1,6 +1,6 @@
 const AliyunSdk = require('@wxcount/aliyun-sdk'); 
-import * as Logger from '../Logger';
-import * as Errors from '../Errors';
+import * as Log from '../Logger';
+const Errors = require('../Errors');
 import BaseContext from '../ctx/BaseContext';
 
 declare module global {
@@ -13,7 +13,7 @@ export default class AliOpenSearch {
     public $id = 'AliOpenSearch';
     public $init = 'init';
     public $lazy = true;
-    public logger = Logger.create(this);
+    public logger:Log.Logger = Log.create(this);
     public instance:any;
 
     /**
@@ -23,11 +23,11 @@ export default class AliOpenSearch {
         this.instance = new AliyunSdk.OpenSearch( global.config.aliyun.search );
     }
 
-    _invoke( ignoreFailStatus:boolean, methodName:string, func:Function, ctx:BaseContext, params ) {
+    _invoke( ignoreFailStatus:boolean, methodName:string, func:Function, ctx:BaseContext, params:any ) {
         const me = this;
 
         return new Promise( function(resolve, reject) {
-            func.call( me.instance, params, function(err, res) {
+            func.call( me.instance, params, function(err:any, res:any) {
                 const resErr = me._hasError( ctx, ignoreFailStatus, methodName, err, res );
                 if(resErr) return reject(resErr);
 
@@ -38,7 +38,7 @@ export default class AliOpenSearch {
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    _push( ctx:BaseContext, cmd:string, methodName:string, indexName:string, table_name:string, fieldsArray:string[][] ) {
+    _push( ctx:BaseContext, cmd:string, methodName:string, indexName:string, table_name:string, fieldsArray:any[] ) {
         const timestamp = (new Date()).getTime();
         const items = fieldsArray.map( fields => ({cmd, timestamp, fields}) );
 
@@ -53,7 +53,7 @@ export default class AliOpenSearch {
     }
 
 
-    batch( ctx:BaseContext, indexName:string, table_name:string, cmdArray:string[], fieldsArray:string[][] ) {
+    batch( ctx:BaseContext, indexName:string, table_name:string, cmdArray:string[], fieldsArray:any[] ) {
         if( cmdArray.length !== fieldsArray.length ) {
             throw new Error('unmatched cmd and fields');
         }
@@ -100,37 +100,37 @@ export default class AliOpenSearch {
     }
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    add( ctx:BaseContext, indexName:string, tableName:string, fields:string ) {
+    add( ctx:BaseContext, indexName:string, tableName:string, fields:any ) {
         return this.addByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    addByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:string[][] ) {
+    addByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:any[] ) {
         return this._push( ctx, 'add', 'add', indexName, tableName, fieldsArray );
     }
 
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    update( ctx:BaseContext, indexName:string, tableName:string, fields:string[] ) {
+    update( ctx:BaseContext, indexName:string, tableName:string, fields:any ) {
         return this.updateByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    updateByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:string[][] ) {
+    updateByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:any[] ) {
         return this._push( ctx, 'update', 'updateByArray', indexName, tableName, fieldsArray );
     }
 
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    delete( ctx:BaseContext, indexName:string, tableName:string, fields:string[] ) {
+    delete( ctx:BaseContext, indexName:string, tableName:string, fields:any ) {
         return this.deleteByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    deleteByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:string[][] ) {
+    deleteByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:any[] ) {
         return this._push( ctx, 'delete', 'deleteByArray', indexName, tableName, fieldsArray );
     }
 

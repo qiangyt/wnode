@@ -1,5 +1,5 @@
-import * as Errors from '../Errors';
-import * as Logger from '../Logger';
+const Errors = require('../Errors');
+import * as Log from '../Logger';
 import * as Restify from 'restify';
 import LocalClientContext from '../ctx/LocalClientContext';
 import AuthToken from '../auth/AuthToken';
@@ -19,9 +19,10 @@ export default class MsClient {
     public $lazy = true;
     public $init = 'init';
     public $ApiServer:ApiServer = null;
-    public logger = Logger.create(this);
+    public logger:Log.Logger = Log.create(this);
     public authCodec:AuthTokenCodec;
     public services:any = {};
+    
 
     init() {
         this.authCodec = JWTAuth.globalAuthBean().codec();
@@ -54,14 +55,14 @@ export default class MsClient {
     call( ctx:BaseContext, serviceName:string, apiName:string, parameters:any ) {
             const me = this;
             return new Promise( function( resolve, reject ) {
-                me._call( ctx, serviceName, apiName, parameters, function( err, result ) {
+                me._call( ctx, serviceName, apiName, parameters, function( err:any, result:any ) {
                     if( err ) reject(err);
                     else resolve(result);
                 } );
             } );
     }
 
-    _call( ctx:BaseContext, serviceName:string, apiName:string, parameters:any, callback ) {
+    _call( ctx:BaseContext, serviceName:string, apiName:string, parameters:any, callback:Function ) {
         let s:any;
         let isLocal:boolean;
         if( !serviceName ) isLocal = true;
@@ -92,7 +93,7 @@ export default class MsClient {
                 parameters.cid = ctx.correlationId;//correlation id
                 parameters.prid = ctx.requestId;//previous request id
 
-                let options = {
+                let options:any = {
                     path: '/' + serviceName + '/' + apiName
                 }
                 // 内部传输保留原有的header
@@ -100,7 +101,7 @@ export default class MsClient {
                     let headers = ctx.req.headers;
                     options.headers = headers;
                 }
-                s.client.post( options, parameters, function( err, req, res, result ) {
+                s.client.post( options, parameters, function( err:any, req:any, res:any, result:any ) {
                     return func( err, result );
                 });
             } );

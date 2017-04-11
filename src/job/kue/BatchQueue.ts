@@ -196,4 +196,27 @@ export default class BatchQueue {
     }
 
 
+    _putJob( ctx:BaseContext, jobData:any ) {
+
+        const c = this.config;
+
+        const job:any = this.queue.create( c.name, jobData );
+        job.priority(c.priority)
+            .attempts(c.attempts)
+            .backoff(c.backoff)
+            .removeOnComplete(c.removeOnComplete)
+            .save( (err:any) => {
+                const logObj = {ctx, jobData, job};
+                this.logger.debug( logObj, 'enque-ed job' );
+                if( !err ) {
+                    this.logger.debug( logObj, 'saved job' );
+                } else {
+                    this.logger.warn( logObj, 'failed to save job' );
+                }
+            } );
+
+        return Promise.resolve();
+    }
+
+
 }

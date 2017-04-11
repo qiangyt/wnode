@@ -3,6 +3,12 @@ import Exception from '../Exception';
 const Errors = require('../Errors');
 
 
+export interface AuthResult {
+    ok:boolean,
+    absentRoles?:number[]
+}
+
+
 export default class AuthToken {
 
     constructor( public userId:any, 
@@ -37,7 +43,7 @@ export default class AuthToken {
     /**
      * 
      */
-    hasRoles( expectedRoles:number[] ) {
+    hasRoles( expectedRoles:number[] ):AuthResult {
         if( !expectedRoles || expectedRoles.length === 0 ) {
             // 如果expectedRoles为空，那么无需权限检查
             return {ok: true};

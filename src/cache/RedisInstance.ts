@@ -1,6 +1,6 @@
-import * as Redis from 'redis';
-import * as Logger from '../Logger';
-import * as Errors from '../Errors';
+const Redis = require('redis');
+import * as Log from '../Logger';
+const Errors = require('../Errors');
 import Exception from '../Exception';
 import * as Bluebird from 'bluebird';
 import * as Util from 'util';
@@ -15,11 +15,11 @@ Bluebird.promisifyAll(Redis.Multi.prototype);
 
 export default class RedisInstance {
 
-    public logger:any;
-    public client:Redis.RedisClient;
+    public logger:Log.Logger;
+    public client:any;
 
     constructor(public instanceName:string, public config:any) {
-        this.logger = Logger.create('RedisInstance/' + (instanceName ? instanceName : '') );
+        this.logger = Log.create('RedisInstance/' + (instanceName ? instanceName : '') );
 
         this.connect();
     }
@@ -74,10 +74,10 @@ export default class RedisInstance {
 
     /* eslint no-empty: "off" */
     encodeObjectArray( ctx:BaseContext, objectArray:any[] ) {
-        const r = {};
-        for( let key in objectArray ) {
-
-        }
+        //const r = {};
+        //for( let key in objectArray ) {
+//
+  //      }
     }
 
     /**
@@ -106,7 +106,7 @@ export default class RedisInstance {
     set( ctx:BaseContext, key:string, value:any, expireSeconds:number, encode:boolean ) {
         const encodedValue = encode ? this.encodeValue( ctx, value ) : value;
         return this.client.setAsync( key, encodedValue )
-        .then( res => {
+        .then( (res:any) => {
             if( expireSeconds !== null && expireSeconds !== undefined && expireSeconds > 0 ) {
                 return this.client.expire( key, expireSeconds );
             }
@@ -119,7 +119,7 @@ export default class RedisInstance {
      */
     get( ctx:BaseContext, key:string, decode:boolean ) {
         return this.client.getAsync(key)
-        .then( res => {
+        .then( (res:any) => {
             const value = decode ? this.decodeValue( ctx, res ) : res;
             return value;
         } );
@@ -150,10 +150,10 @@ export default class RedisInstance {
     mget( ctx:BaseContext, keyOrKeyArray:string|string[] ) {
         let p;
         if( !Util.isArray(keyOrKeyArray) ) {
-            keyOrKeyArray = arguments.slice(1);
+            keyOrKeyArray = Array.from(arguments).slice(1);
         }
         p = this.client.mgetAsync.apply( null, keyOrKeyArray );
-        p.then( valueArray => this.decodeValueArray( ctx, valueArray ) );
+        p.then( (valueArray:string[]) => this.decodeValueArray( ctx, valueArray ) );
     }
 
     /* eslint no-empty-function: "off" */

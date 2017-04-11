@@ -48,11 +48,11 @@ export default class Crypt3Des {
     /**
      * 3DES/CBC解密
      */
-    decrypt_cbc_base64( encrypted ) {
+    decrypt_cbc_base64( encrypted:any ) {
         const decipher = Crypto.createDecipheriv('des-ede3-cbc', this.base64DecodedKey, this.iv);
         decipher.setAutoPadding(false);
 
-        let txt = decipher.update(encrypted, 'base64', 'base64');
+        let txt = (<any>decipher).update(encrypted, 'base64', 'base64');
         txt += decipher.final('base64');
 
         return Crypt3Des.removePadding(txt);

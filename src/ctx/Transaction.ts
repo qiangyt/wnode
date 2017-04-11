@@ -1,12 +1,13 @@
-import * as Errors from '../Errors';
+const Errors = require('../Errors');
 import Exception from '../Exception';
-import * as Logger from '../Logger';
+import * as Log from '../Logger';
 import * as uuid from 'node-uuid';
 import BaseContext from './BaseContext';
-const logger = Logger.create('Transaction');
+const logger = Log.create('Transaction');
 
 declare module global {
     const config:any;
+    const tx:any;
 }
 
 
@@ -16,7 +17,7 @@ declare module global {
 export default class Transaction {
 
     public resources:any[] = [];
-    public txId = uuid.v4();
+    public id = uuid.v4();
 
     public finishing = false;
     public finished = false;

@@ -2,7 +2,7 @@ import * as Fs from 'fs';
 import * as Path from 'path';
 import CodePath from '../util/CodePath';
 import * as Mongoose from 'mongoose';
-import * as Logger from '../Logger';
+import * as Log from '../Logger';
 import * as _ from 'lodash';
 
 declare module global {
@@ -16,10 +16,11 @@ export default class MongooseInstance {
     public models:any = {};
     public connection:Mongoose.Connection;
     public schemaDir:string;
+    public logger:Log.Logger;
 
 
     constructor( public instanceName:string, public config:any ) {
-        this.logger = Logger.create('Mongoose.' + (instanceName ? instanceName : '<default>'));
+        this.logger = Log.create('Mongoose.' + (instanceName ? instanceName : '<default>'));
     }
 
     /**
@@ -48,7 +49,7 @@ export default class MongooseInstance {
 
         const r = Mongoose.createConnection( uri, options );
 
-        r.on( 'error', err => {
+        r.on( 'error', (err:any) => {
             this.logger.error( {err}, 'connection error' );
         } );
 

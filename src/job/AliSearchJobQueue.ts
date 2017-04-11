@@ -47,7 +47,7 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    _prepareBatch( ctx:BaseContext, batch:BatchItem[] ) {
+    _prepareBatch( ctx:BaseContext, batch:BatchItem[] ):Promise<any>[] {
         const bundlePerIndexName = this._sortBatch(batch);
         const promises = [];
 
@@ -65,6 +65,8 @@ export default class AliSearchJobQueue extends BatchQueue {
 
             promises.push(p);
         }
+
+        return promises;
     }
 
 

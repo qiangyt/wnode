@@ -1,7 +1,7 @@
 import * as Path from 'path';
 const Path_parse_old = Path.parse;
-Path.parse = function(full:string) {
-    const r = Path_parse_old(full);
+(<any>Path).parse = function(full:string):Path.ParsedPath {
+    const r:any = Path_parse_old(full);
     r.full = full;
     return r;
 }

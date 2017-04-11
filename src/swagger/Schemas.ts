@@ -106,7 +106,7 @@ export default class Schemas {
             r.type = 'string'; 
         } else if( attrType instanceof Sequelize.TEXT ) {
             r.type = 'string'; 
-        } else if( attrType instanceof Sequelize.NUMBER ) {
+        } else if( attrType instanceof <any>Sequelize.NUMBER ) {
             r.type = 'number'; 
         } else if( attrType instanceof Sequelize.INTEGER ) {
             r.type = 'integer'; 
@@ -114,18 +114,18 @@ export default class Schemas {
         } else if( attrType instanceof Sequelize.FLOAT ) {
             r.type = 'number';
             //r.format = 'float'; 
-        } else if( attrType instanceof Sequelize.TIME ) {
+        } else if( attrType instanceof <any>Sequelize.TIME ) {
             r.type = 'string';
             //r.format = 'date'; 
         } else if( attrType instanceof Sequelize.DATE ) {
             r.type = 'string';
             //r.format = 'date-time'; 
-        } else if( attrType instanceof Sequelize.DATEONLY ) {
+        } else if( attrType instanceof <any>Sequelize.DATEONLY ) {
             r.type = 'string';
             //r.format = 'date-time'; 
-        } else if( attrType instanceof Sequelize.BOOLEAN ) {
+        } else if( attrType instanceof <any>Sequelize.BOOLEAN ) {
             r.type = 'boolean'; 
-        } else if( attrType instanceof Sequelize.NOW ) {
+        } else if( attrType instanceof <any>Sequelize.NOW ) {
             throw new Error('TODO');
         } else if( attrType instanceof Sequelize.BLOB ) {
             r.type = 'string'; 

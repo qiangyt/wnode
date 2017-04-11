@@ -10,12 +10,12 @@ export default class SequelizerTx {
 
 
     constructor(public sequelizer:Sequelize.Sequelize) {
-        this.key = 'sequelizer-' + (sequelizer.instanceName ? sequelizer.instanceName : 'default');
+        this.key = 'sequelizer-' + ((<any>sequelizer).instanceName ? (<any>sequelizer).instanceName : 'default');
     }
 
 
     enlistTx( options:Sequelize.TransactionOptions ) {
-        return this.sequelizer.transaction(options);
+        return (<any>this.sequelizer).transaction(options);
     }
 
 

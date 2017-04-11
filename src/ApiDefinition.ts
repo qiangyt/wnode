@@ -3,7 +3,7 @@ import * as ApiRole from './ApiRole';
 import * as Util from 'util';
 import * as Path from 'path';
 import SupportedMIME from './SupportedMIME';
-import ServerContext from './ctx/ServerContext';
+import BaseContext from './ctx/BaseContext';
 
 
 declare module global {
@@ -34,6 +34,7 @@ export default class ApiDefinition {
     public result:any;
     public customizeJsonResponse:boolean;
     public validateResponse:boolean;
+    public charset:string;
 
 
     constructor( public name:string ) {
@@ -110,7 +111,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    static build( path:Path.ParsedPath ) {
+    static build( path:any ) {
         if( !path.relative ) path.relative = '';
 
         let apiName = Path.join(path.relative, path.name);
@@ -155,7 +156,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    respond( ctx:ServerContext, parameters:any, valueTexts:any ) {
+    respond( ctx:BaseContext, parameters:any, valueTexts:any ) {
         // prepare all parameter values
         const allValues:any = {};
 
@@ -186,7 +187,7 @@ export default class ApiDefinition {
     /**
      * call step method
      */
-    callStep( ctx:ServerContext, stage:any, step:Function, next:Function ) {
+    callStep( ctx:BaseContext, stage:any, step:Function, next:Function ) {
         const values = ctx.values;
 
         ctx.next = next;
@@ -223,14 +224,14 @@ export default class ApiDefinition {
     /**
      * call auth() method
      */
-    callAuth( ctx:ServerContext ) {
+    callAuth( ctx:BaseContext ) {
         this.callStep( ctx, this.auths, ctx.bean.auth, this.callCheck );
     }
 
     /**
      * call exec() method
      */
-    callExec( ctx:ServerContext ) {
+    callExec( ctx:BaseContext ) {
         // the exec is the final step, so the next step is null
         this.callStep( ctx, this.execs, ctx.bean.exec, null );
     }
@@ -238,7 +239,7 @@ export default class ApiDefinition {
     /**
      * call check() method
      */
-    callCheck( ctx:ServerContext ) {
+    callCheck( ctx:BaseContext ) {
         const bean = ctx.bean;
         if( !bean.check ) {
             this.callExec( ctx );

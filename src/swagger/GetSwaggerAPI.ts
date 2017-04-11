@@ -1,5 +1,5 @@
 import * as ApiRole from '../ApiRole';
-import * as Errors from '../Errors';
+const Errors = require('../Errors');
 import SwaggerHelper from './SwaggerHelper';
 import ApiServer from '../ApiServer';
 import BaseContext from '../ctx/BaseContext';

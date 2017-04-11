@@ -1,8 +1,9 @@
-import * as Errors from  '../Errors';
+const Errors = require('../Errors');
 import ErrorType from '../ErrorType';
 import Exception from  '../Exception.js';
 import * as Util from 'util';
-const logger = require('../Logger').create('ctx');
+import * as Log from '../Logger';
+const logger = Log.create('ctx');
 import Transaction from './Transaction';
 import ApiDefinition from '../ApiDefinition';
 import JWTAuth from '../auth/JWTAuth';
@@ -18,7 +19,7 @@ export default class BaseContext {
 
     public $auth:AuthToken = JWTAuth.globalAuthBean().createEmptyToken();
     public isTxOwner = false;
-    public logger;
+    public logger:Log.Logger;
     public req:http.ServerRequest;
     public next:any;
     public tx:Transaction;
@@ -31,7 +32,10 @@ export default class BaseContext {
     public correlationId:string;
     public previousRequestId:string;
     public beginTime = new Date().getTime();
-
+    public $authInternal:AuthToken;
+    public $encodedAuthInternal:string;
+    public bean:any;
+    
 
     constructor( public apiDefinition:ApiDefinition ) {
         this.logger = logger;
@@ -120,7 +124,7 @@ export default class BaseContext {
      *        data: <result的json编码>
      *    }
      */
-    ok( result:any ) {
+    ok( result?:any ) {
         if( this.tx ) {
             return this.commitTx()
                 .then( () => this._ok(result) )
@@ -220,7 +224,7 @@ export default class BaseContext {
 
         let msg;
 
-        let labelOrError = arguments[0];
+        let labelOrError:any = arguments[0];
 
         if( labelOrError instanceof Exception ) {
             let args = [];
@@ -268,7 +272,25 @@ export default class BaseContext {
     done( failed:boolean, result:any, status:number ):void {
         throw new Error('to be implemented');
     }
+    
 
+    getCookie( cookieName:string ):string {
+        return undefined;
+    }
+
+    /**
+     *
+     */
+    setCookie( cookieName:string, cookieValue:string, path:string, domain:string, maxAge:number, secure:boolean, httpOnly:boolean ) {
+        return;
+    }
+
+    /**
+     *
+     */
+    clearCookie( cookieName:string ) {
+        return;
+    }
 
 }
 

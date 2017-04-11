@@ -1,25 +1,29 @@
-import * as Errors from '../Errors.js';
+const Errors = require('../Errors.js');
 import BaseContext from  './BaseContext';
 import LocalClientContext from  './LocalClientContext';
 import * as Util from 'util';
 import CodePath from '../util/CodePath';
 const Package = require(CodePath.resolve('../package.json'));
 import * as uuid from 'node-uuid';
-import * as Logger from '../Logger';
+import * as Log from '../Logger';
 import ApiServer from '../ApiServer';
-import * as http from 'http';
 import ApiDefinition from '../ApiDefinition';
+import * as Restify from 'restify';
+
+declare module global {
+    const config:any;
+    const bearcat:any;
+}
 
 
 export default class ServerContext extends BaseContext {
 
     public produce:string;
-    public bean:any;
 
     constructor( public server:ApiServer, 
                  apiDefinition:ApiDefinition, 
-                 public req:http.ServerRequest, 
-                 public res:http.ServerResponse, 
+                 public req:Restify.Request, 
+                 public res:Restify.Response, 
                  public final:any ) {
 
         super(apiDefinition);
@@ -39,8 +43,8 @@ export default class ServerContext extends BaseContext {
 
         this.logger.info( {
             ctx: this,
-            req: Logger.config.req ? req : undefined,
-            requestTime: req._time
+            req: Log.config.req ? req : undefined,
+            requestTime: (<any>(req))._time
         }, 'new ServerContext' );
     }
 
@@ -48,7 +52,7 @@ export default class ServerContext extends BaseContext {
      *
      */
     getCookie( cookieName:string ) {
-        return this.req.cookies[cookieName];
+        return (<any>(this.req)).cookies[cookieName];
     }
 
     /**
@@ -62,21 +66,21 @@ export default class ServerContext extends BaseContext {
         if( secure ) opts.secure = secure;
         if( httpOnly ) opts.httpOnly = httpOnly;
 
-        this.res.setCookie( cookieName, cookieValue, opts );
+        (<any>(this.res)).setCookie( cookieName, cookieValue, opts );
     }
 
     /**
      *
      */
     clearCookie( cookieName:string ) {
-        this.res.clearCookie(cookieName);
+        (<any>(this.res)).clearCookie(cookieName);
     }
 
 
     setCORSHeaders() {
         const res = this.res;
 
-        res.setHeader('Access-Control-Allow-Credentials', true);
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
         res.setHeader('Access-Control-Allow-Headers', 'aauth,Content-Type,Content-Length, Authorization, Accept,X-Requested-With');
         res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
         res.setHeader('Access-Control-Allow-Origin', '*');
@@ -128,14 +132,16 @@ export default class ServerContext extends BaseContext {
 
         this.final();
 
-        const logObj = {
+        const logObj:any = {
             ctx: this,
             responseTime: new Date().getTime()
         };
-        logObj.duration = logObj.responseTime - this.req._time;
+        logObj.duration = logObj.responseTime - (<any>(this)).req._time;
 
-        if( isJsonResponse && Logger.config.res ) {
-            if( res._hasBody ) logObj.responseBody = res._data.substring( 0, Logger.config.resBodyMaxSize );
+        if( isJsonResponse && Log.config.res ) {
+            if( (<any>(res))._hasBody ) {
+                logObj.responseBody = (<any>(res))._data.substring( 0, Log.config.resBodyMaxSize );
+            }
             logObj.res = res;
         }
 

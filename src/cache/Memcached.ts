@@ -1,6 +1,6 @@
 const NodeMemcached = require('node_memcached');
-import * as Logger from '../Logger';
-import * as Errors from '../Errors';
+import * as Log from '../Logger';
+const Errors = require('../Errors');
 import BaseContext from '../ctx/BaseContext';
 
 declare module global {
@@ -15,7 +15,7 @@ export default class Memcached {
     public $id = 'Memcached';
     public $init = 'init';
     public $lazy = true;
-    public logger = Logger.create(this);
+    public logger:Log.Logger = Log.create(this);
     public config:any;
     public client:any;
 
@@ -106,7 +106,7 @@ export default class Memcached {
         const client = this.client;
 
         return new Promise(function( resolve, reject ) {
-            client.add( key, value, function( err, res ) { 
+            client.add( key, value, function( err:any, res:any ) { 
                if( err ) {
                     if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key, value );
                     reject(err);
@@ -130,7 +130,7 @@ export default class Memcached {
         }
 
             return new Promise(function( resolve, reject ) {
-                client.set( key, encodedValue, expireSeconds, function( err ) {
+                client.set( key, encodedValue, expireSeconds, function( err:any ) {
                     if( err ) {
                         if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key, encodedValue );
                         reject(err);
@@ -148,7 +148,7 @@ export default class Memcached {
         const me = this;
 
             return new Promise(function( resolve, reject ) {
-                me.client.get( key, function(err, res) {
+                me.client.get( key, function(err:any, res:any) {
                     if( err ) {
                         if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key );
                         reject(err);
@@ -167,7 +167,7 @@ export default class Memcached {
         const client = this.client;
 
             return new Promise(function( resolve, reject ) {
-                client.increment( key, delta, function( err ) {
+                client.increment( key, delta, function( err:any ) {
                     if( err ) {
                         if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key, delta );
                         reject(err);
@@ -185,7 +185,7 @@ export default class Memcached {
         const client = this.client;
 
             return new Promise(function( resolve, reject ) {
-                client.decrement( key, delta, function( err ) {
+                client.decrement( key, delta, function( err:any ) {
                     if( err ) {
                         if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key, delta );
                         reject(err);
@@ -204,7 +204,7 @@ export default class Memcached {
         const me = this;
 
             return new Promise(function( resolve, reject ) {
-                me.client.delete( key, function(err) {
+                me.client.delete( key, function(err:any) {
                     if( err ) {
                         if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key );
                         reject(err);
@@ -230,7 +230,7 @@ export default class Memcached {
 
         
             return new Promise(function( resolve, reject ) {
-                client.set( key, encodedValue, expireSeconds, function( err ) {
+                client.set( key, encodedValue, expireSeconds, function( err:any ) {
                     if( err ) {
                         if( ctx ) ctx.error( Errors.INTERNAL_ERROR, err, key, encodedValue );
                         reject(err);

@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import SequelizerManager from './SequelizerManager';
 import * as Sequelize from 'sequelize';
-import * as Errors from '../Errors';
+const Errors = require('../Errors');
 import Exception from '../Exception';
-import * as Logger from '../Logger';
+import * as Log from '../Logger';
 import SequelizerTx from './SequelizerTx';
 import * as Promise from 'bluebird';// 因为sequelizer使用bluebird的Promise，所以我们这里也必须使用bluebird
 import BaseContext from '../ctx/BaseContext';
@@ -14,10 +14,11 @@ export default class SequelizeDao {
     public $init = 'init';
     public sequelizer:Sequelize.Sequelize;
     public model:Sequelize.Model<any,any>;
-
+    public logger:Log.Logger;
+    
 
     constructor( public modelName:string, public instanceName:string ) {
-        this.logger = Logger.create('Sequelizer.' + (instanceName ? instanceName : '<default>') + '.' + modelName);
+        this.logger = Log.create('Sequelizer.' + (instanceName ? instanceName : '<default>') + '.' + modelName);
     }
 
     /**
@@ -33,7 +34,7 @@ export default class SequelizeDao {
      * 取得主键字段
      */
     idFields() {
-        return this.model.primaryKeyAttributes;
+        return (<any>this.model).primaryKeyAttributes;
     }
 
     /** 绑定事务，如果当前存在事务(在ctx.tx中保存)的话。如果ctx.ignoreTx，那么忽略事务 */
@@ -78,7 +79,7 @@ export default class SequelizeDao {
     list( ctx:BaseContext, idArray:Array<string|number>, options:Sequelize.FindOptions ):Promise<any> {
         options = this._where(options );
         const idField = this.idFields()[0];
-        options.where[idField] = <Sequelize.WhereOptions>{$in: idArray};//TODO: 尚不支持composite primary key
+        (<any>options.where)[idField] = <Sequelize.WhereOptions>{$in: idArray};//TODO: 尚不支持composite primary key
         return this.findAll( ctx, options );
     }
 
@@ -146,7 +147,7 @@ export default class SequelizeDao {
     exists( ctx:BaseContext, id:string|number, options?:Sequelize.FindOptions ) {
         options = this._where(options);
         const idField = this.idFields()[0];
-        options.where[idField] = id;//TODO: 尚不支持composite primary key
+        (<any>options.where)[idField] = id;//TODO: 尚不支持composite primary key
         return this.count( ctx, options ).then( amount => amount > 0 );
     }
 

@@ -1,7 +1,7 @@
 import * as Fs from 'fs';
 import * as Path from 'path';
 import CodePath from '../util/CodePath';
-import * as Logger from '../Logger';
+import * as Log from '../Logger';
 import * as Util from 'util';
 import * as Sequelize from 'sequelize';
 
@@ -17,10 +17,11 @@ export default class BaseSequelizer {
 
     public instance:Sequelize.Sequelize;
     public modelDir:string;
-
+    public logger:Log.Logger;
+    
 
     constructor( public instanceName:string, public config:any ) {
-        this.logger = Logger.create('Sequelizer.' + (instanceName ? instanceName : '<default>') );
+        this.logger = Log.create('Sequelizer.' + (instanceName ? instanceName : '<default>') );
         this.init();
     }
 

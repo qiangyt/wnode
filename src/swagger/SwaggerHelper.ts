@@ -19,6 +19,7 @@ export default class SwaggerHelper {
 
     public $id = 'SwaggerHelper';
     public $Schemas:Schemas = null;
+    public ajv:Ajv.Ajv;
 
 
     buildOptions( ignoreInternalApi = true, ignoreGetSwaggerApi = true, ignoreGetBlueprintApi = true, ignoreNames:string[] = [] ) {
@@ -68,12 +69,12 @@ export default class SwaggerHelper {
     }
 
     definitions( defs:ApiDefinition[], options:any ) {
-        const r = {};
+        const r:any = {};
 
         const schemaMapByName = this.$Schemas.all();
         Object.assign( r, schemaMapByName );
 
-        const ajv = this.ajv = new Ajv({
+        const ajv:Ajv.Ajv = this.ajv = new (<any>Ajv)({
             allErrors: false,
             extendRefs: true,
             verbose: true,
@@ -96,7 +97,7 @@ export default class SwaggerHelper {
                 result.description = '(无)';
             }
 
-            const responseSchema = {};
+            const responseSchema:any = {};
             Object.assign( responseSchema, SwaggerHelper.errorSchema() );
             responseSchema.properties.data = result;
 
@@ -169,7 +170,7 @@ export default class SwaggerHelper {
     /**
      *
      */
-    parameter( p:ApiParameter ) {
+    parameter( p:ApiParameter, options:any ) {
         const r:any = {
             name: p.name,
             in: p.in,
@@ -251,7 +252,7 @@ export default class SwaggerHelper {
     /**
      *
      */
-    generalResponses() {
+    generalResponses(options:any) {
         return {
             '200': {
                 description: SwaggerHelper.errorSchema().properties.code.description,
@@ -265,7 +266,7 @@ export default class SwaggerHelper {
         };
     }
 
-    localResponseSchemaName( def:ApiDefinition ) {
+    localResponseSchemaName( def:ApiDefinition, options:any ) {
         return def.name + 'Response';
     }
 

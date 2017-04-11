@@ -1,11 +1,10 @@
 import BaseContext from  './BaseContext';
-import ServerContext from  './ServerContext';
 import ApiDefinition from '../ApiDefinition';
 
 
 export default class LocalClientContext extends BaseContext {
 
-    constructor( public parent:ServerContext, apiDefinition:ApiDefinition, public cb:any ) {
+    constructor( public parent:BaseContext, apiDefinition:ApiDefinition, public cb:any ) {
         super(apiDefinition);
         
         if( parent ) {

@@ -138,12 +138,12 @@ process.on('SIGUSR2', function () {
     rootLogger.reopenFileStreams();
 });
 
-
+export type Logger = bunyan;
 
 /**
  * 对bunyan日志库的简单封装，以便统一日志设置
  */
-export function create(idOrBean:string|any) {
+export function create(idOrBean:string|any):Logger {
     const id = util.isString(idOrBean) ? idOrBean : idOrBean.$id ;
     return rootLogger.child( {id} );
 }

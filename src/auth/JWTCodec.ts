@@ -34,7 +34,7 @@ export default class JWTCodec extends AuthTokenCodec {
     /**
      * 编码
      */
-    encode( token:AuthToken ) {
+    encode( token:AuthToken ):Promise<string> {
         const cfg = this.config;
         const me = this;
 

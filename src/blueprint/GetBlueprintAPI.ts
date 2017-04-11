@@ -4,7 +4,7 @@ import * as marked from 'marked';
 import ApiServer from '../ApiServer';
 import SwaggerHelper from '../swagger/SwaggerHelper';
 import BlueprintHelper from './BlueprintHelper';
-import BaseContext from '../ctx/BaseContext';
+import ServerContext from '../ctx/ServerContext';
 
 //hint: use MWeb Lite to view blueprint
 
@@ -19,7 +19,7 @@ export default class GetBlueprintAPI {
     public $BlueprintHelper:BlueprintHelper = null;
 
 
-    check( ctx:BaseContext, apiName:string /* required:false */ ) {
+    check( ctx:ServerContext, apiName:string /* required:false */ ) {
         if( apiName ) {
             if( !this.$ApiServer.apiDefinitions[apiName] ) {
                 return ctx.error( Errors.API_NOT_FOUND, apiName );
@@ -29,13 +29,13 @@ export default class GetBlueprintAPI {
         ctx.ok();
     }
 
-    exec( ctx:BaseContext, 
+    exec( ctx:ServerContext, 
         apiName:string /* required:false */, 
         html:boolean /* type:'boolean', required:false, description:'true:输出html' */,
         ignoreInternalApi:boolean /* required:false, type:'boolean', description:'是否忽略内部API，默认为true' */,
         ignoreGetSwaggerApi:boolean /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
         ignoreGetBlueprintApi:boolean /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,
-        ignoreNames:boolean /* required:false, type:'array', items:{type:'string'}, description:'需忽略的API名字，默认无' */ ) {
+        ignoreNames:string[] /* required:false, type:'array', items:{type:'string'}, description:'需忽略的API名字，默认无' */ ) {
         
         const options = this.$SwaggerHelper.buildOptions( ignoreInternalApi, ignoreGetSwaggerApi, ignoreGetBlueprintApi, ignoreNames );
 

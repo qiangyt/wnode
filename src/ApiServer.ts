@@ -1,11 +1,12 @@
 import * as Fs from 'fs';
-import * as Path from 'path';
+const Path = require('path');
 import ApiDefinition from './ApiDefinition';
 import * as Restify from 'restify';
+const RestifyAny = <any>(Restify);
 import ServerContext from './ctx/ServerContext';
 import * as ApiRole from './ApiRole';
-import * as Logger from './Logger';
-import * as Errors from './Errors';
+import * as Log from './Logger';
+const Errors = require('./Errors');
 import CodePath from './util/CodePath';
 const CookieParser = require('restify-cookies');
 import JWTAuth from './auth/JWTAuth';
@@ -27,7 +28,7 @@ export default class ApiServer {
     public $SwaggerHelper:SwaggerHelper = null;
     public $lazy = true;
     public $init = 'init';
-    public logger = Logger.create(this);
+    public logger:Log.Logger = Log.create(this);
     public auth:SimpleAuth;
     public restify:Restify.Server;
     public apiDefinitions:any = {};
@@ -61,10 +62,10 @@ export default class ApiServer {
         const cfg_server = global.config.server;
 
         //TODO: formatters, log, HTTPS, versioning
-        const binaryFormatter = Restify.formatters['application/octet-stream; q=0.2'];
-        const textFormatter = Restify.formatters['text/plain; q=0.3'];
+        const binaryFormatter = RestifyAny.formatters['application/octet-stream; q=0.2'];
+        const textFormatter = RestifyAny.formatters['text/plain; q=0.3'];
 
-        const restify = this.restify = Restify.createServer( {
+        const restify:Restify.Server = this.restify = RestifyAny.createServer( {
             name: cfg_server.name,
             acceptable: 'application/json',
             formatters: {
@@ -89,7 +90,7 @@ export default class ApiServer {
 
         this.restify.on('MethodNotAllowed', function(req:Restify.Request, res:Restify.Response) {
             if (req.method.toLowerCase() === 'options') {
-                if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
+                //if (res.methods.indexOf('OPTIONS') === -1) res.methods.push('OPTIONS');
 
                 if( global.config.server.cors ) {
                     res.header('Access-Control-Allow-Credentials', true);
@@ -142,7 +143,7 @@ export default class ApiServer {
 
     buildInternalApiDefinition( relative:string ) {
         const anodeSrcDir = Path.dirname(module.filename);
-        this.buildApiDefinition(Path.join( anodeSrcDir, relative ));
+        this.buildApiDefinition(anodeSrcDir, relative);
     }
 
 
@@ -160,7 +161,7 @@ export default class ApiServer {
             const def = this.apiDefinitions[apiName];
             const spec = def.spec;
 
-            const handler = function( req, res, next ) {
+            const handler = ( req:Restify.Request, res:Restify.Response, next:Function ) => {
                 const ctx = new ServerContext( this, def, req, res, next );
 
                 if( def.transactional ) {
@@ -179,7 +180,7 @@ export default class ApiServer {
                 } ).catch( function( error:any ) {
                     ctx.error( error );
                 } );
-            }.bind(this);
+            };
 
             this.expose( def, path, handler );
 
@@ -276,7 +277,7 @@ export default class ApiServer {
     }
 
 
-    buildApiDefinitions( apiDir:string, dir:string ) {
+    buildApiDefinitions( apiDir:string, dir?:string ) {
         const relative = dir.substring(apiDir.length);
          
         /*eslint no-sync: "off"*/

@@ -1,4 +1,4 @@
-import * as Errors from  './Errors';
+const Errors = require('./Errors');
 import ServerContext from './ctx/ServerContext';
 
 /*

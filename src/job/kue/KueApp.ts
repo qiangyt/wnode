@@ -2,7 +2,7 @@ import * as Kue from 'kue';
 import * as Cluster from 'cluster';
 const BasicAuth = require('basic-auth-connect');
 import * as Express from 'express';
-import * as Logger from '../../Logger';
+import * as Log from '../../Logger';
 
 declare module global {
     const config:any;
@@ -13,10 +13,7 @@ export default class KueApp {
 
     public inited = false;
     public static instance = new KueApp();
-
-    constructor() {
-        this.logger = Logger.create('KueApp');
-    }
+    public logger:Log.Logger = Log.create('KueApp');
 
 
     /* eslint no-process-env:'off' */

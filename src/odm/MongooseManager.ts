@@ -1,5 +1,4 @@
 import * as _ from 'lodash';
-import * as Mongoose from 'mongoose';
 import MongooseInstance from './MongooseInstance';
 
 declare module global {
