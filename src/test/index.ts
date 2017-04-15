@@ -1,7 +1,4 @@
-export default {
+export * from './DaoTestSuite';
+export * from './TestContext';
+export * from './TestSuite';
 
-    DaoTestSuite: require('./DaoTestSuite'),
-    TestContext:  require('./TestContext'),
-    TestSuite:    require('./TestSuite')
-
-};

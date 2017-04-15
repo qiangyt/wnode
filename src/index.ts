@@ -6,11 +6,10 @@ const Path_parse_old = Path.parse;
     return r;
 }
 
-import Internal from './Internal';
+import {registerAsBean, initBeans} from './Internal';
 import Config from './Config';
 import CodePath from './util/CodePath';
 const Bearcat = require('bearcat');
-const requireAsBean = Internal.requireAsBean;
 import SwaggerHelper from './swagger/SwaggerHelper';
 import Schemas from './swagger/Schemas';
 
@@ -25,7 +24,7 @@ function startApp( appJsonPath:string, startCallback:Function ) {
     const bearcat = global.bearcat = require('bearcat');
     bearcat.createApp([CodePath.resolve(appJsonPath)]);
 
-    Internal.initBeans();
+    initBeans();
 
     global.bearcat.start(function() {
         global.bearcat.getBean('ApiServer').start(true);
@@ -68,7 +67,7 @@ function launchMocha(before:Function, done:Function, srcDir = '../../../../src',
     global.bearcat = Bearcat;
     Bearcat.createApp([CodePath.resolve(appJsonPath)]);
 
-    Internal.initBeans();
+    initBeans();
 
     if( before ) before();
 
@@ -80,49 +79,71 @@ function launchMocha(before:Function, done:Function, srcDir = '../../../../src',
 }
 
 
+import ApiDefinition from './ApiDefinition';
+import ApiParameter from './ApiParameter';
+import * as ApiRole from './ApiRole';
+import ApiServer from './ApiServer';
+import * as auth from './Auth';
+import * as blueprint from './blueprint';
+import * as cache from './cache';
+import * as client from './client';
+import * as ctx from './ctx';
+import * as dao from './dao';
+import * as Errors from './Errors';
+import ErrorType from './ErrorType';
+import Exception from './Exception';
+const HackBearcat = require('./HackBearcat');
+import * as job from './job';
+import * as Logger from './Logger';
+import * as mysql from './mysql';
+import * as odm from './odm';
+import * as orm from './orm';
+import * as search from './search';
+import * as swagger from './swagger';
+import * as test from './test';
+import * as util from './util';
+
+
 export default {
 
-    requireAsBean:  requireAsBean,
-
-    ApiDefinition:  require('./ApiDefinition'),
-    ApiParameter:   require('./ApiParameter'),
-    ApiRole:        require('./ApiRole'),
-    ApiServer:      requireAsBean(module, './ApiServer'),
-    auth:           require('./auth'),
+    registerAsBean,
+    ApiDefinition,
+    ApiParameter,
+    ApiRole,
+    ApiServer,
+    auth,
 
     bean: function bean(beanName:string) {
         global.bearcat.getBean(beanName);
     },
-    blueprint:      require('./blueprint'),
-    
-    cache:          require('./cache'),
-    client:         require('./client'),
-    Config:         Config,
-    ctx:            require('./ctx'),
-    
-    dao:            require('./dao'),
-    
-    Errors:         require('./Errors'),
-    ErrorType:      require('./ErrorType'),
-    Exception:      require('./Exception'),
-    
-    graphql:        require('./graphql'),
 
-    HackBearcat:    require('./HackBearcat'),
-
-    job:            require('./job'),
+    blueprint,
     
-    Logger:         require('./Logger'),
+    cache,
+    client,
+    Config,
+    ctx,
+    
+    dao,
+    
+    Errors,
+    ErrorType,
+    Exception,
+
+    HackBearcat,
+
+    job,
+    
+    Logger,
 
     mocha:          launchMocha,
 
     module:         module,
 
-    mysql:          require('./mysql'),
+    mysql,
     
-    odm:            require('./odm'),
-    orm:            require('./orm'),
-    plugin:         require('./plugin'),
+    odm,
+    orm,
     
     schemaFromSequelizer: function buildSchemaFromSequelizer( modelName:string, instanceName:string ) {
         return Schemas.buildSchemaFromSequelizer( modelName, instanceName );
@@ -132,18 +153,19 @@ export default {
         return SwaggerHelper.schemaRef(name);
     },
     
-    search:         require('./search'),
+    search,
     
     start: function start( configDir:string, appJsonPath:string, configCallback:Function, startCallback:Function ) {
         startFunc( startApp, configDir, appJsonPath, configCallback, startCallback );
     },
     
-    swagger: require('./swagger'),
+    swagger,
     
-    test: require('./test'),
+    test,
 
-    util:           require('./util')
+    util
 
 };
 
 
+registerAsBean(ApiServer);

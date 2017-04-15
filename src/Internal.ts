@@ -7,16 +7,17 @@ declare module global {
 
 const beansToRegister:any[] = [];
 
-export default {
+export function requireAsBean( mod:NodeModule, name:string ) {
+    const r = mod.require(name);
+    beansToRegister.push( r );
+    return r;
+}
 
-    requireAsBean: function requireAsBean( mod:any, name:string ) {
-        const r = mod.require(name);
-        beansToRegister.push( r );
-        return r;
-    },
 
-    initBeans: function initBeans() {
-        beansToRegister.forEach( bean => global.bearcat.module(bean) );
-    }
+export function initBeans() {
+    beansToRegister.forEach( bean => global.bearcat.module(bean) );
+}
 
-};
+export function registerAsBean( bean:any ) {
+    beansToRegister.push( bean );
+}

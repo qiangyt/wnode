@@ -1,8 +1,11 @@
-const requireAsBean = require('../Internal').requireAsBean;
+import {registerAsBean} from '../Internal';
 
+import AliOpenSearch from './AliOpenSearch';
 
 export default {
 
-    AliOpenSearch:          requireAsBean(module, './AliOpenSearch')
+    AliOpenSearch
 
 };
+
+registerAsBean(AliOpenSearch);

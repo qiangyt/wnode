@@ -1,8 +1,7 @@
-const requireAsBean = require('../Internal').requireAsBean;
+import {registerAsBean} from '../Internal';
 
-export default {
+export * from './MySqlConnection';
+ 
+import MySqlPool from './MySqlPool';
 
-    MySqlConnection:    require('./MySqlConnection'),
-    MySqlPool:          requireAsBean(module, './MySqlPool')
-
-};
+registerAsBean(MySqlPool);

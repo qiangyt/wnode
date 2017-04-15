@@ -1,8 +1,12 @@
+import BaseContext from './BaseContext';
+import InternalContext from './InternalContext';
+import LocalClientContext from './LocalClientContext';
+import ServerContext from './ServerContext';
+
+
 export default {
-
-    BaseContext:        require('./BaseContext'),
-    InternalContext:    require('./InternalContext'),
-    LocalClientContext: require('./LocalClientContext'),
-    ServerContext:      require('./ServerContext')
-
+    BaseContext,
+    InternalContext,
+    LocalClientContext,
+    ServerContext
 };

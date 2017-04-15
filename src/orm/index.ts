@@ -1,9 +1,6 @@
-export default {
+export * from './BaseSequelizer';
+export * from './MySqlDao';
+export * from './MySqlSequelizer';
+export * from './SequelizeDao';
+export * from './SequelizerManager';
 
-    BaseSequelizer:    require('./BaseSequelizer'),
-    MySqlDao:          require('./MySqlDao'),
-    MySqlSequelizer:   require('./MySqlSequelizer'),
-    SequelizeDao:      require('./SequelizeDao'),
-    SequelizerManager: require('./SequelizerManager')
-
-};

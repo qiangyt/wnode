@@ -1,8 +1,12 @@
-const requireAsBean = require('../Internal').requireAsBean;
+//import {requireAsBean} from '../Internal';
+import {registerAsBean} from '../Internal';
 
+import BlueprintHelper from './BlueprintHelper';
 
 export default {
 
-    BlueprintHelper:  requireAsBean(module, './BlueprintHelper')
+    BlueprintHelper
 
 };
+
+registerAsBean(BlueprintHelper);

@@ -14,6 +14,9 @@ gulp.task("clean", function() {
 gulp.task("build", function() {
     var tsResult = tsProject.src().pipe(tsProject());
 
+    gulp.src(['./src/**/*.js', './src/**/*.json'])
+        .pipe(gulp.dest('dist'));
+
     return merge2([ // Merge the two output streams, so this task is finished when the IO of both operations is done.
         tsResult.dts.pipe(gulp.dest('dist')),
         tsResult.js.pipe(gulp.dest('dist'))

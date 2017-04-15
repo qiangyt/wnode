@@ -1,9 +1,16 @@
-const requireAsBean = require('../Internal').requireAsBean;
+import {registerAsBean} from '../Internal';
+
+import Schemas from './Schemas';
+import SwaggerHelper from './SwaggerHelper';
 
 
 export default {
 
-    Schemas:        requireAsBean(module, './Schemas'),
-    SwaggerHelper:  requireAsBean(module, './SwaggerHelper')
+    Schemas,
+    SwaggerHelper
 
 };
+
+
+registerAsBean(Schemas);
+registerAsBean(SwaggerHelper);

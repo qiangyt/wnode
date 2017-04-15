@@ -1,8 +1,11 @@
-const requireAsBean = require('../Internal').requireAsBean;
+import {registerAsBean} from '../Internal';
 
+import MsClient from './MsClient';
 
 export default {
 
-    MsClient: requireAsBean(module, './MsClient')
+    MsClient
 
 };
+
+registerAsBean(MsClient);

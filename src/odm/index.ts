@@ -1,8 +1,4 @@
+export * from './MongooseDao';
+export * from './MongooseInstance';
+export * from './MongooseManager';
 
-export default {
-
-    MongooseDao:        require('./MongooseDao'),
-    MongooseInstance:   require('./MongooseInstance'),
-    MongooseManager:    require('./MongooseManager')
-
-};

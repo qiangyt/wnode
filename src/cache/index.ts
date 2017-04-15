@@ -1,12 +1,20 @@
-const requireAsBean = require('../Internal').requireAsBean;
+//import {requireAsBean} from '../Internal';
+import {registerAsBean} from '../Internal';
 
+
+import CacheTemplate from './CacheTemplate';
+import RedisInstance from './RedisInstance';
+import RedisManager from './RedisManager';
+import AliMemcached from './AliMemcached';
+import Memcached from './Memcached';
 
 export default {
-
-    AliMemcached: requireAsBean(module, './AliMemcached'),
-    CacheTemplate: require('./CacheTemplate'),
-    Memcached: requireAsBean(module, './Memcached'),
-    RedisInstance: require('./RedisInstance'),
-    RedisManager: require('./RedisManager')
-
+    CacheTemplate,
+    RedisInstance,
+    RedisManager,
+    AliMemcached,
+    Memcached
 };
+
+registerAsBean(AliMemcached);
+registerAsBean(Memcached);

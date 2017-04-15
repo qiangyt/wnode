@@ -1,17 +1,31 @@
-const requireAsBean = require('../Internal').requireAsBean;
+import {registerAsBean} from '../Internal';
 
+import Aes128 from './Aes128';
+import Crypt3Des from './Crypt3Des';
+
+const AjvPatch = './AjvPatch';
+import Base64 from './Base64';
+import CodePath from './CodePath';
+const Cookie = './Cookie';
+import Hmac from './Hmac';
+import RequestHelper from './RequestHelper';
+import PasswordHelper from './PasswordHelper';
+import Time from './Time';
 
 export default {
 
-    Aes128:     requireAsBean(module, './Aes128'),
-    AjvPatch:   require('./AjvPatch'),
-    Base64:     require('./Base64'),
-    CodePath:   require('./CodePath'),
-    Cookie:     require('./Cookie'),
-    Crypt3Des:  requireAsBean(module, './Crypt3Des'),
-    Hmac:       require('./Hmac'),
-    RequestHelper:  require('./RequestHelper'),
-    PasswordHelper: require('./PasswordHelper'),
-    Time:       require('./Time')
+    Aes128,
+    Crypt3Des,
+    AjvPatch,
+    Base64,
+    CodePath,
+    Cookie,
+    Hmac,
+    RequestHelper,
+    PasswordHelper,
+    Time
 
 };
+
+registerAsBean(Aes128);
+registerAsBean(Crypt3Des);

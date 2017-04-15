@@ -1,6 +1,3 @@
-export default {
+export * from './BatchQueue';
+export * from './KueApp';
 
-    BatchQueue: require('./BatchQueue'),
-    KueApp:     require('./KueApp')
-
-};

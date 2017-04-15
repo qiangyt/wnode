@@ -1,8 +1,13 @@
-const requireAsBean = require('../Internal').requireAsBean;
+import {registerAsBean} from '../Internal';
+
+import SqlBuilder from './SqlBuilder';
 
 
 export default {
 
-    SqlBuilder: requireAsBean(module, './SqlBuilder')
+    SqlBuilder
 
 };
+
+
+registerAsBean(SqlBuilder);
