@@ -1,6 +1,14 @@
-export * from './BaseSequelizer';
-export * from './MySqlDao';
-export * from './MySqlSequelizer';
-export * from './SequelizeDao';
-export * from './SequelizerManager';
+import BaseSequelizer from './BaseSequelizer';
+import MySqlDao from './MySqlDao';
+import MySqlSequelizer from './MySqlSequelizer';
+import SequelizeDao from './SequelizeDao';
+import SequelizerManager from './SequelizerManager';
+
+export {
+    BaseSequelizer,
+    MySqlDao,
+    MySqlSequelizer,
+    SequelizeDao,
+    SequelizerManager
+};
 

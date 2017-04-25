@@ -8,7 +8,7 @@ import RedisManager from './RedisManager';
 import AliMemcached from './AliMemcached';
 import Memcached from './Memcached';
 
-export default {
+export {
     CacheTemplate,
     RedisInstance,
     RedisManager,

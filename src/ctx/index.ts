@@ -4,7 +4,7 @@ import LocalClientContext from './LocalClientContext';
 import ServerContext from './ServerContext';
 
 
-export default {
+export {
     BaseContext,
     InternalContext,
     LocalClientContext,

@@ -104,7 +104,7 @@ import * as test from './test';
 import * as util from './util';
 
 
-export default {
+export = {
 
     registerAsBean,
     ApiDefinition,

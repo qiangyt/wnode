@@ -1,7 +1,12 @@
 import {registerAsBean} from '../Internal';
 
-export * from './MySqlConnection';
- 
+import MySqlConnection from './MySqlConnection'; 
 import MySqlPool from './MySqlPool';
+
+
+export {
+    MySqlConnection,
+    MySqlPool
+};
 
 registerAsBean(MySqlPool);

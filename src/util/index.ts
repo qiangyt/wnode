@@ -12,7 +12,7 @@ import RequestHelper from './RequestHelper';
 import PasswordHelper from './PasswordHelper';
 import Time from './Time';
 
-export default {
+export {
 
     Aes128,
     Crypt3Des,

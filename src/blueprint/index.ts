@@ -3,7 +3,7 @@ import {registerAsBean} from '../Internal';
 
 import BlueprintHelper from './BlueprintHelper';
 
-export default {
+export {
 
     BlueprintHelper
 

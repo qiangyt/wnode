@@ -4,7 +4,7 @@ import Schemas from './Schemas';
 import SwaggerHelper from './SwaggerHelper';
 
 
-export default {
+export {
 
     Schemas,
     SwaggerHelper

@@ -2,7 +2,7 @@ import {registerAsBean} from '../Internal';
 
 import AliOpenSearch from './AliOpenSearch';
 
-export default {
+export {
 
     AliOpenSearch
 

@@ -9,7 +9,7 @@ import JWToken from './JWToken';
 import SimpleAuth from './SimpleAuth';
 
 
-export default {
+export {
     AuthToken,
     AuthTokenCodec,
     JWTAuth,

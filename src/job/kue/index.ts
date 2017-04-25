@@ -1,3 +1,7 @@
-export * from './BatchQueue';
-export * from './KueApp';
+import BatchQueue from './BatchQueue';
+import KueApp from './KueApp';
 
+export {
+    BatchQueue,
+    KueApp
+};

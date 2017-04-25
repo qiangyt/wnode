@@ -11,22 +11,22 @@ module.exports = roleMapByName;
 export function hasName( name:string ):boolean {
     return roleMapByName[name] !== undefined;
 }
+module.exports.hasName = hasName;
 
-
-export function hasValue( value:number ):boolean {
+export const hasValue = function( value:number ):boolean {
     return roleMapByValue[value] !== undefined;
 }
-
+module.exports.hasValue = hasValue;
 
 export function byName( name:string ):number {
     return roleMapByName[name];
 }
-
+module.exports.byName = byName;
 
 export function byValue( value:number ):string {
     return roleMapByValue[value];
 }
-
+module.exports.byValue = byValue;
 
 export function byValueArray( values:number[] ):string[] {
     const names = [];
@@ -35,18 +35,19 @@ export function byValueArray( values:number[] ):string[] {
     }
     return names;
 }
-
+module.exports.byValueArray = byValueArray;
 
 export function getRegularRole( value:number ):number {
     /* eslint no-bitwise:'off' */
     return value & REGULAR_MASK; 
 };
-
+module.exports.getRegularRole = getRegularRole;
 
 export function isInternal( value:number ):boolean {
     /* eslint no-bitwise:'off' */
     return ((value & INTERNAL_MASK) === INTERNAL_MASK);
 };
+module.exports.isInternal = isInternal;
 
 /* eslint complexity:['error',11] */
 export function add( name:string, value:number ):number {
