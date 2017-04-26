@@ -35,7 +35,6 @@ function startApp( appJsonPath:string, startCallback:Function ) {
 
 
 function startFunc( starter:Function, configDir = '../config', appJsonPath = './app.json', configCallback?:Function, startCallback?:Function ) {
-    
     module.exports.config = global.config = new Config( CodePath.resolve(configDir) );
 
     if( configCallback ) {
@@ -51,16 +50,15 @@ function startFunc( starter:Function, configDir = '../config', appJsonPath = './
 
 let _mochaLaunched = false;
 
-function launchMocha(before:Function, done:Function, srcDir = '../../../../src', configDir = '../config', appJsonPath = './app.json') {
+function launchMocha(before:Function, done:Function, srcDir = '../../../src', configDir = '../config', appJsonPath = './app.json') {
     if( _mochaLaunched ) {
         if( done ) done();
         return;
     }
 
     _mochaLaunched = true;
-
-    CodePath.baseDir = Path.join( Path.parse(module.filename).dir, srcDir );
-
+    
+    CodePath.baseDir = Path.join(Path.parse(require.main.filename).dir, srcDir);
     global.config = new Config( CodePath.resolve(configDir) );
 
     // make bearcat global, for `bearcat.module()`
