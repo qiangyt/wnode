@@ -6,14 +6,15 @@ import BaseContext from './ctx/BaseContext';
  */
 export default class Exception extends Error {
 
-    public data:any[];
+    public data:any;
     public args:any[];
     public ctx:BaseContext;
     
-    constructor( ...data:any[] ) {
+    constructor( data:any, ...args:any[] ) {
         super('');
         this.data = data;
-        this.args = ( arguments.length > 1 ) ? Array.from(arguments).slice(1) : [];
+        //this.args = ( arguments.length > 1 ) ? Array.from(arguments).slice(1) : [];
+        this.args = args || [];
     }
 }
 

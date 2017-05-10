@@ -34,20 +34,20 @@ export default class Config {
 
         const jsonEnvPath = Path.join( dir, env + '.json' );
         const jsEnvPath = Path.join( dir, env + '.js' );
-        let envPath = jsonEnvPath;
+        let envPath;
 
         try {
             /*eslint no-sync: "off"*/
-            Fs.statSync(envPath);
+            Fs.statSync(jsonEnvPath);
+            envPath = jsonEnvPath;
         } catch( e ) {
-            logger.info( {path: envPath}, 'no env-specific configuration file' );
+            logger.info( {path: jsonEnvPath}, 'no env-specific configuration file' );
 
-            envPath = jsEnvPath;
             try {
-                Fs.statSync(envPath);
+                Fs.statSync(jsEnvPath);
+                envPath = jsEnvPath;
             } catch( err ) {
-                logger.info( {path: envPath}, 'no env-specific configuration file' );
-                envPath = null;
+                logger.info( {path: jsEnvPath}, 'no env-specific configuration file' );
             }
         }
 

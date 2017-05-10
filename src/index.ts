@@ -59,6 +59,7 @@ function launchMocha(before:Function, done:Function, srcDir = '../../../src', co
     _mochaLaunched = true;
     
     CodePath.baseDir = Path.join(Path.parse(require.main.filename).dir, srcDir);
+    
     global.config = new Config( CodePath.resolve(configDir) );
 
     // make bearcat global, for `bearcat.module()`

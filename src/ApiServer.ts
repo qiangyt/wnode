@@ -11,6 +11,7 @@ import CodePath from './util/CodePath';
 const CookieParser = require('restify-cookies');
 import JWTAuth from './auth/JWTAuth';
 import SwaggerHelper from './swagger/SwaggerHelper';
+import BlueprintHelper from './blueprint/BlueprintHelper';
 import SimpleAuth from './auth/SimpleAuth';
 
 declare let StaticSupport:any;
@@ -240,7 +241,9 @@ export default class ApiServer {
             ignoreGetSwaggerApi: true,
             ignoreNames: <any[]>[]
         };
-        global.bearcat.getBean('BlueprintHelper').output( this, null, options, function(err:any/*, blueprint*/) {
+
+        const blueprint:BlueprintHelper = global.bearcat.getBean('BlueprintHelper');
+        blueprint.output( this, null, options, function(err:any/*, blueprint*/) {
             if( err ) {
                 logger.fatal( err, 'validation failure by blueprint' );
             } else {

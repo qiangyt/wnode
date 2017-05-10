@@ -3,12 +3,13 @@ import BaseContext from  './BaseContext';
 import LocalClientContext from  './LocalClientContext';
 import * as Util from 'util';
 import CodePath from '../util/CodePath';
-const Package = require(CodePath.resolve('../package.json'));
 import * as uuid from 'node-uuid';
 import * as Log from '../Logger';
 import ApiServer from '../ApiServer';
 import ApiDefinition from '../ApiDefinition';
 import * as Restify from 'restify';
+
+let _Package:any;
 
 declare module global {
     const config:any;
@@ -97,6 +98,11 @@ export default class ServerContext extends BaseContext {
         return 'application/json';
     }
 
+    Package() {
+        if( _Package ) _Package = require(CodePath.resolve('../package.json'));
+        return _Package;
+    }
+
     /**
      *
      */
@@ -107,7 +113,7 @@ export default class ServerContext extends BaseContext {
 
         const res = this.res;
 
-        res.setHeader( '$version', Package.version );
+        res.setHeader( '$version', this.Package().version );
 
         if( global.config.server.cors ) {
             this.setCORSHeaders();

@@ -1,7 +1,6 @@
 import * as _ from 'lodash';
 import SupportedMIME from '../SupportedMIME';
 import CodePath from '../util/CodePath';
-const Package = require(CodePath.resolve('../package.json'));
 import * as ApiRole from '../ApiRole';
 import * as Ajv from 'ajv';
 import Schemas from './Schemas';
@@ -152,12 +151,15 @@ export default class SwaggerHelper {
      *
      */
     info(options:any) {
+
+        const pkg = require(CodePath.resolve('../package.json'));
+
         const r = {
             title: global.config.server.name,
-            description: Package.description,
-            version: Package.version,
+            description: pkg.description,
+            version: pkg.version,
             contact: {
-                email: Package.author
+                email: pkg.author
             }
         };
 
