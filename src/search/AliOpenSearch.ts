@@ -1,4 +1,4 @@
-const AliyunSdk = require('@wxcount/aliyun-sdk'); 
+const AliyunSdk = require('waliyun-sdk'); 
 import * as Log from '../Logger';
 const Errors = require('../Errors');
 import BaseContext from '../ctx/BaseContext';

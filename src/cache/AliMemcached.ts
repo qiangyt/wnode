@@ -1,4 +1,4 @@
-const AliyunSdk = require('@wxcount/aliyun-sdk');
+const AliyunSdk = require('waliyun-sdk');
 import Memcached from './Memcached';
 
 declare module global {

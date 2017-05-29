@@ -1,6 +1,13 @@
 /.DS_Store
+/.git
+/.vscode
 /build
 /gen
 /logs
 /npm-debug.log*
+/src
+/.gitignore
+/.npmignore
+/gulpfile.js
+/tsconfig.json
 
