@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as bunyan from 'bunyan';
 import Time from './util/Time';
 import * as _ from 'lodash';
-import BaseContext from './ctx/BaseContext';
+import Context from './ctx/Context';
 
 
 const launchTime = new Date();
@@ -64,12 +64,12 @@ const pid = process.pid; // pid is used to append to log file path to survive cl
 const logFilePrefix = cfg.name + '_' + Time.formatDate(launchTime) + (isLocal ? '': ('_' + pid));
 
 
-function contextSerializer(ctx:BaseContext) {
+function contextSerializer(ctx:Context) {
     const r = {
         apiName: ctx.apiDefinition ? ctx.apiDefinition.name : undefined,
-        requestId: ctx.requestId,
-        correlationId: ctx.correlationId,
-        previousRequestId: ctx.previousRequestId,
+        spanId: ctx.spanId,
+        traceId: ctx.traceId,
+        previousSpanId: ctx.previousSpanId,
         txId:<any>(undefined),
         isTxOwner:<boolean>(undefined)
     };

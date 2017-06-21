@@ -1,6 +1,6 @@
 import AuthToken from './AuthToken';
 import Aes128 from '../util/Aes128';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 
 export default class AuthTokenCodec {
@@ -30,7 +30,7 @@ export default class AuthTokenCodec {
     /**
      * 解码
      */
-    decode( ctx:BaseContext, tokenText:string ) {
+    decode( ctx:Context, tokenText:string ) {
         const me = this;
         return new Promise( function( resolve ) {
             const json = me.$Aes128.decrypt(tokenText, 'base64');

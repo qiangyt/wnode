@@ -4,7 +4,7 @@ import * as Mongoose from 'mongoose';
 const Errors = require('../Errors');
 import Exception from '../Exception';
 import * as Log from '../Logger';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 
 export default class MongooseDao {
@@ -50,12 +50,12 @@ export default class MongooseDao {
     /** 
      * 用id获取document，返回Promise<document> 
      */
-    get( ctx:BaseContext, id:string|number ):Promise<Object> {
+    get( ctx:Context, id:string|number ):Promise<Object> {
         return this.model.findById( id, undefined ).exec();
     }
 
     /** 用id获取document，返回Promise<document>。如果找不到document，则报错 */
-    load( ctx:BaseContext, id:string|number ):Promise<Object> {
+    load( ctx:Context, id:string|number ):Promise<Object> {
         return this.get( ctx, id )
         .then( document => {
             if( !document ) throw new Exception( Errors.ENTITY_NOT_FOUND, this.schemaName, id );
@@ -64,14 +64,14 @@ export default class MongooseDao {
     }
 
     /** 查询表中是否至少有一行，返回Promise<boolean> */
-    hasOne( ctx:BaseContext ):Promise<boolean> {
+    hasOne( ctx:Context ):Promise<boolean> {
         /* eslint no-unused-vars: 'off' */
         return this.model.findOne( null, '_id' ).exec()
         .then(document => (undefined !== document && null !== document));
     }
 
     /** 用id数组获取对应的数据对象，返回Promise<document[]> */
-    list( ctx:BaseContext, idArray:string[]|number[] ):Promise<Object[]> {
+    list( ctx:Context, idArray:string[]|number[] ):Promise<Object[]> {
         return this.map( ctx, idArray )
         .then( (documentMap:any) => {
             //return idArray.map( (id:string|number) => documentMap[id] );
@@ -86,7 +86,7 @@ export default class MongooseDao {
 
 
     /** 用id数组获取对应的数据对象，返回Promise<{id->document}> */
-    map( ctx:BaseContext, idArray:string[]|number[] ):Promise<Object> {
+    map( ctx:Context, idArray:string[]|number[] ):Promise<Object> {
         return this.model.find( {_id: {$in: idArray}}, undefined ).exec()
             .then( documentArray => {
                 const r:any = {};
@@ -102,7 +102,7 @@ export default class MongooseDao {
     /**
      * 分页获取所有的数据
      */
-    listAll( ctx:BaseContext, offset:number, limit:number, total:boolean, sorter:string|Object ) {
+    listAll( ctx:Context, offset:number, limit:number, total:boolean, sorter:string|Object ) {
         const criteria = {};
         const selectIdOnly = false;
         return total ? 
@@ -114,7 +114,7 @@ export default class MongooseDao {
     /**
      * 分页获取所有的数据
      */
-    queryId( ctx:BaseContext, offset:number, limit:number, total:boolean, sorter:string|Object, criteria:Object ) {
+    queryId( ctx:Context, offset:number, limit:number, total:boolean, sorter:string|Object, criteria:Object ) {
         criteria = criteria || {};
         const selectIdOnly = true;
         return total ? 
@@ -123,17 +123,17 @@ export default class MongooseDao {
     }
 
     /** 判断指定document是否存在，返回Promise<boolean> */
-    exists( ctx:BaseContext, id:string|number ):Promise<boolean> {
+    exists( ctx:Context, id:string|number ):Promise<boolean> {
         return this.get( ctx, id ).then( amount => amount > 0 );
     }
 
     /** 计数，返回Promise<integer> */
-    /* protected */_count( ctx:BaseContext, criteria:Object ) {
+    /* protected */_count( ctx:Context, criteria:Object ) {
         return this.model.count(criteria).exec();
     }
 
     /** 分页查询，返回Promise<document[] */
-    /* protected */_page( ctx:BaseContext, criteria:Object, offset:number, limit:number, selectIdOnly:boolean, sorter:string|Object ):Promise<Object[]> {
+    /* protected */_page( ctx:Context, criteria:Object, offset:number, limit:number, selectIdOnly:boolean, sorter:string|Object ):Promise<Object[]> {
         const projection = selectIdOnly ? {id:1} : undefined;
         
         let r = this.model.find( criteria, projection ).skip(offset).limit(limit);
@@ -152,7 +152,7 @@ export default class MongooseDao {
     }
 
     /** 分页查询并返回总行数，返回Promise<{rows:document[], count:integer}> */
-    /* protected */_pageAndCount( ctx:BaseContext, criteria:Object, offset:number, limit:number, selectIdOnly:boolean, sorter:string|Object ) {
+    /* protected */_pageAndCount( ctx:Context, criteria:Object, offset:number, limit:number, selectIdOnly:boolean, sorter:string|Object ) {
         //TODO: mongodb有没有提供单次命令？
         const countP = this._count( ctx, criteria );
         const pageP = this._page( ctx, criteria, offset, limit, selectIdOnly, sorter );
@@ -162,12 +162,12 @@ export default class MongooseDao {
         });
     }
 
-    update( ctx:BaseContext, document:any ):Promise<Object> {
+    update( ctx:Context, document:any ):Promise<Object> {
         return document.update();
     }
 
     /** 用id取得一个document，然后更新这个document，返回Promise<document> */
-    updateById( ctx:BaseContext, id:string|number, document:Object ):Promise<Object> {
+    updateById( ctx:Context, id:string|number, document:Object ):Promise<Object> {
         const options = {
             new: true,
             upsert: false
@@ -180,15 +180,15 @@ export default class MongooseDao {
     }
 
     /** 创建一个document，返回Promise<document> */
-    insert( ctx:BaseContext, document:Object ):Promise<Object> {
+    insert( ctx:Context, document:Object ):Promise<Object> {
         return this._newDocument(document).save();
     }
 
-    remove( ctx:BaseContext, document:any ):Promise<Object> {
+    remove( ctx:Context, document:any ):Promise<Object> {
         return document.remove();
     }
 
-    removeById( ctx:BaseContext, id:string|number ):Promise<Object> {
+    removeById( ctx:Context, id:string|number ):Promise<Object> {
         return this.model.findByIdAndRemove(id).exec()
             .then( document => {
                 if( !document ) throw new Exception( Errors.ENTITY_NOT_FOUND, this.schemaName, id );

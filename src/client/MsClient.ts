@@ -6,7 +6,7 @@ import AuthToken from '../auth/AuthToken';
 import JWTAuth from '../auth/JWTAuth';
 import ApiServer from '../ApiServer';
 import AuthTokenCodec from '../auth/AuthTokenCodec';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
@@ -52,7 +52,7 @@ export default class MsClient {
         }
     }
 
-    call( ctx:BaseContext, serviceName:string, apiName:string, parameters:any ) {
+    call( ctx:Context, serviceName:string, apiName:string, parameters:any ) {
             const me = this;
             return new Promise( function( resolve, reject ) {
                 me._call( ctx, serviceName, apiName, parameters, function( err:any, result:any ) {
@@ -62,7 +62,7 @@ export default class MsClient {
             } );
     }
 
-    _call( ctx:BaseContext, serviceName:string, apiName:string, parameters:any, callback:Function ) {
+    _call( ctx:Context, serviceName:string, apiName:string, parameters:any, callback:Function ) {
         let s:any;
         let isLocal:boolean;
         if( !serviceName ) isLocal = true;
@@ -90,8 +90,8 @@ export default class MsClient {
         } else {
             this.resolveInternalAuthToken(ctx).then( function(internalAuthToken) {
                 parameters.aauth = internalAuthToken;
-                parameters.cid = ctx.correlationId;//correlation id
-                parameters.prid = ctx.requestId;//previous request id
+                parameters.tid = ctx.traceId;
+                parameters.psid = ctx.spanId;//previous span id
 
                 let options:any = {
                     path: '/' + serviceName + '/' + apiName
@@ -112,7 +112,7 @@ export default class MsClient {
     /**
      *
      */
-    resolveInternalAuthToken( ctx:BaseContext ) {
+    resolveInternalAuthToken( ctx:Context ) {
         if( !ctx.$authInternal ) {
             ctx.$authInternal = ( ctx.$auth ) ? ctx.$auth.internalCopy() : new AuthToken( null, null, null, null, true );
         }

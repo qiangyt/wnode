@@ -1,7 +1,7 @@
 import * as Mysql from 'mysql';
 import MySqlConnection from './MySqlConnection';
 import SqlBuilder from '../dao/SqlBuilder';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
@@ -39,7 +39,7 @@ export default class MySqlPool {
         this.pool = Mysql.createPool( opts );
     }
 
-    get( ctx:BaseContext ) {
+    get( ctx:Context ) {
         const me = this;
 
         return new Promise( function( resolve, reject ) {

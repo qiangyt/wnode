@@ -1,6 +1,6 @@
 import BatchQueue from './kue/BatchQueue';
 import {BatchItem} from './kue/BatchQueue';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 import AliOpenSearch from '../search/AliOpenSearch';
 
 
@@ -47,7 +47,7 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    _prepareBatch( ctx:BaseContext, batch:BatchItem[] ):Promise<any>[] {
+    _prepareBatch( ctx:Context, batch:BatchItem[] ):Promise<any>[] {
         const bundlePerIndexName = this._sortBatch(batch);
         const promises = [];
 
@@ -70,7 +70,7 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    _processBundle( ctx:BaseContext, bundle:any ) {
+    _processBundle( ctx:Context, bundle:any ) {
         return this.$AliOpenSearch.batch( ctx, 
                                           bundle.indexName, 
                                           bundle.tableName, 
@@ -86,7 +86,7 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    _put( ctx:BaseContext, cmd:string, data:any, indexName:string, tableName:string ) {
+    _put( ctx:Context, cmd:string, data:any, indexName:string, tableName:string ) {
 
         // check arguments to low risk of invalid data stucked in job queue
         if( !cmd ) throw new Error('blank cmd');
@@ -100,12 +100,12 @@ export default class AliSearchJobQueue extends BatchQueue {
     }
 
 
-    put( ctx:BaseContext, cmd:string, data:any, indexName:string, tableName:string ) {
+    put( ctx:Context, cmd:string, data:any, indexName:string, tableName:string ) {
         return this._put( ctx, cmd, data, indexName, tableName );
     }
 
 
-    putArray( ctx:BaseContext, cmd:string, dataList:any[], indexName:string, tableName:string ) {
+    putArray( ctx:Context, cmd:string, dataList:any[], indexName:string, tableName:string ) {
         for( let data of dataList ) {
             this._put( ctx, cmd, data, indexName, tableName );
         }

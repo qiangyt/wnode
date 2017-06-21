@@ -1,19 +1,19 @@
-import BaseContext from  './BaseContext';
+import Context from  './Context';
 import ApiDefinition from '../ApiDefinition';
 
 
-export default class LocalClientContext extends BaseContext {
+export default class LocalClientContext extends Context {
 
-    constructor( public parent:BaseContext, apiDefinition:ApiDefinition, public cb:any ) {
+    constructor( public parent:Context, apiDefinition:ApiDefinition, public cb:any ) {
         super(apiDefinition);
         
         if( parent ) {
             this.$auth = parent.$auth;
             this.req = parent.req;
             this.tx = parent.tx;
-            this.requestId = parent.requestId;
-            this.correlationId = parent.correlationId;
-            this.previousRequestId = parent.previousRequestId;
+            this.spanId = parent.spanId;
+            this.traceId = parent.traceId;
+            this.previousSpanId = parent.previousSpanId;
         }
     }
 

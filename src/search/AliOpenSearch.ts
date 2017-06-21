@@ -1,7 +1,7 @@
 const AliyunSdk = require('waliyun-sdk'); 
 import * as Log from '../Logger';
 const Errors = require('../Errors');
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
@@ -23,7 +23,7 @@ export default class AliOpenSearch {
         this.instance = new AliyunSdk.OpenSearch( global.config.aliyun.search );
     }
 
-    _invoke( ignoreFailStatus:boolean, methodName:string, func:Function, ctx:BaseContext, params:any ) {
+    _invoke( ignoreFailStatus:boolean, methodName:string, func:Function, ctx:Context, params:any ) {
         const me = this;
 
         return new Promise( function(resolve, reject) {
@@ -38,7 +38,7 @@ export default class AliOpenSearch {
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    _push( ctx:BaseContext, cmd:string, methodName:string, indexName:string, table_name:string, fieldsArray:any[] ) {
+    _push( ctx:Context, cmd:string, methodName:string, indexName:string, table_name:string, fieldsArray:any[] ) {
         const timestamp = (new Date()).getTime();
         const items = fieldsArray.map( fields => ({cmd, timestamp, fields}) );
 
@@ -53,7 +53,7 @@ export default class AliOpenSearch {
     }
 
 
-    batch( ctx:BaseContext, indexName:string, table_name:string, cmdArray:string[], fieldsArray:any[] ) {
+    batch( ctx:Context, indexName:string, table_name:string, cmdArray:string[], fieldsArray:any[] ) {
         if( cmdArray.length !== fieldsArray.length ) {
             throw new Error('unmatched cmd and fields');
         }
@@ -78,7 +78,7 @@ export default class AliOpenSearch {
     }
 
 
-    _hasError( ctx:BaseContext, ignoreFailStatus:boolean, methodName:string, err:any, res:any ) {
+    _hasError( ctx:Context, ignoreFailStatus:boolean, methodName:string, err:any, res:any ) {
         if(err) return err;
 
         const statusIsOk = (res.status === 'OK');
@@ -100,37 +100,37 @@ export default class AliOpenSearch {
     }
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    add( ctx:BaseContext, indexName:string, tableName:string, fields:any ) {
+    add( ctx:Context, indexName:string, tableName:string, fields:any ) {
         return this.addByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    addByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:any[] ) {
+    addByArray( ctx:Context, indexName:string, tableName:string, fieldsArray:any[] ) {
         return this._push( ctx, 'add', 'add', indexName, tableName, fieldsArray );
     }
 
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    update( ctx:BaseContext, indexName:string, tableName:string, fields:any ) {
+    update( ctx:Context, indexName:string, tableName:string, fields:any ) {
         return this.updateByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    updateByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:any[] ) {
+    updateByArray( ctx:Context, indexName:string, tableName:string, fieldsArray:any[] ) {
         return this._push( ctx, 'update', 'updateByArray', indexName, tableName, fieldsArray );
     }
 
 
     // 注意, fields 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    delete( ctx:BaseContext, indexName:string, tableName:string, fields:any ) {
+    delete( ctx:Context, indexName:string, tableName:string, fields:any ) {
         return this.deleteByArray( ctx, indexName, tableName, [fields] );
     }
 
 
     // 注意, fieldsArray 下面的所有属性必须全部序列化为字符串, 包括整型. 如 4 必须转换为 "4",否则 sdk 会报验证错误.
-    deleteByArray( ctx:BaseContext, indexName:string, tableName:string, fieldsArray:any[] ) {
+    deleteByArray( ctx:Context, indexName:string, tableName:string, fieldsArray:any[] ) {
         return this._push( ctx, 'delete', 'deleteByArray', indexName, tableName, fieldsArray );
     }
 
@@ -139,7 +139,7 @@ export default class AliOpenSearch {
      * 列出有哪些index
      * 
      */
-    listIndices( ctx:BaseContext ) {
+    listIndices( ctx:Context ) {
         return this._invoke( false, 'listIndices', this.instance.listApp, ctx, {} );
     }
 
@@ -148,7 +148,7 @@ export default class AliOpenSearch {
      * 
      * @param query query子句，详细格式请参考ALI open search API文档
      */
-    search( ctx:BaseContext, index_name:string, query:string ) {
+    search( ctx:Context, index_name:string, query:string ) {
         const params = {index_name, query};
 
         return this._invoke( true, 'search', this.instance.search, ctx, params );
@@ -159,7 +159,7 @@ export default class AliOpenSearch {
      * 
      * @param indexName 
      */
-    suggest( ctx:BaseContext, index_name:string, query:string, suggest_name:string, hit:number ) {
+    suggest( ctx:Context, index_name:string, query:string, suggest_name:string, hit:number ) {
         const params = {index_name, query, suggest_name, hit};
 
         return this._invoke( false, 'suggest', this.instance.suggest, ctx, params );

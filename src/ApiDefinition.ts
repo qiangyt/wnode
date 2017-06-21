@@ -3,7 +3,7 @@ import * as ApiRole from './ApiRole';
 import * as Util from 'util';
 import * as Path from 'path';
 import SupportedMIME from './SupportedMIME';
-import BaseContext from './ctx/BaseContext';
+import Context from './ctx/Context';
 
 
 declare module global {
@@ -156,7 +156,7 @@ export default class ApiDefinition {
     /**
      *
      */
-    respond( ctx:BaseContext, parameters:any, valueTexts:any ) {
+    respond( ctx:Context, parameters:any, valueTexts:any ) {
         // prepare all parameter values
         const allValues:any = {};
 
@@ -187,7 +187,7 @@ export default class ApiDefinition {
     /**
      * call step method
      */
-    callStep( ctx:BaseContext, stage:any, step:Function, next:Function ) {
+    callStep( ctx:Context, stage:any, step:Function, next:Function ) {
         const values = ctx.values;
 
         ctx.next = next;
@@ -224,14 +224,14 @@ export default class ApiDefinition {
     /**
      * call auth() method
      */
-    callAuth( ctx:BaseContext ) {
+    callAuth( ctx:Context ) {
         this.callStep( ctx, this.auths, ctx.bean.auth, this.callCheck );
     }
 
     /**
      * call exec() method
      */
-    callExec( ctx:BaseContext ) {
+    callExec( ctx:Context ) {
         // the exec is the final step, so the next step is null
         this.callStep( ctx, this.execs, ctx.bean.exec, null );
     }
@@ -239,7 +239,7 @@ export default class ApiDefinition {
     /**
      * call check() method
      */
-    callCheck( ctx:BaseContext ) {
+    callCheck( ctx:Context ) {
         const bean = ctx.bean;
         if( !bean.check ) {
             this.callExec( ctx );

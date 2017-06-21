@@ -14,10 +14,19 @@ export default class BlueprintHelper {
     public $id = 'BlueprintHelper';
     public $SwaggerHelper:SwaggerHelper = null;
 
+    
+    normalizeOptions( options:any ) {
+        options = options || {};
+        options.furyValidator = true;
+        return options;
+    }
+
     /**
      * 
      */
     output( server:any, apiName:string, options:any, callback:Function ) {
+        options = this.normalizeOptions(options);
+
         const swagger = this.$SwaggerHelper.root( server, apiName, options );
         const swaggerJson = JSON.stringify(swagger);
 

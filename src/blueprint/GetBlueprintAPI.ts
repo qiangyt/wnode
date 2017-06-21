@@ -4,7 +4,7 @@ import * as marked from 'marked';
 import ApiServer from '../ApiServer';
 import SwaggerHelper from '../swagger/SwaggerHelper';
 import BlueprintHelper from './BlueprintHelper';
-import ServerContext from '../ctx/ServerContext';
+import Context from '../ctx/Context';
 
 //hint: use MWeb Lite to view blueprint
 
@@ -19,7 +19,7 @@ export default class GetBlueprintAPI {
     public $BlueprintHelper:BlueprintHelper = null;
 
 
-    check( ctx:ServerContext, apiName:string /* required:false */ ) {
+    check( ctx:Context, apiName:string /* required:false */ ) {
         if( apiName ) {
             if( !this.$ApiServer.apiDefinitions[apiName] ) {
                 return ctx.error( Errors.API_NOT_FOUND, apiName );
@@ -29,7 +29,7 @@ export default class GetBlueprintAPI {
         ctx.ok();
     }
 
-    exec( ctx:ServerContext, 
+    exec( ctx:Context, 
         apiName:string /* required:false */, 
         html:boolean /* type:'boolean', required:false, description:'true:输出html' */,
         ignoreInternalApi:boolean /* required:false, type:'boolean', description:'是否忽略内部API，默认为true' */,

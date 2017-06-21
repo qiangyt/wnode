@@ -1,4 +1,4 @@
-import BaseContext from './ctx/BaseContext';
+import Context from './ctx/Context';
 
 
 /**
@@ -8,7 +8,7 @@ export default class Exception extends Error {
 
     public data:any;
     public args:any[];
-    public ctx:BaseContext;
+    public ctx:Context;
     
     constructor( data:any, ...args:any[] ) {
         super('');

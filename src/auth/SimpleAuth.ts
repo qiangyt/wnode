@@ -4,7 +4,7 @@ import * as ApiRole from '../ApiRole';
 import AuthToken from './AuthToken';
 import * as Log from '../Logger';
 import AuthTokenCodec from './AuthTokenCodec';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 import ApiDefinition from '../ApiDefinition';
 import * as Restify from 'restify';
 
@@ -27,7 +27,7 @@ export default class SimpleAuth {
      * @param def the ApiDefinition object
      * @param req the request object
      */
-    auth( ctx:BaseContext, def:ApiDefinition, req:Restify.Request ) {
+    auth( ctx:Context, def:ApiDefinition, req:Restify.Request ) {
         const me = this;
         const token = this.resolveToken( ctx, req );
         this.logger.debug( {token, ctx}, 'decoding token' );
@@ -50,7 +50,7 @@ export default class SimpleAuth {
         } );
     }
 
-    resolveToken( ctx:BaseContext, req:Restify.Request ) {
+    resolveToken( ctx:Context, req:Restify.Request ) {
         const params = req.params;
 
         let token;
@@ -78,7 +78,7 @@ export default class SimpleAuth {
     /**
      * @param req the request object
      */
-    decode( ctx:BaseContext, token:string ) {
+    decode( ctx:Context, token:string ) {
         if( !token ) return Promise.resolve(this.createEmptyToken());
         return this.codec().decode(ctx, token);
     }

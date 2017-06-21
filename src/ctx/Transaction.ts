@@ -2,7 +2,7 @@ const Errors = require('../Errors');
 import Exception from '../Exception';
 import * as Log from '../Logger';
 import * as uuid from 'node-uuid';
-import BaseContext from './BaseContext';
+import Context from './Context';
 const logger = Log.create('Transaction');
 
 declare module global {
@@ -26,7 +26,7 @@ export default class Transaction {
     public rollbacking = false;
     public ignore = false;
 
-    constructor( public ctx:BaseContext, public options:any ) {
+    constructor( public ctx:Context, public options:any ) {
         //
     }
 

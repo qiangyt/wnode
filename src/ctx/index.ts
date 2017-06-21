@@ -1,11 +1,10 @@
-import BaseContext from './BaseContext';
+import Context from './Context';
 import InternalContext from './InternalContext';
 import LocalClientContext from './LocalClientContext';
 import ServerContext from './ServerContext';
 
-
 export {
-    BaseContext,
+    Context,
     InternalContext,
     LocalClientContext,
     ServerContext

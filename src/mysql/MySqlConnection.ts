@@ -1,5 +1,5 @@
 import MySqlPool from './MySqlPool';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 
 export default class MySqlConnection {
@@ -12,7 +12,7 @@ export default class MySqlConnection {
     /**
      * 
      */
-    query( ctx:BaseContext, sql:string, values:any[] ) {
+    query( ctx:Context, sql:string, values:any[] ) {
         const me = this;
         
         
@@ -28,7 +28,7 @@ export default class MySqlConnection {
         } );
     }
 
-    insert( ctx:BaseContext, tableName:string, valuesMapByColumns:any ) {
+    insert( ctx:Context, tableName:string, valuesMapByColumns:any ) {
         const me = this;
         const columns = [];
         const values = [];
@@ -46,7 +46,7 @@ export default class MySqlConnection {
         );
     }
 
-    update( ctx:BaseContext, tableName:string, valuesMapByColumns:any, conditionsMapByColumns:any ) {
+    update( ctx:Context, tableName:string, valuesMapByColumns:any, conditionsMapByColumns:any ) {
         const me = this;
         const values = [];
 

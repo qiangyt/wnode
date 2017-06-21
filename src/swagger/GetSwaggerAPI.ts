@@ -2,7 +2,7 @@ import * as ApiRole from '../ApiRole';
 const Errors = require('../Errors');
 import SwaggerHelper from './SwaggerHelper';
 import ApiServer from '../ApiServer';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 
 /**
@@ -15,7 +15,7 @@ export default class GetSwaggerAPI {
     public $ApiServer:ApiServer = null;
     
 
-    check( ctx:BaseContext, apiName:string ) {
+    check( ctx:Context, apiName:string ) {
 
         if( apiName ) {
             if( !this.$ApiServer.apiDefinitions[apiName] ) {
@@ -26,7 +26,7 @@ export default class GetSwaggerAPI {
         ctx.ok();
     }
 
-    exec( ctx:BaseContext,
+    exec( ctx:Context,
         apiName?:string/* required:false, description:'指定输出的API名字。未指定的话输出全部API' */,
         ignoreInternalApi=true /* required:false, type:'boolean', description:'是否忽略内部API，默认为true' */,
         ignoreGetSwaggerApi=true /* required:false, type:'boolean', description:'是否忽略GetSwagger API，默认为true' */,

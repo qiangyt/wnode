@@ -88,7 +88,7 @@ import * as cache from './cache';
 import * as client from './client';
 import * as ctx from './ctx';
 import * as dao from './dao';
-import * as Errors from './Errors';
+const Errors = require('./Errors');
 import ErrorType from './ErrorType';
 import Exception from './Exception';
 const HackBearcat = require('./HackBearcat');
@@ -99,12 +99,10 @@ import * as odm from './odm';
 import * as orm from './orm';
 import * as search from './search';
 import * as swagger from './swagger';
-import * as test from './test';
+//import * as test from './test';
 import * as util from './util';
 
-
 export = {
-
     registerAsBean,
     ApiDefinition,
     ApiParameter,
@@ -160,7 +158,7 @@ export = {
     
     swagger,
     
-    test,
+    //test,
 
     util
 

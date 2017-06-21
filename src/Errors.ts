@@ -1,5 +1,6 @@
 import ErrorType from './ErrorType';
-
+import * as Fs from 'fs';
+import * as Path from 'path';
 
 const errorMapByCode:any = {};
 const SYS_CODE_START = 1;
@@ -21,6 +22,12 @@ export function register( codeStart:number, codeEnd:number, jsonFilePath:string 
         }
     }
 
+    try {
+        Fs.statSync(jsonFilePath);
+    } catch( e ) {
+        return;
+    }
+    
     const errors = require(jsonFilePath );
 
     for( let key in errors ) {
@@ -42,6 +49,7 @@ export function register( codeStart:number, codeEnd:number, jsonFilePath:string 
 };
 
 // 初始化系统内部错误
-register( SYS_CODE_START, SYS_CODE_END, './Errors.json' );
+const sysErrorsJsonPath = Path.join( Path.parse(module.filename).dir, 'Errors.json');
+register( SYS_CODE_START, SYS_CODE_END, sysErrorsJsonPath );
 sysErrorInited = true;
 

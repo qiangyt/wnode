@@ -1,5 +1,5 @@
 const Errors = require('./Errors');
-import ServerContext from './ctx/ServerContext';
+import Context from './ctx/Context';
 
 /*
  *
@@ -59,7 +59,7 @@ export default class ApiParameter {
      *
      */
     /* eslint complexity: ["error", 16] */
-    parseThenCheckValue( ctx:ServerContext, value:any ) {
+    parseThenCheckValue( ctx:Context, value:any ) {
         // step 1, required check
         if( undefined === value ) {
             if( this.in === 'cookie' ) value = ctx.getCookie(this.name);
@@ -157,12 +157,13 @@ export default class ApiParameter {
     checked_in( value:string ) {
         if( typeof value !== 'string' ) throw new Error(this.fqName() + ".in: '" + value + "' is not a string");
 
+        if( value === 'query' ) return value;
         if( value === 'path' ) return value;
         if( value === 'body' ) return value;
         if( value === 'cookie' ) return value;
         if( value === 'internal' ) return value;
 
-        throw new Error(this.fqName() + ".in: '" + value + "' is invalid. Should be: 'path', 'body', 'cookie', 'internal'. See http://swagger.io/specification/#parameterIn");
+        throw new Error(this.fqName() + ".in: '" + value + "' is invalid. Should be: 'path', 'body', 'cookie', 'query', 'internal'. See http://swagger.io/specification/#parameterIn");
     }
 
     /*
@@ -299,9 +300,10 @@ export default class ApiParameter {
                     }
 
                     if( attrs.method ) {
+                        attrs.method = attrs.method.toLowerCase();
                         if( method ) {
                             if( attrs.method !== method ) {
-                                throw new Error("only same one method across parameters is supported: " + apiName + '.' + paramName);
+                                throw new Error("only single HTTP method is allowd across all parameters: " + apiName + '.' + paramName);
                             }
                         } else {
                             method = attrs.method;
@@ -312,6 +314,9 @@ export default class ApiParameter {
                         }
                     }
                     obj.assign( attrs );
+                    if( attrs.in === 'body' ) {
+                        obj.type = 'object';
+                    }
                     if ('integer' === attrs.type && attrs.format) {
                         // int32, int64
                         obj.format = attrs.format;
@@ -347,7 +352,7 @@ export default class ApiParameter {
         const methodBody = method.toString();
 
         // first, extract the parameter declaration text
-        const decl = methodBody.substring( methodBody.indexOf('('), methodBody.indexOf(')') + 1 ).trim();
+        const decl = methodBody.substring( methodBody.indexOf('('), methodBody.lastIndexOf(')') + 1 ).trim();
 
         // then, a simple DSM-based parameter parser, it assumes the input declaration text conforms to javascript syntax
         const ST_END = -1, ST_INIT = 0, ST_IN_NAME = 1, ST_IN_CMT = 2;

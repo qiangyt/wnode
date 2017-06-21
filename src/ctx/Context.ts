@@ -15,7 +15,7 @@ declare module global {
 }
 
 
-export default class BaseContext {
+export default class Context {
 
     public $auth:AuthToken = JWTAuth.globalAuthBean().createEmptyToken();
     public isTxOwner = false;
@@ -28,14 +28,15 @@ export default class BaseContext {
     public result:any;
     public hasError = false;
     public errorCallback:any;
-    public requestId:string;
-    public correlationId:string;
-    public previousRequestId:string;
+    public spanId:string;
+    public traceId:string;
+    public previousSpanId:string;
     public beginTime = new Date().getTime();
     public $authInternal:AuthToken;
     public $encodedAuthInternal:string;
-    public bean:any;
-    
+    public bean:any;    
+    public produce:string;
+
 
     constructor( public apiDefinition:ApiDefinition ) {
         this.logger = logger;

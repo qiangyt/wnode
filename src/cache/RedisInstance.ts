@@ -4,7 +4,7 @@ const Errors = require('../Errors');
 import Exception from '../Exception';
 import * as Bluebird from 'bluebird';
 import * as Util from 'util';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 
 Bluebird.promisifyAll(Redis.RedisClient.prototype);
@@ -68,12 +68,12 @@ export default class RedisInstance {
     /**
      * JSON编码
      */
-    encodeValue( ctx:BaseContext, value:any ) {
+    encodeValue( ctx:Context, value:any ) {
         return JSON.stringify(value);
     }
 
     /* eslint no-empty: "off" */
-    encodeObjectArray( ctx:BaseContext, objectArray:any[] ) {
+    encodeObjectArray( ctx:Context, objectArray:any[] ) {
         //const r = {};
         //for( let key in objectArray ) {
 //
@@ -83,7 +83,7 @@ export default class RedisInstance {
     /**
      * JSON解码
      */
-    decodeValue( ctx:BaseContext, value:string ) {
+    decodeValue( ctx:Context, value:string ) {
         if( value === undefined || value === null ) return value;
 
         try {
@@ -94,7 +94,7 @@ export default class RedisInstance {
         }
     }
 
-    decodeValueArray( ctx:BaseContext, valueArray:string[] ) {
+    decodeValueArray( ctx:Context, valueArray:string[] ) {
         if( valueArray === undefined || valueArray === null ) return valueArray;
 
         return valueArray.map( value => this.decodeValue(ctx, value) );
@@ -103,7 +103,7 @@ export default class RedisInstance {
     /**
      *
      */
-    set( ctx:BaseContext, key:string, value:any, expireSeconds:number, encode:boolean ) {
+    set( ctx:Context, key:string, value:any, expireSeconds:number, encode:boolean ) {
         const encodedValue = encode ? this.encodeValue( ctx, value ) : value;
         return this.client.setAsync( key, encodedValue )
         .then( (res:any) => {
@@ -117,7 +117,7 @@ export default class RedisInstance {
     /**
      *
      */
-    get( ctx:BaseContext, key:string, decode:boolean ) {
+    get( ctx:Context, key:string, decode:boolean ) {
         return this.client.getAsync(key)
         .then( (res:any) => {
             const value = decode ? this.decodeValue( ctx, res ) : res;
@@ -128,26 +128,26 @@ export default class RedisInstance {
     /**
      *
      */
-    incrby( ctx:BaseContext, key:string, delta:number ) {
+    incrby( ctx:Context, key:string, delta:number ) {
         return this.client.incrbyAsync( key, delta );
     }
 
     /**
      *
      */
-    decrby( ctx:BaseContext, key:string, delta:number ) {
+    decrby( ctx:Context, key:string, delta:number ) {
         return this.client.decrbyAsync( key, delta );
     }
 
     /**
      * @param keyOrKeyArray 单个key，或key的数组
      */
-    del( ctx:BaseContext, keyOrKeyArray:string|string[] ) {
+    del( ctx:Context, keyOrKeyArray:string|string[] ) {
         // 删除支持数组
         return this.client.delAsync( keyOrKeyArray );
     }
 
-    mget( ctx:BaseContext, keyOrKeyArray:string|string[] ) {
+    mget( ctx:Context, keyOrKeyArray:string|string[] ) {
         let p;
         if( !Util.isArray(keyOrKeyArray) ) {
             keyOrKeyArray = Array.from(arguments).slice(1);
@@ -158,7 +158,7 @@ export default class RedisInstance {
 
     /* eslint no-empty-function: "off" */
     /* eslint no-unused-vars: "off" */
-    mset( ctx:BaseContext, keyValueObjects:any[] ) {
+    mset( ctx:Context, keyValueObjects:any[] ) {
 
     }
 

@@ -1,5 +1,5 @@
 const Errors = require('../Errors.js');
-import BaseContext from  './BaseContext';
+import Context from  './Context';
 import LocalClientContext from  './LocalClientContext';
 import * as Util from 'util';
 import CodePath from '../util/CodePath';
@@ -17,9 +17,7 @@ declare module global {
 }
 
 
-export default class ServerContext extends BaseContext {
-
-    public produce:string;
+export default class ServerContext extends Context {
 
     constructor( public server:ApiServer, 
                  apiDefinition:ApiDefinition, 
@@ -29,15 +27,15 @@ export default class ServerContext extends BaseContext {
 
         super(apiDefinition);
 
-        this.requestId = uuid.v4();
+        this.spanId = uuid.v4();
 
         const params = req.params;
         if( params ) {
-            this.correlationId = params.cid;
-            this.previousRequestId = params.prid;
+            this.traceId = params.tid;
+            this.previousSpanId = params.psid;
         }
-        if( !this.correlationId ) {
-            this.correlationId = uuid.v4();
+        if( !this.traceId ) {
+            this.traceId = uuid.v4();
         }
 
         this.next = null;
@@ -46,7 +44,7 @@ export default class ServerContext extends BaseContext {
             ctx: this,
             req: Log.config.req ? req : undefined,
             requestTime: (<any>(req))._time
-        }, 'new ServerContext' );
+        }, 'new Context' );
     }
 
     /**
@@ -99,7 +97,10 @@ export default class ServerContext extends BaseContext {
     }
 
     Package() {
-        if( _Package ) _Package = require(CodePath.resolve('../package.json'));
+        if( !_Package ) {
+            const path = CodePath.resolve('../package.json');
+            _Package = require(path);
+        }
         return _Package;
     }
 
@@ -127,8 +128,8 @@ export default class ServerContext extends BaseContext {
         const isJsonResponse = contentType === 'application/json';
         if( isJsonResponse ) {
             if( !result ) result = {};
-            result.rid = this.requestId;
-            result.cid = this.correlationId;
+            result.sid = this.spanId;
+            result.tid = this.traceId;
         }
 
         let charset = this.resolveCharset( isBinary );
@@ -151,7 +152,7 @@ export default class ServerContext extends BaseContext {
             logObj.res = res;
         }
 
-        this.logger.info( logObj, 'end ServerContext' );
+        this.logger.info( logObj, 'end Context' );
     }
 
     resolveCharset( isBinary:boolean ):string {
@@ -178,7 +179,7 @@ export default class ServerContext extends BaseContext {
     /**
      * @deprecated
      */
-    static call2( parent:ServerContext, def:ApiDefinition, parameterValues:any, callback:any ) {
+    static call2( parent:Context, def:ApiDefinition, parameterValues:any, callback:any ) {
         const ctx = new LocalClientContext( parent, def, callback );
         def.respond( ctx, def.spec.parameters, parameterValues );
     }

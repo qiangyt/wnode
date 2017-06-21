@@ -1,7 +1,7 @@
 const NodeMemcached = require('node_memcached');
 import * as Log from '../Logger';
 const Errors = require('../Errors');
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
@@ -81,14 +81,14 @@ export default class Memcached {
     /**
      * JSON编码
      */
-    encodeValue( ctx:BaseContext, value:any ) {
+    encodeValue( ctx:Context, value:any ) {
         return JSON.stringify(value);
     }
 
     /**
      * JSON解码
      */
-    decodeValue( ctx:BaseContext, value:any ) {
+    decodeValue( ctx:Context, value:any ) {
         if( value === undefined || value === null ) return value;
         
         try {
@@ -100,7 +100,7 @@ export default class Memcached {
     }
 
     // 向 OCS 中写入数据 
-    add( ctx:BaseContext, key:string, value:any, encode:boolean ) {
+    add( ctx:Context, key:string, value:any, encode:boolean ) {
         value = encode ? this.encodeValue( ctx, value ) : value;
 
         const client = this.client;
@@ -120,7 +120,7 @@ export default class Memcached {
     /**
      * 
      */
-    set( ctx:BaseContext, key:string, value:any, expireSeconds:number, encode:boolean ) {
+    set( ctx:Context, key:string, value:any, expireSeconds:number, encode:boolean ) {
         const encodedValue = encode ? this.encodeValue( ctx, value ) : value;
 
         const client = this.client;
@@ -144,7 +144,7 @@ export default class Memcached {
     /**
      * 
      */
-    get( ctx:BaseContext, key:string, decode:boolean ) {
+    get( ctx:Context, key:string, decode:boolean ) {
         const me = this;
 
             return new Promise(function( resolve, reject ) {
@@ -163,7 +163,7 @@ export default class Memcached {
     /**
      * 
      */
-    increment( ctx:BaseContext, key:string, delta:number ) {
+    increment( ctx:Context, key:string, delta:number ) {
         const client = this.client;
 
             return new Promise(function( resolve, reject ) {
@@ -181,7 +181,7 @@ export default class Memcached {
     /**
      * 
      */
-    decrement( ctx:BaseContext, key:string, delta:number ) {
+    decrement( ctx:Context, key:string, delta:number ) {
         const client = this.client;
 
             return new Promise(function( resolve, reject ) {
@@ -200,7 +200,7 @@ export default class Memcached {
     /**
      * 
      */
-    delete( ctx:BaseContext, key:string ) {
+    delete( ctx:Context, key:string ) {
         const me = this;
 
             return new Promise(function( resolve, reject ) {
@@ -219,7 +219,7 @@ export default class Memcached {
     /**
      * 
      */
-    replace( ctx:BaseContext, key:string, value:any, expireSeconds:number, encode:boolean ) {
+    replace( ctx:Context, key:string, value:any, expireSeconds:number, encode:boolean ) {
         const encodedValue = encode ? this.encodeValue( ctx, value ) : value;
 
         const client = this.client;

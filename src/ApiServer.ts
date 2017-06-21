@@ -28,7 +28,6 @@ export default class ApiServer {
     public $proxy = false;
     public $SwaggerHelper:SwaggerHelper = null;
     public $lazy = true;
-    public $init = 'init';
     public logger:Log.Logger = Log.create(this);
     public auth:SimpleAuth;
     public restify:Restify.Server;
@@ -216,6 +215,8 @@ export default class ApiServer {
      */
     start( listen:boolean ) {
         this.logger.info('start server initialization');
+
+        this.init();
 
         this.initRestify();
         this.initApi();

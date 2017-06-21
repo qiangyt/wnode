@@ -200,10 +200,22 @@ export default class SwaggerHelper {
             r['x-in'] = inValue;
             inValue = 'query';
         }
+
+        if( this.forFuryValidator(options) ) {
+            if( inValue === 'body' ) {
+                inValue = 'query';
+            }
+        }
         r['in'] = inValue;
 
         return r;
     }
+
+
+    forFuryValidator( options:any ) {
+        return options.furyValidator && (options.furyValidator === true);
+    }
+
 
     /**
      *

@@ -4,7 +4,7 @@ import * as ApiRole from '../ApiRole';
 import * as uuid from 'node-uuid';
 import AuthTokenCodec from './AuthTokenCodec';
 import AuthToken from './AuthToken';
-import BaseContext from '../ctx/BaseContext';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
@@ -83,7 +83,7 @@ export default class JWTCodec extends AuthTokenCodec {
     /**
      * 解码
      */
-    decode( ctx:BaseContext, tokenText:string ) {
+    decode( ctx:Context, tokenText:string ) {
         const cfg = this.config;
         const me = this;
         
@@ -117,7 +117,7 @@ export default class JWTCodec extends AuthTokenCodec {
     /**
      * 解码成token对象（JWToken)
      */
-    decodeAsToken( ctx:BaseContext, decoded:any ) {
+    decodeAsToken( ctx:Context, decoded:any ) {
         const expireByMinutes:number = undefined;//TODO
 
         let userId = decoded.uid;

@@ -1,6 +1,6 @@
 import * as Kue from 'kue';
 import InternalContext from  '../../ctx/InternalContext';
-import BaseContext from  '../../ctx/BaseContext';
+import Context from  '../../ctx/Context';
 import * as Logger from '../../Logger';
 import * as Domain from 'domain';
 import RedisManager from '../../cache/RedisManager';
@@ -171,7 +171,7 @@ export default class BatchQueue {
 
 
     /* eslint no-unused-vars:'off' */
-    _prepareBatch( ctx:BaseContext, batch:BatchItem[] ):Promise<any>[] {
+    _prepareBatch( ctx:Context, batch:BatchItem[] ):Promise<any>[] {
         throw new Error('need to overwrite');
     }
 
@@ -196,7 +196,7 @@ export default class BatchQueue {
     }
 
 
-    _putJob( ctx:BaseContext, jobData:any ) {
+    _putJob( ctx:Context, jobData:any ) {
 
         const c = this.config;
 
