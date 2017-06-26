@@ -1,7 +1,7 @@
 const NodeMemcached = require('node_memcached');
 import * as Log from '../Logger';
 const Errors = require('../Errors');
-import Context from '../ctx/Context';
+import {Context} from '../ctx/Context';
 
 declare module global {
     const config:any;
@@ -10,7 +10,7 @@ declare module global {
 
 // See https://github.com/chylvina/node_memcached
 
-export default class Memcached {
+export class Memcached {
 
     public $id = 'Memcached';
     public $init = 'init';

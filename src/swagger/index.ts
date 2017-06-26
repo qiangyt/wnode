@@ -1,7 +1,7 @@
 import {registerAsBean} from '../Internal';
 
-import Schemas from './Schemas';
-import SwaggerHelper from './SwaggerHelper';
+import {Schemas} from './Schemas';
+import {SwaggerHelper} from './SwaggerHelper';
 
 
 export {

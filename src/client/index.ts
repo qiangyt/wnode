@@ -1,6 +1,6 @@
 import {registerAsBean} from '../Internal';
 
-import MsClient from './MsClient';
+import {MsClient} from './MsClient';
 
 export {
 

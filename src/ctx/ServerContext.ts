@@ -1,12 +1,12 @@
 const Errors = require('../Errors.js');
-import Context from  './Context';
-import LocalClientContext from  './LocalClientContext';
+import {Context} from  './Context';
+import {LocalClientContext} from  './LocalClientContext';
 import * as Util from 'util';
-import CodePath from '../util/CodePath';
+import {CodePath} from '../util/CodePath';
 import * as uuid from 'node-uuid';
 import * as Log from '../Logger';
-import ApiServer from '../ApiServer';
-import ApiDefinition from '../ApiDefinition';
+import {ApiServer} from '../ApiServer';
+import {ApiDefinition} from '../ApiDefinition';
 import * as Restify from 'restify';
 
 let _Package:any;
@@ -17,7 +17,7 @@ declare module global {
 }
 
 
-export default class ServerContext extends Context {
+export class ServerContext extends Context {
 
     constructor( public server:ApiServer, 
                  apiDefinition:ApiDefinition, 

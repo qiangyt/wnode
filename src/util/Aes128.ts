@@ -6,7 +6,7 @@ declare module global {
 }
 
 
-export default class Aes128 {
+export class Aes128 {
 
     public $id = 'Aes128';
     public $init = 'init';

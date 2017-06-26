@@ -2,11 +2,11 @@
 import {registerAsBean} from '../Internal';
 
 
-import CacheTemplate from './CacheTemplate';
-import RedisInstance from './RedisInstance';
-import RedisManager from './RedisManager';
-import AliMemcached from './AliMemcached';
-import Memcached from './Memcached';
+import {CacheTemplate} from './CacheTemplate';
+import {RedisInstance} from './RedisInstance';
+import {RedisManager} from './RedisManager';
+import {AliMemcached} from './AliMemcached';
+import {Memcached} from './Memcached';
 
 export {
     CacheTemplate,

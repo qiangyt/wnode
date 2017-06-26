@@ -1,27 +1,38 @@
 //import {requireAsBean} from '../Internal';
 import {registerAsBean} from '../Internal';
 
-import AuthToken from './AuthToken';
-import AuthTokenCodec from './AuthTokenCodec';
-import JWTAuth from './JWTAuth';
-import JWTCodec from './JWTCodec';
-import JWToken from './JWToken';
-import SimpleAuth from './SimpleAuth';
+import {AuthToken as _AuthToken} from './AuthToken';
+import {AuthTokenCodec as _AuthTokenCodec } from './AuthTokenCodec';
+import {JWTAuth as _JWTAuth} from './JWTAuth';
+import {JWTCodec as _JWTCodec} from './JWTCodec';
+import {JWToken as _JWToken} from './JWToken';
+import {SimpleAuth as _SimpleAuth} from './SimpleAuth';
 
 
+export module auth {
+
+    export declare class AuthToken extends _AuthToken {}
+    export declare class AuthTokenCodec extends _AuthTokenCodec {}
+    export declare class JWTAuth extends _JWTAuth {}
+    export declare class JWTCodec extends _JWTCodec {}
+    export declare class JWToken extends _JWToken {}
+    export declare class SimpleAuth extends _SimpleAuth {}
+
+}
+/*
 export {
-    AuthToken,
-    AuthTokenCodec,
-    JWTAuth,
-    JWTCodec,
-    JWToken,
-    SimpleAuth
-};
+    auth.AuthToken,
+    auth.AuthTokenCodec,
+    auth.JWTAuth,
+    auth.JWTCodec,
+    auth.JWToken,
+    auth.SimpleAuth
+};*/
 
-registerAsBean(AuthTokenCodec);
-registerAsBean(JWTAuth);
-registerAsBean(JWTCodec);
-registerAsBean(SimpleAuth);
+registerAsBean(_AuthTokenCodec);
+registerAsBean(_JWTAuth);
+registerAsBean(_JWTCodec);
+registerAsBean(_SimpleAuth);
 
 //export {AuthTokenCodec as AuthTokenCodec} from './AuthTokenCodec';
 

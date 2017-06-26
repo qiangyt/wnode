@@ -1,7 +1,7 @@
 import * as Path from 'path';
 
 
-export default class CodePath {
+export class CodePath {
 
     public static baseDir = Path.dirname(require.main.filename);
 

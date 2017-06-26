@@ -1,13 +1,13 @@
 const Errors = require('../Errors');
-import ErrorType from '../ErrorType';
-import Exception from  '../Exception.js';
+import {ErrorType} from '../ErrorType';
+import {Exception} from  '../Exception.js';
 import * as Util from 'util';
 import * as Log from '../Logger';
 const logger = Log.create('ctx');
-import Transaction from './Transaction';
-import ApiDefinition from '../ApiDefinition';
-import JWTAuth from '../auth/JWTAuth';
-import AuthToken from '../auth/AuthToken';
+import {Transaction} from './Transaction';
+import {ApiDefinition} from '../ApiDefinition';
+import {JWTAuth} from '../auth/JWTAuth';
+import {AuthToken} from '../auth/AuthToken';
 import * as http from 'http';
 
 declare module global {
@@ -15,7 +15,7 @@ declare module global {
 }
 
 
-export default class Context {
+export class Context {
 
     public $auth:AuthToken = JWTAuth.globalAuthBean().createEmptyToken();
     public isTxOwner = false;

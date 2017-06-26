@@ -3,9 +3,9 @@ import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 import * as bunyan from 'bunyan';
-import Time from './util/Time';
+import {Time} from './util/Time';
 import * as _ from 'lodash';
-import Context from './ctx/Context';
+import {Context} from './ctx/Context';
 
 
 const launchTime = new Date();

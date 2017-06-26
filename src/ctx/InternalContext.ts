@@ -1,8 +1,8 @@
-import Context from  '../ctx/Context';
+import {Context} from  '../ctx/Context';
 import * as ApiRole from '../ApiRole';
 
 
-export default class InternalContext extends Context {
+export class InternalContext extends Context {
 
     public next:any;
 

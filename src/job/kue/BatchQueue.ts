@@ -1,11 +1,11 @@
 import * as Kue from 'kue';
-import InternalContext from  '../../ctx/InternalContext';
-import Context from  '../../ctx/Context';
+import {InternalContext} from  '../../ctx/InternalContext';
+import {Context} from  '../../ctx/Context';
 import * as Logger from '../../Logger';
 import * as Domain from 'domain';
-import RedisManager from '../../cache/RedisManager';
+import {RedisManager} from '../../cache/RedisManager';
 import * as Cluster from 'cluster';
-import KueApp from './KueApp';
+import {KueApp} from './KueApp';
 
 
 export class BatchItem {
@@ -16,7 +16,7 @@ export class BatchItem {
 
 
 
-export default class BatchQueue {
+export class BatchQueue {
     
     public $id:string;
     public $lazy = true;
@@ -220,3 +220,4 @@ export default class BatchQueue {
 
 
 }
+

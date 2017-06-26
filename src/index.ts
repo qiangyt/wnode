@@ -7,11 +7,11 @@ const Path_parse_old = Path.parse;
 }
 
 import {registerAsBean, initBeans} from './Internal';
-import Config from './Config';
-import CodePath from './util/CodePath';
+import {Config} from './Config';
+import {CodePath} from './util/CodePath';
 const Bearcat = require('bearcat');
-import SwaggerHelper from './swagger/SwaggerHelper';
-import Schemas from './swagger/Schemas';
+import {SwaggerHelper} from './swagger/SwaggerHelper';
+import {Schemas} from './swagger/Schemas';
 
 declare module global {
     let config:any;
@@ -78,10 +78,10 @@ function launchMocha(before:Function, done:Function, srcDir = '../../../src', co
 }
 
 
-import ApiDefinition from './ApiDefinition';
-import ApiParameter from './ApiParameter';
+import {ApiDefinition} from './ApiDefinition';
+import {ApiParameter} from './ApiParameter';
 import * as ApiRole from './ApiRole';
-import ApiServer from './ApiServer';
+import {ApiServer} from './ApiServer';
 import * as auth from './Auth';
 import * as blueprint from './blueprint';
 import * as cache from './cache';
@@ -89,8 +89,8 @@ import * as client from './client';
 import * as ctx from './ctx';
 import * as dao from './dao';
 const Errors = require('./Errors');
-import ErrorType from './ErrorType';
-import Exception from './Exception';
+import {ErrorType} from './ErrorType';
+import {Exception} from './Exception';
 const HackBearcat = require('./HackBearcat');
 import * as job from './job';
 import * as Logger from './Logger';

@@ -1,5 +1,5 @@
 const AliyunSdk = require('waliyun-sdk');
-import Memcached from './Memcached';
+import {Memcached} from './Memcached';
 
 declare module global {
     const config:any;
@@ -8,7 +8,7 @@ declare module global {
 
 // See https://github.com/chylvina/node_memcached
 
-export default class AliMemcached extends Memcached {
+export class AliMemcached extends Memcached {
 
     public $id = 'AliMemcached';
 
@@ -24,5 +24,3 @@ export default class AliMemcached extends Memcached {
     }
   
 }
-
-

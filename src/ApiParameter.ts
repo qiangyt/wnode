@@ -1,5 +1,5 @@
 const Errors = require('./Errors');
-import Context from './ctx/Context';
+import {Context} from './ctx/Context';
 
 /*
  *
@@ -10,7 +10,7 @@ import Context from './ctx/Context';
  *  2) We don't yet support semantics of all parameter attributes.
  *     See attribute comments respectively.
  */
-export default class ApiParameter {
+export class ApiParameter {
 
     // string. see http://swagger.io/specification/#parameterIn
         // The location of the parameter.

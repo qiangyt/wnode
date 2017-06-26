@@ -1,4 +1,4 @@
-import Base64 from './Base64';
+import {Base64} from './Base64';
 import * as Crypto from 'crypto';
 
 declare module global {

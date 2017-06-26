@@ -1,5 +1,5 @@
 import * as ApiRole from '../ApiRole';
-import Exception from '../Exception';
+import {Exception} from '../Exception';
 const Errors = require('../Errors');
 
 
@@ -9,7 +9,7 @@ export interface AuthResult {
 }
 
 
-export default class AuthToken {
+export class AuthToken {
 
     constructor( public userId:any, 
                  public expireByMinutes:number, 

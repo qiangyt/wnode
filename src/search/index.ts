@@ -1,6 +1,6 @@
 import {registerAsBean} from '../Internal';
 
-import AliOpenSearch from './AliOpenSearch';
+import {AliOpenSearch} from './AliOpenSearch';
 
 export {
 

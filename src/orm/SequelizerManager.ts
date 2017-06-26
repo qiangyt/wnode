@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import MySqlSequelizer from './MySqlSequelizer';
-import BaseSequelizer from './BaseSequelizer';
+import {MySqlSequelizer} from './MySqlSequelizer';
+import {BaseSequelizer} from './BaseSequelizer';
 
 declare module global {
     const config:any;
@@ -12,7 +12,7 @@ declare module global {
  * 这个类管理了一个实例注册表（实例名映射到实例对象）。
  * 每一个实例都是按需创建，即，不被使用时不会被创建。
  */
-export default class SequelizerManager {
+export class SequelizerManager {
 
     public static instance = new SequelizerManager();
 

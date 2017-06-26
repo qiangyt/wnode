@@ -1,6 +1,6 @@
 {
     "name": "wnode",
-    "version": "0.1.2",
+    "version": "0.2.1",
     "description": "node.js framework by suntoe",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
@@ -19,7 +19,6 @@
     "homepage": "https://github.com/suntoe/wnode#readme",
     "devDependencies": {
         "@types/assert-plus": "1.0.3",
-        "@types/bluebird": "3.5.2",
         "@types/bunyan": "0.0.36",
         "@types/jsonwebtoken": "7.2.0",
         "@types/kue": "0.9.31",
@@ -36,42 +35,79 @@
         "@types/sequelize": "3.4.43",
         "@types/sinon": "2.1.2",
         "@types/sprintf-js": "0.0.27",
+
+        "chai": "3.5.0",
+        "commander": "2.9.0",
+
+        "merge2": "1.0.3",
+        "mocha": "2.5.3",
+
+        "rimraf": "2.6.1",
+
         "gulp": "3.9.1",
         "gulp-sourcemaps": "2.5.1",
         "gulp-typescript": "3.1.6",
         "gulp-util": "3.0.8",
-        "merge2": "1.0.3",
-        "rimraf": "2.6.1",
+
         "sinon": "2.1.0",
+        "swagger2blueprint": "1.0.2",
+
         "typescript": "2.2.2"
     },
     "dependencies": {
-        "waliyun-sdk": "1.10.5",
         "ajv": "4.11.5",
+        "ali-oss": "4.4.4",
+        "aliyun-oss-upload-stream": "1.3.0",
         "assert-plus": "1.0.0",
+
         "basic-auth-connect": "1.0.0",
         "bearcat": "0.4.29",
-        "bluebird": "3.5.0",
         "bunyan": "1.8.10",
+
+        "ccap": "0.6.10",
+
+        "ejs": "2.5.1",
         "escape-regexp-component": "1.0.2",
-        "fury": "2.3.0",
-        "fury-adapter-apib-serializer": "0.1.2",
-        "fury-adapter-swagger": "0.9.1",
+
+        "fury": "3.0.0-beta.1",
+        "fury-adapter-apib-serializer": "0.3.1",
+        "fury-adapter-swagger": "^0.12.0-beta.1",
+
         "jsonwebtoken": "7.3.0",
+
+        "gm": "1.23.0",
+
         "kue": "0.11.5",
+
         "lodash": "4.17.4",
+
         "marked": "0.3.6",
+        "md5": "2.1.0",
         "mime": "1.3.4",
         "mkdirp": "0.5.1",
         "moment": "2.18.1",
         "mongoose": "4.9.3",
         "mysql": "2.13.0",
-        "node-uuid": "1.4.8",
+
+        "ncp": "2.0.0",
         "node_memcached": "1.1.3",
+        "node-uuid": "1.4.8",
+
+        "protobufjs": "5.0.1",
+
+        "qiniu": "6.1.11",
+
         "redis": "2.7.1",
+        "request": "2.74.0",
         "restify": "4.3.0",
         "restify-cookies": "0.2.2",
+
         "sequelize": "3.30.4",
-        "sprintf-js": "1.0.3"
+        "sprintf-js": "1.0.3",
+
+        "validator": "5.5.0",
+
+        "waliyun-sdk": "1.10.5"
+
     }
 }

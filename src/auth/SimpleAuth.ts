@@ -1,15 +1,15 @@
 const Errors = require('../Errors');
-import Exception from '../Exception';
+import {Exception} from '../Exception';
 import * as ApiRole from '../ApiRole';
-import AuthToken from './AuthToken';
+import {AuthToken} from './AuthToken';
 import * as Log from '../Logger';
-import AuthTokenCodec from './AuthTokenCodec';
-import Context from '../ctx/Context';
-import ApiDefinition from '../ApiDefinition';
+import {AuthTokenCodec} from './AuthTokenCodec';
+import {Context} from '../ctx/Context';
+import {ApiDefinition} from '../ApiDefinition';
 import * as Restify from 'restify';
 
 
-export default class SimpleAuth {
+export class SimpleAuth {
 
     public $id = 'SimpleAuth';
     public $AuthTokenCodec:AuthTokenCodec = null;
@@ -40,7 +40,7 @@ export default class SimpleAuth {
 
             const absentRoleNames = ApiRole.byValueArray(authResult.absentRoles)
             throw new Exception( Errors.NO_PERMISSION, absentRoleNames );
-        } ).catch( function(err) {
+        } ).catch( function(err:Error) {
             if( err instanceof Exception ) throw err;
 
             if( 'TokenExpiredError' === err.name ) throw new Exception( Errors.EXPIRED_AUTH_TOKEN );

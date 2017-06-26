@@ -1,7 +1,7 @@
-import AuthToken from './AuthToken';
+import {AuthToken} from './AuthToken';
 
 
-export default class JWToken extends AuthToken {
+export class JWToken extends AuthToken {
 
     /**
      * 

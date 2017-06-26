@@ -1,9 +1,9 @@
-import TestSuite from './TestSuite';
-import SequelizerManager from '../orm/SequelizerManager';
+import {TestSuite} from './TestSuite';
+import {SequelizerManager} from '../orm/SequelizerManager';
 import * as Sequelize from 'sequelize';
 
 
-export default class DaoTestSuite extends TestSuite {
+export class DaoTestSuite extends TestSuite {
 
     public _sequelizer:Sequelize.Sequelize;
 

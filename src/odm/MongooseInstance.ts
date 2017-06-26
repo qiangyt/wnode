@@ -1,6 +1,6 @@
 import * as Fs from 'fs';
 import * as Path from 'path';
-import CodePath from '../util/CodePath';
+import {CodePath} from '../util/CodePath';
 import * as Mongoose from 'mongoose';
 import * as Log from '../Logger';
 import * as _ from 'lodash';
@@ -10,7 +10,7 @@ declare module global {
 }
 
 
-export default class MongooseInstance {
+export class MongooseInstance {
 
     public schemas:any = {};
     public models:any = {};

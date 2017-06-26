@@ -1,8 +1,8 @@
-import Context from  './Context';
-import ApiDefinition from '../ApiDefinition';
+import {Context} from  './Context';
+import {ApiDefinition} from '../ApiDefinition';
 
 
-export default class LocalClientContext extends Context {
+export class LocalClientContext extends Context {
 
     constructor( public parent:Context, apiDefinition:ApiDefinition, public cb:any ) {
         super(apiDefinition);

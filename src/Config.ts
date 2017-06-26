@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 const logger = require('./Logger').create('Config');
 
 
-export default class Config {
+export class Config {
 
     constructor( dir:string ) {
         const jsonBasePath = Path.join( dir, 'config.json' );

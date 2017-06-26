@@ -1,7 +1,7 @@
 import * as http from 'http';
 
 
-export default class RequestHelper {
+export class RequestHelper {
 
     static normalizeIpv4( ip:string ) {
         const pos = ip.lastIndexOf(':');

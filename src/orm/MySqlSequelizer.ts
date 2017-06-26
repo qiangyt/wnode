@@ -1,9 +1,9 @@
 import * as _ from 'lodash';
 import * as Sequelize from 'sequelize';
-import BaseSequelizer from './BaseSequelizer';
+import {BaseSequelizer} from './BaseSequelizer';
 
 
-export default class MySqlSequelizer extends BaseSequelizer {
+export class MySqlSequelizer extends BaseSequelizer {
 
     /**
      * 重写BaseSequelizer.createInstance()方法，

@@ -1,15 +1,15 @@
 import * as _ from 'lodash';
-import SequelizerManager from './SequelizerManager';
 import * as Sequelize from 'sequelize';
 const Errors = require('../Errors');
-import Exception from '../Exception';
+import {Exception} from '../Exception';
 import * as Log from '../Logger';
-import SequelizerTx from './SequelizerTx';
 import * as Promise from 'bluebird';// 因为sequelizer使用bluebird的Promise，所以我们这里也必须使用bluebird
-import Context from '../ctx/Context';
+import {Context} from '../ctx/Context';
+import {SequelizerManager} from './SequelizerManager';
+import {SequelizerTx} from './SequelizerTx';
 
 
-export default class SequelizeDao {
+export class SequelizeDao {
 
     public $init = 'init';
     public sequelizer:Sequelize.Sequelize;

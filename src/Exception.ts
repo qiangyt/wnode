@@ -1,10 +1,10 @@
-import Context from './ctx/Context';
+import {Context} from './ctx/Context';
 
 
 /**
  * 扩展Error对象，以便放置一个自定义数据
  */
-export default class Exception extends Error {
+export class Exception extends Error {
 
     public data:any;
     public args:any[];

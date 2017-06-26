@@ -1,9 +1,9 @@
-import AuthToken from './AuthToken';
-import Aes128 from '../util/Aes128';
-import Context from '../ctx/Context';
+import {AuthToken} from './AuthToken';
+import {Aes128} from '../util/Aes128';
+import {Context} from '../ctx/Context';
 
 
-export default class AuthTokenCodec {
+export class AuthTokenCodec {
 
     public $id = 'AuthTokenCodec';
     public $Aes128:Aes128 = null;
@@ -40,4 +40,3 @@ export default class AuthTokenCodec {
     }
 
 }
-

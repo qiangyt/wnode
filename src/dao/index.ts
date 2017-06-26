@@ -1,6 +1,6 @@
 import {registerAsBean} from '../Internal';
 
-import SqlBuilder from './SqlBuilder';
+import {SqlBuilder} from './SqlBuilder';
 
 
 export {

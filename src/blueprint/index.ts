@@ -1,7 +1,7 @@
 //import {requireAsBean} from '../Internal';
 import {registerAsBean} from '../Internal';
 
-import BlueprintHelper from './BlueprintHelper';
+import {BlueprintHelper} from './BlueprintHelper';
 
 export {
 

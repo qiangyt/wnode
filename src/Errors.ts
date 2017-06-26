@@ -1,4 +1,4 @@
-import ErrorType from './ErrorType';
+import {ErrorType} from './ErrorType';
 import * as Fs from 'fs';
 import * as Path from 'path';
 

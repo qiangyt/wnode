@@ -1,18 +1,18 @@
 import * as Fs from 'fs';
 const Path = require('path');
-import ApiDefinition from './ApiDefinition';
+import {ApiDefinition} from './ApiDefinition';
 import * as Restify from 'restify';
 const RestifyAny = <any>(Restify);
-import ServerContext from './ctx/ServerContext';
+import {ServerContext} from './ctx/ServerContext';
 import * as ApiRole from './ApiRole';
 import * as Log from './Logger';
 const Errors = require('./Errors');
-import CodePath from './util/CodePath';
+import {CodePath} from './util/CodePath';
 const CookieParser = require('restify-cookies');
-import JWTAuth from './auth/JWTAuth';
-import SwaggerHelper from './swagger/SwaggerHelper';
-import BlueprintHelper from './blueprint/BlueprintHelper';
-import SimpleAuth from './auth/SimpleAuth';
+import {JWTAuth} from './auth/JWTAuth';
+import {SwaggerHelper} from './swagger/SwaggerHelper';
+import {BlueprintHelper} from './blueprint/BlueprintHelper';
+import {SimpleAuth} from './auth/SimpleAuth';
 
 declare let StaticSupport:any;
 
@@ -22,7 +22,7 @@ declare module global {
 }
 
 
-export default class ApiServer {
+export class ApiServer {
   
     public $id = 'ApiServer';
     public $proxy = false;
