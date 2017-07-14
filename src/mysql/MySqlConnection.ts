@@ -2,7 +2,7 @@ import {MySqlPool} from './MySqlPool';
 import {Context} from '../ctx/Context';
 
 
-export class MySqlConnection {
+export default class MySqlConnection {
 
     constructor( public pool:MySqlPool, public rawConnection:any ) {
         this.pool = pool;
@@ -76,3 +76,5 @@ export class MySqlConnection {
     }
 
 }
+
+module.exports.MySqlConnection = MySqlConnection;

@@ -11,7 +11,7 @@ gulp.task("clean", function() {
     rimraf('dist', () => {});
 });
 
-gulp.task("build", function() {
+gulp.task("default", function() {
     var tsResult = tsProject.src().pipe(tsProject());
 
     gulp.src(['./src/**/*.js', './src/**/*.json'])
@@ -24,6 +24,6 @@ gulp.task("build", function() {
 });
 
 
-gulp.task('watch', ['build'], function() {
-    gulp.watch('src/**/*.ts', ['build']);
+gulp.task('watch', ['default'], function() {
+    gulp.watch('src/**/*.ts', ['default']);
 });

@@ -9,7 +9,7 @@ export interface AuthResult {
 }
 
 
-export class AuthToken {
+export default class AuthToken {
 
     constructor( public userId:any, 
                  public expireByMinutes:number, 
@@ -93,3 +93,5 @@ export class AuthToken {
     }
 
 }
+
+exports.AuthToken = AuthToken;

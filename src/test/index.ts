@@ -1,10 +1,10 @@
-import {DaoTestSuite} from './DaoTestSuite';
-import {TestContext} from './TestContext';
-import {TestSuite} from './TestSuite';
+'use strict';
 
-export {
-    DaoTestSuite,
-    TestContext,
-    TestSuite
-}
 
+module.exports = {
+
+    DaoTestSuite: require('./DaoTestSuite'),
+    TestContext:  require('./TestContext'),
+    TestSuite:    require('./TestSuite')
+
+};

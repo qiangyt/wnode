@@ -1,5 +1,5 @@
 import * as Mysql from 'mysql';
-import {MySqlConnection} from './MySqlConnection';
+import MySqlConnection from './MySqlConnection';
 import {SqlBuilder} from '../dao/SqlBuilder';
 import {Context} from '../ctx/Context';
 

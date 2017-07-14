@@ -1,4 +1,4 @@
-import {AuthToken} from './AuthToken';
+import AuthToken from './AuthToken';
 import {Aes128} from '../util/Aes128';
 import {Context} from '../ctx/Context';
 

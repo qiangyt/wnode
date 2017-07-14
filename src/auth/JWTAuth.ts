@@ -1,5 +1,5 @@
 import * as ApiRole from '../ApiRole';
-import {JWToken} from './JWToken';
+import JWToken from './JWToken';
 import {SimpleAuth} from './SimpleAuth';
 import {JWTCodec} from './JWTCodec';
 
