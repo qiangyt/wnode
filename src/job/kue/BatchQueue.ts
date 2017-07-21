@@ -101,7 +101,7 @@ export default class BatchQueue {
 
         const q = this.queue = this._createQueue();
 
-        q.process( config.name, <number>config.batch, ( job:Kue.Job, kueContext:any, done:Function ) => {
+        (<any>q).process( config.name, <number>config.batch, ( job:Kue.Job, kueContext:any, done:Function ) => {
             const dmn = Domain.create();
             dmn.on( 'error', (err:any) => {
                 done(err);

@@ -78,9 +78,9 @@ export default class ApiServer {
 
         //restify.use( Restify.acceptParser(restify.acceptable) );
         //restify.use( Restify.requestLogger() );
-        restify.use( Restify.queryParser({mapParams: true}) );
+        restify.use( Restify.plugins.queryParser({mapParams: true}) );
         restify.pre( Restify.pre.userAgentConnection() );
-        restify.use( Restify.bodyParser({
+        restify.use( Restify.plugins.bodyParser({
             maxBodySize: cfg_server.maxBodySize ? cfg_server.maxBodySize : 1048576,
             mapParams: true,
             mapFiles: false,
@@ -103,7 +103,7 @@ export default class ApiServer {
                 return res.send(204);
             }
         
-            return res.send(new Restify.MethodNotAllowedError());
+            return res.send(405);//new Restify.MethodNotAllowedError());
         });
     }
 

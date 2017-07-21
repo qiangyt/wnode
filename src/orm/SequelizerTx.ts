@@ -20,12 +20,12 @@ export default class SequelizerTx {
 
 
     commitTx( txData:Sequelize.Transaction ) {
-        return txData.commit();
+        return <any>txData.commit();
     }
 
 
     rollbackTx( txData:Sequelize.Transaction ) {
-        return txData.rollback();
+        return <any>txData.rollback();
     }
 
 }

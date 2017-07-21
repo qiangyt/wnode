@@ -43,7 +43,7 @@ export default class MsClient {
                 const connectTimeout = scfg.connectTimeout;
                 const requestTimeout = scfg.requestTimeout;
 
-                s.client = Restify.createJsonClient( {
+                s.client = (<any>Restify).createJsonClient( {
                     url: sbase,
                     connectTimeout: connectTimeout ? connectTimeout : 3000,
                     requestTimeout: requestTimeout ? requestTimeout : 2000
