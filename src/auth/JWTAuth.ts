@@ -1,7 +1,7 @@
 import * as ApiRole from '../ApiRole';
 import JWToken from './JWToken';
-import {SimpleAuth} from './SimpleAuth';
-import {JWTCodec} from './JWTCodec';
+import SimpleAuth from './SimpleAuth';
+import JWTCodec from './JWTCodec';
 
 declare module global {
     const config:any;
@@ -9,7 +9,7 @@ declare module global {
 }
 
 
-export class JWTAuth extends SimpleAuth {
+export default class JWTAuth extends SimpleAuth {
 
     public $id = 'JWTAuth';
     public $JWTCodec:JWTCodec = null;

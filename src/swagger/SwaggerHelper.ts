@@ -1,12 +1,12 @@
 import * as _ from 'lodash';
 import SupportedMIME from '../SupportedMIME';
-import {CodePath} from '../util/CodePath';
+import CodePath from '../util/CodePath';
 import * as ApiRole from '../ApiRole';
 import * as Ajv from 'ajv';
-import {Schemas} from './Schemas';
-import {ApiServer} from '../ApiServer';
-import {ApiDefinition} from '../ApiDefinition';
-import {ApiParameter} from '../ApiParameter';
+import Schemas from './Schemas';
+import ApiServer from '../ApiServer';
+import ApiDefinition from '../ApiDefinition';
+import ApiParameter from '../ApiParameter';
 
 
 declare module global {
@@ -14,7 +14,7 @@ declare module global {
 }
 
 
-export class SwaggerHelper {
+export default class SwaggerHelper {
 
     public $id = 'SwaggerHelper';
     public $Schemas:Schemas = null;

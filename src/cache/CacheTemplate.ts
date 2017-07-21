@@ -1,5 +1,5 @@
 
-export class CacheTemplate {
+export default class CacheTemplate {
 
     static get<T>( cacheHitPromise:Promise<T>, cacheMissPromise:Promise<T>, cacheSetterPromise:Promise<T> ) {
         return cacheHitPromise
@@ -19,4 +19,3 @@ export class CacheTemplate {
     }
 
 }
-

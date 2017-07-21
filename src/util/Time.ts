@@ -1,7 +1,7 @@
 
 
 
-export class Time {
+export default class Time {
 
     /**
      * 

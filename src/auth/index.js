@@ -7,11 +7,11 @@ const requireAsBean = require('../Internal').requireAsBean;
 
 module.exports = {
 
-    AuthToken: require('./AuthToken'),
+    AuthToken: require('./AuthToken').default,
     AuthTokenCodec: requireAsBean(module, './AuthTokenCodec'),
     JWTAuth: requireAsBean(module, './JWTAuth'),
     JWTCodec: requireAsBean(module, './JWTCodec'),
-    JWToken: require('./JWToken'),
+    JWToken: require('./JWToken').default,
     SimpleAuth: requireAsBean(module, './SimpleAuth')
 
 };

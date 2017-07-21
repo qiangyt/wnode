@@ -1,14 +1,14 @@
 const AliyunSdk = require('waliyun-sdk'); 
 import * as Log from '../Logger';
 const Errors = require('../Errors');
-import {Context} from '../ctx/Context';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
 }
 
 
-export class AliOpenSearch {
+export default class AliOpenSearch {
 
     public $id = 'AliOpenSearch';
     public $init = 'init';

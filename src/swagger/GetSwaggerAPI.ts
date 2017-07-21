@@ -1,14 +1,14 @@
 import * as ApiRole from '../ApiRole';
 const Errors = require('../Errors');
-import {SwaggerHelper} from './SwaggerHelper';
-import {ApiServer} from '../ApiServer';
-import {Context} from '../ctx/Context';
+import SwaggerHelper from './SwaggerHelper';
+import ApiServer from '../ApiServer';
+import Context from '../ctx/Context';
 
 
 /**
  *
  */
-export class GetSwaggerAPI {
+export default class GetSwaggerAPI {
 
     public $id = 'GetSwaggerAPI';
     public $SwaggerHelper:SwaggerHelper = null;
@@ -53,5 +53,3 @@ Object.assign( GetSwaggerAPI, {
     },
     validateResponse: false
 } );
-
-

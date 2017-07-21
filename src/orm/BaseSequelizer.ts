@@ -1,6 +1,6 @@
 import * as Fs from 'fs';
 import * as Path from 'path';
-import {CodePath} from '../util/CodePath';
+import CodePath from '../util/CodePath';
 import * as Log from '../Logger';
 import * as Util from 'util';
 import * as Sequelize from 'sequelize';
@@ -13,7 +13,7 @@ declare module global {
 /**
  * 封装一个sequelizer实例
  */
-export class BaseSequelizer {
+export default class BaseSequelizer {
 
     public instance:Sequelize.Sequelize;
     public modelDir:string;

@@ -1,11 +1,11 @@
 import * as Kue from 'kue';
-import {InternalContext} from  '../../ctx/InternalContext';
-import {Context} from  '../../ctx/Context';
+import InternalContext from  '../../ctx/InternalContext';
+import Context from  '../../ctx/Context';
 import * as Logger from '../../Logger';
 import * as Domain from 'domain';
-import {RedisManager} from '../../cache/RedisManager';
+import RedisManager from '../../cache/RedisManager';
 import * as Cluster from 'cluster';
-import {KueApp} from './KueApp';
+import KueApp from './KueApp';
 
 
 export class BatchItem {
@@ -16,7 +16,7 @@ export class BatchItem {
 
 
 
-export class BatchQueue {
+export default class BatchQueue {
     
     public $id:string;
     public $lazy = true;
@@ -101,7 +101,7 @@ export class BatchQueue {
 
         const q = this.queue = this._createQueue();
 
-        q.process( config.name, config.batch, ( job:Kue.Job, kueContext:any, done:Function ) => {
+        q.process( config.name, <number>config.batch, ( job:Kue.Job, kueContext:any, done:Function ) => {
             const dmn = Domain.create();
             dmn.on( 'error', (err:any) => {
                 done(err);
@@ -220,4 +220,3 @@ export class BatchQueue {
 
 
 }
-

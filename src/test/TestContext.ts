@@ -1,7 +1,7 @@
-import {InternalContext} from '../ctx/InternalContext';
+import InternalContext from '../ctx/InternalContext';
 
 
-export class TestContext extends InternalContext {
+export default class TestContext extends InternalContext {
 
     // 关闭 beginTx()，使得被测试对象无法启动事务
     beginTx() {

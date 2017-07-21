@@ -1,5 +1,5 @@
 import * as ApiRole from '../ApiRole';
-import {Exception} from '../Exception';
+import Exception from '../Exception';
 const Errors = require('../Errors');
 
 
@@ -93,5 +93,3 @@ export default class AuthToken {
     }
 
 }
-
-exports.AuthToken = AuthToken;

@@ -1,14 +1,14 @@
 import * as Mysql from 'mysql';
 import MySqlConnection from './MySqlConnection';
-import {SqlBuilder} from '../dao/SqlBuilder';
-import {Context} from '../ctx/Context';
+import SqlBuilder from '../dao/SqlBuilder';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
 }
 
 
-export class MySqlPool {
+export default class MySqlPool {
 
     public $id = 'MySqlPool';
     public $init = "init";

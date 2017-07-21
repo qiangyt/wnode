@@ -1,9 +1,9 @@
-import {ApiParameter} from './ApiParameter';
+import ApiParameter from './ApiParameter';
 import * as ApiRole from './ApiRole';
 import * as Util from 'util';
 import * as Path from 'path';
 import SupportedMIME from './SupportedMIME';
-import {Context} from './ctx/Context';
+import Context from './ctx/Context';
 
 
 declare module global {
@@ -13,7 +13,7 @@ declare module global {
 
 
 
-export class ApiDefinition {
+export default class ApiDefinition {
 
     public roles:number[] = [];
     public specs:any;

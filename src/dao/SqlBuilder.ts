@@ -1,6 +1,6 @@
 
 
-export class SqlBuilder {
+export default class SqlBuilder {
 
     public $id = 'SqlBuilder';
     public $lazy = true;

@@ -1,10 +1,10 @@
 import * as Fs from 'fs';
 import * as Path from 'path';
-import {CodePath} from '../util/CodePath';
+import CodePath from '../util/CodePath';
 import * as Util from 'util';
 import * as Sequelize from 'sequelize';
-import {SwaggerHelper} from './SwaggerHelper';
-import {SequelizerManager} from '../orm/SequelizerManager';
+import SwaggerHelper from './SwaggerHelper';
+import SequelizerManager from '../orm/SequelizerManager';
 
 declare module global {
     const config:any;
@@ -12,7 +12,7 @@ declare module global {
 
 
 
-export class Schemas {
+export default class Schemas {
 
     public $id = 'Schemas';
     public $init = 'init';

@@ -1,7 +1,7 @@
 import * as Crypto from 'crypto';
 
 
-export class PasswordHelper {
+export default class PasswordHelper {
 
     static generateSalt():number {
         const r = Math.random() * 1000000000;

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {MongooseInstance} from './MongooseInstance';
+import MongooseInstance from './MongooseInstance';
 
 declare module global {
     const config:any;
@@ -15,7 +15,7 @@ declare module global {
  * 这个类管理了一个实例注册表（实例名映射到实例对象）。
  * 每一个实例都是按需创建，即，不被使用时不会被创建。
  */
-export class MongooseManager {
+export default class MongooseManager {
 
     public static instance = new MongooseManager();
 
@@ -62,4 +62,3 @@ export class MongooseManager {
     }
 
 }
-

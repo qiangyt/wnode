@@ -1,13 +1,13 @@
-import {MongooseManager} from './MongooseManager';
-import {MongooseInstance} from './MongooseInstance';
+import MongooseManager from './MongooseManager';
+import MongooseInstance from './MongooseInstance';
 import * as Mongoose from 'mongoose';
 const Errors = require('../Errors');
-import {Exception} from '../Exception';
+import Exception from '../Exception';
 import * as Log from '../Logger';
-import {Context} from '../ctx/Context';
+import Context from '../ctx/Context';
 
 
-export class MongooseDao {
+export default class MongooseDao {
 
     public $init = 'init';
     public $lazy = true;

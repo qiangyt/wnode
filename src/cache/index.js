@@ -6,9 +6,9 @@ const requireAsBean = require('../Internal').requireAsBean;
 module.exports = {
 
     AliMemcached: requireAsBean(module, './AliMemcached'),
-    CacheTemplate: require('./CacheTemplate'),
+    CacheTemplate: require('./CacheTemplate').default,
     Memcached: requireAsBean(module, './Memcached'),
-    RedisInstance: require('./RedisInstance'),
-    RedisManager: require('./RedisManager')
+    RedisInstance: require('./RedisInstance').default,
+    RedisManager: require('./RedisManager').default
 
 };

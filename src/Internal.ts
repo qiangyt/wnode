@@ -8,7 +8,7 @@ declare module global {
 const beansToRegister:any[] = [];
 
 export function requireAsBean( mod:NodeModule, name:string ) {
-    const r = mod.require(name);
+    const r = mod.require(name).default;
     beansToRegister.push( r );
     return r;
 }

@@ -1,24 +1,30 @@
-'use strict';
+
+import * as Internal from './Internal';
 
 const Path = require('path');
+
+declare module global {
+    let bearcat:any;
+    let config:any;
+}
+
 const Path_parse_old = Path.parse;
-Path.parse = function(full) {
+Path.parse = function(full:string) {
     const r = Path_parse_old(full);
     r.full = full;
     return r;
 }
 
-const Internal = require('./Internal');
-const Config = require('./Config');
-const CodePath = require('./util/CodePath');
+import Config from './Config';
+import CodePath from './util/CodePath';
 const Bearcat = require('bearcat');
 const requireAsBean = Internal.requireAsBean;
-const registerAsBean = Internal.registerAsBean;
-const SwaggerHelper = require('./swagger/SwaggerHelper');
-const Schemas = require('./swagger/Schemas');
+//import registerAsBean = Internal.registerAsBean;
+import SwaggerHelper from './swagger/SwaggerHelper';
+import Schemas from './swagger/Schemas';
 
 
-function startApp(appJsonPath, startCallback) {
+function startApp(appJsonPath:string, startCallback:Function) {
     // make bearcat global, for `bearcat.module()`
     const bearcat = global.bearcat = require('bearcat');
     bearcat.createApp([CodePath.resolve(appJsonPath)]);
@@ -33,9 +39,7 @@ function startApp(appJsonPath, startCallback) {
 }
 
 
-function startFunc(starter, configDir, appJsonPath, configCallback, startCallback) {
-    if (!configDir) configDir = '../config';
-    if (!appJsonPath) appJsonPath = './app.json';
+function startFunc(starter:Function, configDir = '../config', appJsonPath = './app.json', configCallback?:Function, startCallback?:Function) {
 
     module.exports.config = global.config = new Config(CodePath.resolve(configDir));
 
@@ -52,15 +56,11 @@ function startFunc(starter, configDir, appJsonPath, configCallback, startCallbac
 
 let _mochaLaunched = false;
 
-function launchMocha(before, done, srcDir, configDir, appJsonPath) {
+export function mocha(before?:Function, done?:Function, srcDir = '../../../src', configDir = '../config', appJsonPath = './app.json') {
     if (_mochaLaunched) {
         if (done) done();
         return;
     }
-
-    if (!srcDir) srcDir = '../../../src';
-    if (!configDir) configDir = '../config';
-    if (!appJsonPath) appJsonPath = './app.json';
 
     _mochaLaunched = true;
 
@@ -83,32 +83,45 @@ function launchMocha(before, done, srcDir, configDir, appJsonPath) {
     });
 }
 
+export function bean(beanName:string) {
+    global.bearcat.getBean(beanName);
+}
+
+export function schemaFromSequelizer(modelName:string, instanceName:string) {
+    return Schemas.buildSchemaFromSequelizer(modelName, instanceName);
+}
+
+export function schemaRef(name:string) {
+    return SwaggerHelper.schemaRef(name);
+}
+
+export function start(configDir:string, appJsonPath:string, configCallback?:Function, startCallback?:Function) {
+    startFunc(startApp, configDir, appJsonPath, configCallback, startCallback);
+}
+
 module.exports = {
     requireAsBean,
 
-    ApiDefinition: require('./ApiDefinition'),
-    ApiParameter: require('./ApiParameter'),
+    ApiDefinition: require('./ApiDefinition').default,
+    ApiParameter: require('./ApiParameter').default,
     ApiRole: require('./ApiRole'),
     ApiServer: requireAsBean(module, './ApiServer'),
     auth: require('./auth'),
 
-    bean: function bean(beanName) {
-        global.bearcat.getBean(beanName);
-    },
     blueprint: require('./blueprint'),
 
     cache: require('./cache'),
     client: require('./client'),
-    Config: Config,
+    Config,
     ctx: require('./ctx'),
 
     dao: require('./dao'),
 
     Errors: require('./Errors'),
-    ErrorType: require('./ErrorType'),
-    Exception: require('./Exception'),
+    ErrorType: require('./ErrorType').default,
+    Exception: require('./Exception').default,
 
-    graphql: require('./graphql'),
+    //graphql: require('./graphql'),
 
     HackBearcat: require('./HackBearcat'),
 
@@ -116,30 +129,16 @@ module.exports = {
 
     Logger: require('./Logger'),
 
-    mocha: launchMocha,
-
     module: module,
 
     mysql: require('./mysql'),
 
     odm: require('./odm'),
     orm: require('./orm'),
-    plugin: require('./plugin'),
 
-    schemaFromSequelizer: function buildSchemaFromSequelizer(modelName, instanceName) {
-        return Schemas.buildSchemaFromSequelizer(modelName, instanceName);
-    },
-
-    schemaRef: function(name) {
-        return SwaggerHelper.schemaRef(name);
-    },
+    //plugin: require('./plugin'),
 
     search: require('./search'),
-
-    start: function start(configDir, appJsonPath, configCallback, startCallback) {
-        startFunc(startApp, configDir, appJsonPath, configCallback, startCallback);
-    },
-
     swagger: require('./swagger'),
 
     test: require('./test'),
@@ -149,4 +148,5 @@ module.exports = {
 };
 
 
-registerAsBean(ApiServer);
+//registerAsBean(ApiServer);
+

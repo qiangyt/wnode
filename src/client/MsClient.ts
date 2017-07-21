@@ -1,19 +1,19 @@
 const Errors = require('../Errors');
 import * as Log from '../Logger';
 import * as Restify from 'restify';
-import {LocalClientContext} from '../ctx/LocalClientContext';
-import {AuthToken} from '../auth/AuthToken';
-import {JWTAuth} from '../auth/JWTAuth';
-import {ApiServer} from '../ApiServer';
-import {AuthTokenCodec} from '../auth/AuthTokenCodec';
-import {Context} from '../ctx/Context';
+import LocalClientContext from '../ctx/LocalClientContext';
+import AuthToken from '../auth/AuthToken';
+import JWTAuth from '../auth/JWTAuth';
+import ApiServer from '../ApiServer';
+import AuthTokenCodec from '../auth/AuthTokenCodec';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
 }
 
 
-export class MsClient {
+export default class MsClient {
 
     public $id = 'MsClient';
     public $lazy = true;

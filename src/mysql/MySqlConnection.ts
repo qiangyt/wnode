@@ -1,5 +1,5 @@
-import {MySqlPool} from './MySqlPool';
-import {Context} from '../ctx/Context';
+import MySqlPool from './MySqlPool';
+import Context from '../ctx/Context';
 
 
 export default class MySqlConnection {
@@ -76,5 +76,3 @@ export default class MySqlConnection {
     }
 
 }
-
-module.exports.MySqlConnection = MySqlConnection;

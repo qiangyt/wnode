@@ -1,6 +1,6 @@
 
 
-export class Base64 {
+export default class Base64 {
 
     /**
      * base64编码
@@ -17,4 +17,3 @@ export class Base64 {
     }
 
 }
-

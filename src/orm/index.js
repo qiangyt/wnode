@@ -3,10 +3,10 @@
 
 module.exports = {
 
-    BaseSequelizer: require('./BaseSequelizer'),
-    MySqlDao: require('./MySqlDao'),
-    MySqlSequelizer: require('./MySqlSequelizer'),
-    SequelizeDao: require('./SequelizeDao'),
-    SequelizerManager: require('./SequelizerManager')
+    BaseSequelizer: require('./BaseSequelizer').default,
+    MySqlDao: require('./MySqlDao').default,
+    MySqlSequelizer: require('./MySqlSequelizer').default,
+    SequelizeDao: require('./SequelizeDao').default,
+    SequelizerManager: require('./SequelizerManager').default
 
 };

@@ -4,7 +4,7 @@ const vsprintf = require("sprintf-js").vsprintf;
 /**
  * 定义一个预定义的错误类别
  */
-export class ErrorType {
+export default class ErrorType {
 
     constructor( public key:string, public code:number, public formaters:any ) {
         if( !formaters['en_US'] ) throw new Error("Error '" + code + "': missing formater for locale 'en_US'");

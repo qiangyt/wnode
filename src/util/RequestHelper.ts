@@ -1,7 +1,7 @@
 import * as http from 'http';
 
 
-export class RequestHelper {
+export default class RequestHelper {
 
     static normalizeIpv4( ip:string ) {
         const pos = ip.lastIndexOf(':');
@@ -44,11 +44,11 @@ export class RequestHelper {
         if( headers ) {
             // proxied by nginx / apache mod_proxy
             r = headers['x-real-ip'];
-            if( r && r.length ) return RequestHelper.normalizeIpv4(r);
+            if( r && r.length ) return RequestHelper.normalizeIpv4(<string>r);
 
             const xForwardedFor = headers['x-forwarded-for'];
             if( xForwardedFor && xForwardedFor.length ) {
-                for( let t of xForwardedFor.split(',') ) {
+                for( let t of (<string>xForwardedFor).split(',') ) {
                     t = t.trim();
                     if( t.length ) return RequestHelper.normalizeIpv4(t);
                 }

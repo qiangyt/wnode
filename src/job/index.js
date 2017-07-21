@@ -3,7 +3,7 @@
 
 module.exports = {
 
-    AliSearchJobQueue: require('./AliSearchJobQueue'),
+    AliSearchJobQueue: require('./AliSearchJobQueue').default,
     kue: require('./kue')
 
 };

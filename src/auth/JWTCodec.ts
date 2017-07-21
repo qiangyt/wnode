@@ -1,10 +1,10 @@
 import * as Jwt from 'jsonwebtoken';
-import {JWToken} from './JWToken';
+import JWToken from './JWToken';
 import * as ApiRole from '../ApiRole';
 import * as uuid from 'node-uuid';
-import {AuthTokenCodec} from './AuthTokenCodec';
-import {AuthToken} from './AuthToken';
-import {Context} from '../ctx/Context';
+import AuthTokenCodec from './AuthTokenCodec';
+import AuthToken from './AuthToken';
+import Context from '../ctx/Context';
 
 declare module global {
     const config:any;
@@ -14,7 +14,7 @@ declare module global {
 /**
  * JWT编解码器
  */
-export class JWTCodec extends AuthTokenCodec {
+export default class JWTCodec extends AuthTokenCodec {
 
     public $id = 'JWTCodec';
     public $lazy = true;
@@ -140,4 +140,3 @@ export class JWTCodec extends AuthTokenCodec {
     }
 
 }
-

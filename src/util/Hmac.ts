@@ -1,7 +1,7 @@
 import * as Crypto from 'crypto';
 
 
-export class Hmac {
+export default class Hmac {
 
     static sha1( input:Buffer, key:string ) {
         const result = Crypto.createHmac('sha1', key);

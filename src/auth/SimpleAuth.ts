@@ -1,15 +1,15 @@
 const Errors = require('../Errors');
-import {Exception} from '../Exception';
+import Exception from '../Exception';
 import * as ApiRole from '../ApiRole';
-import {AuthToken} from './AuthToken';
+import AuthToken from './AuthToken';
 import * as Log from '../Logger';
-import {AuthTokenCodec} from './AuthTokenCodec';
-import {Context} from '../ctx/Context';
-import {ApiDefinition} from '../ApiDefinition';
+import AuthTokenCodec from './AuthTokenCodec';
+import Context from '../ctx/Context';
+import ApiDefinition from '../ApiDefinition';
 import * as Restify from 'restify';
 
 
-export class SimpleAuth {
+export default class SimpleAuth {
 
     public $id = 'SimpleAuth';
     public $AuthTokenCodec:AuthTokenCodec = null;
@@ -65,7 +65,7 @@ export class SimpleAuth {
                     if( !token ) {
                         const authorizationHeader = headers.authorization;
                         if( authorizationHeader && authorizationHeader.indexOf('aauth ', 0) === 0 ) {
-                            token = authorizationHeader.substring('aauth '.length);
+                            token = (<string>authorizationHeader).substring('aauth '.length);
                         }
                     }
                 }
@@ -88,4 +88,3 @@ export class SimpleAuth {
     }
 
 }
-

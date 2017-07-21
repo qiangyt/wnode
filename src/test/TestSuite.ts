@@ -1,14 +1,14 @@
-import {TestContext} from './TestContext';
+import TestContext from './TestContext';
 import * as Util from 'util';
 import * as Sinon from 'sinon';
-import {Context} from '../ctx/Context';
+import Context from '../ctx/Context';
 
 declare module global {
     const bearcat:any;
 }
 
 
-export class TestSuite {
+export default class TestSuite {
 
     public ctx:Context;
     public sinons:any[];

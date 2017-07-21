@@ -3,8 +3,8 @@
 
 module.exports = {
 
-    DaoTestSuite: require('./DaoTestSuite'),
-    TestContext:  require('./TestContext'),
-    TestSuite:    require('./TestSuite')
+    DaoTestSuite: require('./DaoTestSuite').default,
+    TestContext:  require('./TestContext').default,
+    TestSuite:    require('./TestSuite').default
 
 };

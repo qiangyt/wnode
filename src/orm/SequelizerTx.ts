@@ -4,7 +4,7 @@ import * as Sequelize from 'sequelize';
 /**
  * 封装一个sequelizer事务实例
  */
-export class SequelizerTx {
+export default class SequelizerTx {
 
     public key:string;
 
@@ -29,4 +29,3 @@ export class SequelizerTx {
     }
 
 }
-

@@ -3,9 +3,9 @@
 
 module.exports = {
 
-    BaseContext: require('./Context'),
-    InternalContext: require('./InternalContext'),
-    LocalClientContext: require('./LocalClientContext'),
-    ServerContext: require('./ServerContext')
+    BaseContext: require('./Context').default,
+    InternalContext: require('./InternalContext').default,
+    LocalClientContext: require('./LocalClientContext').default,
+    ServerContext: require('./ServerContext').default
 
 };

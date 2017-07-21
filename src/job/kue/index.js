@@ -3,7 +3,7 @@
 
 module.exports = {
 
-    BatchQueue: require('./BatchQueue'),
-    KueApp:     require('./KueApp')
+    BatchQueue: require('./BatchQueue').default,
+    KueApp: require('./KueApp').default
 
 };

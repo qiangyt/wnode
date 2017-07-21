@@ -1,17 +1,17 @@
 import * as ApiRole from '../ApiRole';
 const Errors = require('../Errors');
 import * as marked from 'marked';
-import {ApiServer} from '../ApiServer';
-import {SwaggerHelper} from '../swagger/SwaggerHelper';
-import {BlueprintHelper} from './BlueprintHelper';
-import {Context} from '../ctx/Context';
+import ApiServer from '../ApiServer';
+import SwaggerHelper from '../swagger/SwaggerHelper';
+import BlueprintHelper from './BlueprintHelper';
+import Context from '../ctx/Context';
 
 //hint: use MWeb Lite to view blueprint
 
 /**
  *
  */
-export class GetBlueprintAPI {
+export default class GetBlueprintAPI {
 
     public $id = 'GetBlueprintAPI';
     public $ApiServer:ApiServer = null;
@@ -64,3 +64,4 @@ Object.assign( GetBlueprintAPI, {
         }
     }
 } );
+

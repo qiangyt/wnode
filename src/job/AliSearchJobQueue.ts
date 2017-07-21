@@ -1,10 +1,9 @@
-import {BatchQueue} from './kue/BatchQueue';
-import {BatchItem} from './kue/BatchQueue';
-import {Context} from '../ctx/Context';
-import {AliOpenSearch} from '../search/AliOpenSearch';
+import BatchQueue, {BatchItem} from './kue/BatchQueue';
+import Context from '../ctx/Context';
+import AliOpenSearch from '../search/AliOpenSearch';
 
 
-export class AliSearchJobQueue extends BatchQueue {
+export default class AliSearchJobQueue extends BatchQueue {
 
     public $AliOpenSearch:AliOpenSearch = null;
 

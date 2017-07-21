@@ -1,8 +1,8 @@
-import {Context} from  '../ctx/Context';
+import Context from  '../ctx/Context';
 import * as ApiRole from '../ApiRole';
 
 
-export class InternalContext extends Context {
+export default class InternalContext extends Context {
 
     public next:any;
 
@@ -48,4 +48,3 @@ export class InternalContext extends Context {
     }
 
 }
-

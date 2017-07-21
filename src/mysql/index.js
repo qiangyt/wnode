@@ -6,7 +6,7 @@ const requireAsBean = require('../Internal').requireAsBean;
 
 module.exports = {
 
-    MySqlConnection: require('./MySqlConnection'),
+    MySqlConnection: require('./MySqlConnection').default,
     MySqlPool: requireAsBean(module, './MySqlPool')
 
 };

@@ -9,7 +9,7 @@ declare module global {
 }
 
 
-export class KueApp {
+export default class KueApp {
 
     public inited = false;
     public static instance = new KueApp();
@@ -52,5 +52,3 @@ export class KueApp {
     }
 
 }
-
-

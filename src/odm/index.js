@@ -3,8 +3,8 @@
 
 module.exports = {
 
-    MongooseDao:        require('./MongooseDao'),
-    MongooseInstance:   require('./MongooseInstance'),
-    MongooseManager:    require('./MongooseManager')
+    MongooseDao: require('./MongooseDao').default,
+    MongooseInstance: require('./MongooseInstance').default,
+    MongooseManager: require('./MongooseManager').default
 
 };
