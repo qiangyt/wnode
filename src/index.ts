@@ -108,6 +108,7 @@ module.exports = {
     ApiServer: requireAsBean(module, './ApiServer'),
     auth: require('./auth'),
 
+    bean: bean,
     blueprint: require('./blueprint'),
 
     cache: require('./cache'),
@@ -129,6 +130,7 @@ module.exports = {
 
     Logger: require('./Logger'),
 
+    mocha: mocha,
     module: module,
 
     mysql: require('./mysql'),
@@ -138,7 +140,10 @@ module.exports = {
 
     //plugin: require('./plugin'),
 
+    schemaFromSequelizer: schemaFromSequelizer,
+    schemaRef: schemaRef,
     search: require('./search'),
+    start: start,
     swagger: require('./swagger'),
 
     test: require('./test'),
