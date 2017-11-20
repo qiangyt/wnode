@@ -143,7 +143,7 @@ export default class ApiServer {
 
     buildInternalApiDefinition( relative:string ) {
         const wnodeSrcDir = Path.dirname(module.filename);
-        this.buildApiDefinition(wnodeSrcDir, relative);
+        this.buildApiDefinition(Path.join(wnodeSrcDir, relative), relative);
     }
 
 

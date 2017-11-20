@@ -53,3 +53,5 @@ Object.assign( GetSwaggerAPI, {
     },
     validateResponse: false
 } );
+
+module.exports = GetSwaggerAPI;

@@ -65,3 +65,5 @@ Object.assign( GetBlueprintAPI, {
     }
 } );
 
+
+module.exports = GetBlueprintAPI;
