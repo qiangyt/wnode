@@ -12,6 +12,7 @@ export interface AuthResult {
 export default class AuthToken {
 
     constructor( public userId:any, 
+                 public orgId:any,
                  public expireByMinutes:number, 
                  public roles = [ApiRole.any], 
                  public data?:any, 
@@ -28,7 +29,7 @@ export default class AuthToken {
      * 
      */
     internalCopy():AuthToken {
-        return new AuthToken( this.userId, this.expireByMinutes, this.roles, this.data, true );
+        return new AuthToken( this.userId, this.orgId, this.expireByMinutes, this.roles, this.data, true );
     }
 
     ensureSelfOrAdmin( userId:any = this.userId ):void {
@@ -49,11 +50,14 @@ export default class AuthToken {
         }
     }
 
-    ensureSelfOrOrgAdmin( userId:any = this.userId ):void {
+    ensureSelfOrOrgAdmin( userId:any = this.userId, orgId:any = this.orgId ):void {
         if( this.userId === userId ) return;
 
         // 如果不是自己，那么当前用户必须是组织管理员
         if( !this.hasRole(ApiRole.org_admin) ) {
+            throw new Exception( Errors.NO_PERMISSION, ApiRole.org_admin );
+        }
+        if( !this.orgId !== orgId ) {
             throw new Exception( Errors.NO_PERMISSION, ApiRole.org_admin );
         }
     }

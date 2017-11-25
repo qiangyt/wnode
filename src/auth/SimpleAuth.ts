@@ -84,7 +84,7 @@ export default class SimpleAuth {
     }
 
     createEmptyToken() {
-        return new AuthToken( null, null, [ApiRole.any], null, false );
+        return new AuthToken( null, null, null, [ApiRole.any], null, false );
     }
 
 }

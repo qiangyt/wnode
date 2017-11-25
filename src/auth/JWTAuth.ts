@@ -20,7 +20,7 @@ export default class JWTAuth extends SimpleAuth {
     }
 
     createEmptyToken() {
-        return new JWToken( null, null, [ApiRole.any] );
+        return new JWToken( null, null, null, [ApiRole.any] );
     }
 
     static globalAuthBean():JWTAuth {

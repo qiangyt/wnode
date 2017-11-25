@@ -56,6 +56,7 @@ export default class JWTCodec extends AuthTokenCodec {
         const r:any = {};
 
         if( token.userId ) r.uid = token.userId;
+        if( token.orgId ) r.oid = token.orgId;
         if( token.roles ) r.rol = token.roles;
         if( token.internal ) r.itn = token.internal;
         if( token.data ) r.dat = token.data;
@@ -121,7 +122,9 @@ export default class JWTCodec extends AuthTokenCodec {
         const expireByMinutes:number = undefined;//TODO
 
         let userId = decoded.uid;
-        if( userId ) userId = parseInt(userId, 10);
+        //if( userId ) userId = parseInt(userId, 10);
+
+        let orgId = decoded.oid;
 
         let roles = decoded.rol;
         if( !roles ) roles = [ApiRole.any];
@@ -129,14 +132,14 @@ export default class JWTCodec extends AuthTokenCodec {
         let internal = decoded.itn;
         if( internal === undefined || internal === null ) internal = false;
 
-        return new JWToken( userId, expireByMinutes, roles, decoded.dat, internal );
+        return new JWToken( userId, orgId, expireByMinutes, roles, decoded.dat, internal );
     }
 
     /**
      * @{override}
      */
     createEmptyToken() {
-        return new JWToken( null, null, [ApiRole.any], null, false );
+        return new JWToken( null, null, null, [ApiRole.any], null, false );
     }
 
 }

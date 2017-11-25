@@ -17,6 +17,7 @@ export default class AuthTokenCodec {
         return new Promise( function(resolve) {
             const raw = {
                 i: token.userId,
+                o: token.orgId,
                 e: token.expireByMinutes,
                 r: token.roles,
                 d: token.data,
@@ -35,7 +36,7 @@ export default class AuthTokenCodec {
         return new Promise( function( resolve ) {
             const json = me.$Aes128.decrypt(tokenText, 'base64');
             const raw = JSON.parse(json);
-            resolve( new AuthToken( raw.i, raw.e, raw.r, raw.d, raw.x ) );
+            resolve( new AuthToken( raw.i, raw.o, raw.e, raw.r, raw.d, raw.x ) );
         } );
     }
 
