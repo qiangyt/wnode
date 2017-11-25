@@ -189,6 +189,66 @@
         "code": 32,
         "en_US": "bad mail: '%s'",
         "zh_CN": "无效的邮箱: '%s'"
+    },
+
+    "SMS_FAILURE": {
+        "code": 33,
+        "zh_CN": "短消息发送失败",
+        "en_US": "Failed to send short message"
+    },
+
+    "WAIT_MOMENT_TO_SEND_SMS": {
+        "code": 34,
+        "zh_CN": "请稍等片刻再发送短消息",
+        "en_US": "Please wait a moment to send short message again"
+    },
+
+    "VERIFY_CODE_NOT_MATCHES": {
+        "code": 35,
+        "zh_CN": "验证码错误",
+        "en_US": "The verify code is wrong"
+    },
+
+    "DUPLICATED_MOBILE": {
+        "code": 36,
+        "zh_CN": "该手机号码已被别的用户注册，请联系我们的客服",
+        "en_US": "This mobile number is duplicated with others"
+    },
+
+    "DUPLICATED_USER_NAME": {
+        "code": 37,
+        "zh_CN": "该用户名已被别的用户注册",
+        "en_US": "This user name is duplicated with others"
+    },
+
+    "MISSED_OLD_PASSWORD": {
+        "code": 38,
+        "zh_CN": "请输入旧密码",
+        "en_US": "Please input the old password"
+    },
+
+    "VERIFY_CODE_NOT_SENT": {
+        "code": 39,
+        "zh_CN": "验证码还未发出",
+        "en_US": "The verify code is not sent ever"
+    },
+
+    "VERIFY_CODE_EXPIRED": {
+        "code": 40,
+        "zh_CN": "验证码已过期",
+        "en_US": "The verify code is expired"
+    },
+
+    "WAIT_MOMENT_TO_SEND_MAIL": {
+        "code": 41,
+        "zh_CN": "请稍等片刻再发送邮件",
+        "en_US": "Please wait a moment to send mail again"
+    },
+
+    "DUPLICATED_MAIL": {
+        "code": 42,
+        "zh_CN": "该邮件地址已被别的用户注册，请联系我们的客服",
+        "en_US": "This mail address is duplicated with others"
     }
 
 }
