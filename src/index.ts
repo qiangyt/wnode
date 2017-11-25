@@ -106,6 +106,7 @@ module.exports = {
     ApiParameter: require('./ApiParameter').default,
     ApiRole: require('./ApiRole'),
     ApiServer: requireAsBean(module, './ApiServer'),
+    api: require('./api'),
     auth: require('./auth'),
 
     bean: bean,

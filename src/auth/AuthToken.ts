@@ -32,34 +32,51 @@ export default class AuthToken {
         return new AuthToken( this.userId, this.orgId, this.expireByMinutes, this.roles, this.data, true );
     }
 
-    ensureSelfOrAdmin( userId:any = this.userId ):void {
-        if( this.userId === userId ) return;
-
-        // 如果不是自己，那么当前用户必须是系统管理员
+    // 确保当前用户必须是系统管理员
+    ensureAdmin():void {
         if( !this.hasRole(ApiRole.admin) ) {
             throw new Exception( Errors.NO_PERMISSION, ApiRole.admin );
         }
     }
 
-    ensureSelfOrRoot( userId:any = this.userId ):void {
-        if( this.userId === userId ) return;
-
-        // 如果不是自己，那么当前用户必须是系统管理员
+    // 确保当前用户必须是超级管理员
+    ensureRoot():void {
         if( !this.hasRole(ApiRole.root) ) {
             throw new Exception( Errors.NO_PERMISSION, ApiRole.root );
         }
     }
 
+    ensureSelfOrAdmin( userId:any = this.userId ):void {
+        if( this.userId === userId ) return;
+        this.ensureAdmin();
+    }
+
+    ensureSelfOrRoot( userId:any = this.userId ):void {
+        if( this.userId === userId ) return;
+        this.ensureRoot();
+    }
+
     ensureSelfOrOrgAdmin( userId:any = this.userId, orgId:any = this.orgId ):void {
         if( this.userId === userId ) return;
 
-        // 如果不是自己，那么当前用户必须是组织管理员
-        if( !this.hasRole(ApiRole.org_admin) ) {
-            throw new Exception( Errors.NO_PERMISSION, ApiRole.org_admin );
+        // 如果指定用户并非自己，那么
+        this.ensureOrgAdmin( userId, orgId );
+    }
+
+    ensureOrgAdmin( userId:any = this.userId, orgId:any = this.orgId ):void {
+        if( this.orgId === orgId ) {
+             // 如果属于是当前组织，那么必须是组织管理员
+            if( !this.hasRole(ApiRole.org_admin) ) {
+                throw new Exception( Errors.NO_PERMISSION, ApiRole.org_admin );
+            }
+            return;
         }
-        if( !this.orgId !== orgId ) {
-            throw new Exception( Errors.NO_PERMISSION, ApiRole.org_admin );
-        }
+
+        // 如果指定组织不是自己所属组织，那么
+
+        if( this.hasRole(ApiRole.admin) ) return;
+
+        this.ensureRoot();
     }
 
     /**
