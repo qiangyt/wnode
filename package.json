@@ -1,6 +1,6 @@
 {
     "name": "wnode",
-    "version": "0.2.18",
+    "version": "0.2.20",
     "description": "node.js framework by suntoe",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",

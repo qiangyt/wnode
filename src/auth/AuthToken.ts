@@ -40,6 +40,24 @@ export default class AuthToken {
         }
     }
 
+    ensureSelfOrRoot( userId:any = this.userId ):void {
+        if( this.userId === userId ) return;
+
+        // 如果不是自己，那么当前用户必须是系统管理员
+        if( !this.hasRole(ApiRole.root) ) {
+            throw new Exception( Errors.NO_PERMISSION, ApiRole.root );
+        }
+    }
+
+    ensureSelfOrOrgAdmin( userId:any = this.userId ):void {
+        if( this.userId === userId ) return;
+
+        // 如果不是自己，那么当前用户必须是组织管理员
+        if( !this.hasRole(ApiRole.org_admin) ) {
+            throw new Exception( Errors.NO_PERMISSION, ApiRole.org_admin );
+        }
+    }
+
     /**
      * 
      */
