@@ -177,6 +177,18 @@
         "code": 30,
         "en_US": "Please upgrade this client",
         "zh_CN": "请升级到最新版本"
+    },
+
+    "MAIL_NOT_SIGNED_UP": {
+        "code": 31,
+        "en_US": "no user signed up with the mail: %s",
+        "zh_CN": "没有用户使用该邮箱注册: %s"
+    },
+
+    "BAD_MAIL": {
+        "code": 32,
+        "en_US": "bad mail: '%s'",
+        "zh_CN": "无效的邮箱: '%s'"
     }
 
 }
