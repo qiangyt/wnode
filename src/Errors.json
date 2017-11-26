@@ -249,6 +249,12 @@
         "code": 42,
         "zh_CN": "该邮件地址已被别的用户注册，请联系我们的客服",
         "en_US": "This mail address is duplicated with others"
+    },
+
+    "PARAMETER_TOO_LONG": {
+        "code": 43,
+        "en_US": "parameter '%s' is too long, must be equal or less than %s",
+        "zh_CN": "参数'%s'长度必须小于或等于%s"
     }
 
 }
