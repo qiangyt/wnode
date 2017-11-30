@@ -218,4 +218,13 @@ export default class SequelizeDao {
             .then( (entity:any) => this.remove( ctx, entity, options ) );
     }
 
+    distinctFields( ctx:Context, fieldName:string, options?:Sequelize.FindOptions<any> ) {
+        if( !options ) options = {};
+        _.merge( options, {
+            attributes:[[Sequelize.literal('distinct `' + fieldName + '`'), fieldName]]
+        } );
+
+        return this.findAll( ctx, options );
+    }
+
 }
