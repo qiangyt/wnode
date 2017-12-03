@@ -32,51 +32,55 @@ export default class AuthToken {
         return new AuthToken( this.userId, this.orgId, this.expireByMinutes, this.roles, this.data, true );
     }
 
-    // 确保当前用户必须是系统管理员
+    // 确保当前用户必须是系统管理员或超级管理员
     ensureAdmin():void {
-        if( !this.hasRole(ApiRole.admin) ) {
-            throw new Exception( Errors.NO_PERMISSION, ApiRole.admin );
-        }
+        if( this.hasRole(ApiRole.admin) ) return;
+        if( this.hasRole(ApiRole.root) ) return;
+        throw new Exception( Errors.NO_PERMISSION, ApiRole.admin );
     }
 
-    // 确保当前用户必须是超级管理员
-    ensureRoot():void {
-        if( !this.hasRole(ApiRole.root) ) {
-            throw new Exception( Errors.NO_PERMISSION, ApiRole.root );
+    // 确保有权限操作目标用户的数据
+    ensureTargetUserAccessible( targetUserId:any ):any {
+        if( !this.hasRole(ApiRole.user) ) {
+            // 如果未作为普通用户登录
+            this.ensureAdmin(); // 必须是管理员
+            return;
         }
-    }
+        
+        // 如果作为普通用户登录
 
-    ensureSelfOrAdmin( userId:any = this.userId ):void {
-        if( this.userId === userId ) return;
+        if( this.userId === targetUserId ) return;// 目标用户就是自己，放行
+        
+        // 目标用户是别人，那么必须是管理员
         this.ensureAdmin();
     }
 
-    ensureSelfOrRoot( userId:any = this.userId ):void {
-        if( this.userId === userId ) return;
-        this.ensureRoot();
+    // 确保当前用户必须是org管理员
+    ensureOrgAdmin():void {
+        if( this.hasRole(ApiRole.org_admin) ) return;
+        this.ensureAdmin();
     }
 
-    ensureSelfOrOrgAdmin( userId:any = this.userId, orgId:any = this.orgId ):void {
-        if( this.userId === userId ) return;
-
-        // 如果指定用户并非自己，那么
-        this.ensureOrgAdmin( userId, orgId );
-    }
-
-    ensureOrgAdmin( userId:any = this.userId, orgId:any = this.orgId ):void {
-        if( this.orgId === orgId ) {
-             // 如果属于是当前组织，那么必须是组织管理员
-            if( !this.hasRole(ApiRole.org_admin) ) {
-                throw new Exception( Errors.NO_PERMISSION, ApiRole.org_admin );
-            }
+    // 确保有权限操作目标org用户的数据
+    ensureTargetOrgUserAccessible( targetUserId:any, targetOrgId:any ):any {
+        if( !this.hasRole(ApiRole.org_user) ) {
+            // 如果未作为org用户登录
+            this.ensureAdmin(); // 必须是管理员
             return;
         }
 
-        // 如果指定组织不是自己所属组织，那么
+        // 如果作为org用户登录
 
-        if( this.hasRole(ApiRole.admin) ) return;
+        if( this.orgId === targetOrgId ) {
+            // 自己当前登录的org就是目标org
+            if( this.userId === targetUserId ) return;// 自己就是目标用户，放行
 
-        this.ensureRoot();
+            this.ensureOrgAdmin();
+            return;
+        }
+
+        // 自己当前登录的org不是是目标org，必须是管理员
+        this.ensureAdmin();
     }
 
     /**

@@ -5,11 +5,11 @@ const ApiRole = require('../ApiRole');
 export default class OrgUserAPI {
 
     static apiMeta:any = {
-        role: ApiRole.org_user
+        role: [ApiRole.org_user]
     };
 
     auth( ctx:Context, userId:any /* required:false */, orgId:any /* required:false */) {
-        ctx.$auth.ensureSelfOrOrgAdmin( userId, orgId );
+        ctx.$auth.ensureTargetOrgUserAccessible( userId, orgId );
         ctx.ok();
     }
 
