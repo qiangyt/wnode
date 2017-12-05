@@ -70,9 +70,13 @@ export default class SequelizeDao {
     /** 用id获取entity，返回Promise<entity>。如果找不到entity，则报错 */
     load( ctx:Context, id:string|number, options:Sequelize.FindOptions<any> ) {
         return this.get( ctx, id, options ).then( (entity:any) => {
-            if( !entity ) throw new Exception( Errors.ENTITY_NOT_FOUND, this.modelName, id );
+            if( !entity ) this.raiseEntityNotFoundError(id);
             return entity;
         } );
+    }
+
+    raiseEntityNotFoundError(id:string|number) {
+        throw new Exception( Errors.ENTITY_NOT_FOUND, this.modelName, id );
     }
 
     /** 用id数组获取对应的数据对象，返回Promise<entity[]> */

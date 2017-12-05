@@ -58,9 +58,13 @@ export default class MongooseDao {
     load( ctx:Context, id:string|number ):Promise<Object> {
         return this.get( ctx, id )
         .then( document => {
-            if( !document ) throw new Exception( Errors.ENTITY_NOT_FOUND, this.schemaName, id );
+            if( !document ) this.raiseEntityNotFoundError(id);
             return document;
         } );
+    }
+
+    raiseEntityNotFoundError(id:string|number) {
+        throw new Exception( Errors.ENTITY_NOT_FOUND, this.schemaName, id );
     }
 
     /** 查询表中是否至少有一行，返回Promise<boolean> */
@@ -174,7 +178,7 @@ export default class MongooseDao {
         };
         return this.model.findByIdAndUpdate( id, document, options ).exec()
             .then( document => {
-                if( !document ) throw new Exception( Errors.ENTITY_NOT_FOUND, this.schemaName, id );
+                if( !document ) this.raiseEntityNotFoundError(id);
                 return document;
             } );
     }
@@ -191,7 +195,7 @@ export default class MongooseDao {
     removeById( ctx:Context, id:string|number ):Promise<Object> {
         return this.model.findByIdAndRemove(id).exec()
             .then( document => {
-                if( !document ) throw new Exception( Errors.ENTITY_NOT_FOUND, this.schemaName, id );
+                if( !document ) this.raiseEntityNotFoundError(id);
                 return document;
             } );
     }

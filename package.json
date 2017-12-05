@@ -1,13 +1,13 @@
 {
     "name": "wnode",
-    "version": "0.2.32",
+    "version": "0.2.33",
     "description": "node.js framework by suntoe",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "clean": "node_modules/.bin/gulp clean",
-        "dist": "node_modules/.bin/gulp clean default"
+        "dist": "node_modules/.bin/gulp clean | node_modules/.bin/gulp clean default"
     },
     "repository": {
         "type": "git",
