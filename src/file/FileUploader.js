@@ -1,22 +1,34 @@
 'use strict';
 
 const Logger = require('../Logger');
+const Exception = require('../Exception');
+const CodePath = require('../util/CodePath');
+const Errors = require('../Errors');
+const ErrorType = require('../ErrorType');
 const FileHelper = require('../file/FileHelper');
+const InternalContext = require('../ctx/InternalContext');
 const formidable = require('formidable');
 const http = require('http');
 const util = require('util');
+const NodeUuid = require('node-uuid');
 
 
 //https://github.com/felixge/node-formidable.git
+//TODO: how to support transaction when internaly invoking API
 
 class FileUploader {
 
     constructor() {
         this.$id = 'FileUploader';
         this.$init = '_init';
+        this.$MsClient = null;
         this.logger = Logger.create(this);
+
+        this.Package = require(CodePath.resolve('../package.json'));
+
         this.$lazy = true;
     }
+
 
     _createFormidable() {
         const cfg = this.config;
@@ -59,11 +71,23 @@ class FileUploader {
 
         if (!cfg.port) throw new Error('<file.upload.port> is not configured');
 
+        cfg.allowedAPIs = cfg.allowedAPIs || {};
+
+
         this.server = http.createServer((req, res) => {
             if (req.url !== '/upload') return;
 
+            const headers = {
+                '$version': this.Package.version,
+                'Access-Control-Allow-Credentials': 'true',
+                'Access-Control-Allow-Headers': 'aauth,Content-Type,Content-Length, Authorization, Accept,X-Requested-With',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Max-Age': '3600'
+            };
+
             if (req.method.toLowerCase() !== 'post') {
-                this.showFileUploadForm(res);
+                this.showFileUploadForm(res, headers);
                 return;
             }
 
@@ -75,32 +99,35 @@ class FileUploader {
                     return; //TODO: error response
                 }
 
-                res.writeHead(200, { 'content-type': 'text/plain' });
-                res.write('received upload:\n\n');
-                res.end(util.inspect({ fields: fields, files: files }));
+                let serviceName, apiName, apiParameters;
 
-                //file.size = 0//The size of the uploaded file in bytes. If the file is still being uploaded (see 'fileBegin' event), this property says how many bytes of the file have been written to disk yet.
-                //file.path = null//The path this file is being written to. You can modify this in the 'fileBegin' event in case you are unhappy with the way formidable generates a temporary path for your files.
-                //file.name = null//The name this file had according to the uploading client.
-                //file.type = null//The mime type of this file, according to the uploading client.
-                //Formidable.File#toJSON()//This method returns a JSON-representation of the file, allowing you to JSON.stringify() the file which is useful for logging and responding to requests.
+                if (fields) {
+                    apiParameters = {};
+                    for (let fieldName in fields) {
+                        const fieldValue = fields[fieldName];
+                        if ('service' === fieldName) {
+                            serviceName = fieldValue;
+                            continue;
+                        }
+                        if ('api' === fieldName) {
+                            apiName = fieldValue;
+                            continue;
+                        }
+                        apiParameters[fieldName] = fieldValue;
+                    }
 
-                //'progress'//Emitted after each incoming chunk of data that has been parsed. Can be used to roll your own progress bar.
-                //form.on('progress', function(bytesReceived, bytesExpected) {});
-                //});
-
-                //'error'
-                //Emitted when there is an error processing the incoming form. A request that experiences an error is automatically paused, you will have to manually call request.resume() if you want the request to continue firing 'data' events.
-                //form.on('error', function(err) {});
-
-                //'aborted'
-                //Emitted when the request was aborted by the user. Right now this can be due to a 'timeout' or 'close' event on the socket. After this event is emitted, an error event will follow. In the future there will be a separate 'timeout' event (needs a change in the node core).
-
-                //form.on('aborted', function() {});
-                //'end'
-
-                //form.on('end', function() {});
-                //Emitted when the entire request has been received, and all contained files have finished flushing to disk. This is a great place for you to send your response.
+                    if (serviceName && apiName) {
+                        this._callInternalAPI(serviceName, apiName, parameters)
+                            .then(data => {
+                                this._responseOk(res, headers, data);
+                            })
+                            .catch(err => {
+                                this._responseError(res, headers, err);
+                            });
+                    } else {
+                        this._echo(res, headers, fields, files);
+                    }
+                }
 
                 return;
             });
@@ -111,6 +138,81 @@ class FileUploader {
     }
 
 
+    //const response = {code: '0', data:result, time: new Date().getTime()};
+
+    _respondJson(res, headers, body) {
+
+        headers['content-type'] = 'application/json;charset=utf-8';
+
+        body.code = body.code || '0';
+        body.sid = body.sid || NodeUuid.v4();
+        body.tid = body.tid || NodeUuid.v4();
+        body.time = body.time || new Date().getTime();
+
+        res.writeHead(200, headers);
+        res.end(JSON.stringify(body));
+    }
+
+
+    _responseOk(res, headers, data) {
+        this._respondJson(res, headers, { data });
+    }
+
+
+    _responseError(res, headers, err) {
+        this._respondJson(res, headers, data);
+
+        let body;
+
+        if (!err instanceof Exception) {
+            if (Util.isError(err)) {
+                this.logger.error(Object.assign({ stack: err.stack }), err.message); // print the stack trace
+            } else {
+                this.logger.error(util.inspect(err));
+            }
+
+            body = Errors.INTERNAL_ERROR.build();
+        } else {
+            if (global.config.server.printStackTraceAlways) {
+                logger.error(err, err.message);
+            }
+            body = err.data.build(err.args);
+        }
+
+        this._respondJson(res, headers, body);
+    }
+
+
+    _echo(res, headers, fields, files) {
+        this._responseOk(res, headers, { data: { fields, files } });
+        //res.writeHead(200, { 'content-type': 'text/plain' });
+        //res.write('received upload:\n\n');
+        //res.end(util.inspect({ fields: fields, files: files }));
+
+        //file.size = 0//The size of the uploaded file in bytes. If the file is still being uploaded (see 'fileBegin' event), this property says how many bytes of the file have been written to disk yet.
+        //file.path = null//The path this file is being written to. You can modify this in the 'fileBegin' event in case you are unhappy with the way formidable generates a temporary path for your files.
+        //file.name = null//The name this file had according to the uploading client.
+        //file.type = null//The mime type of this file, according to the uploading client.
+        //Formidable.File#toJSON()//This method returns a JSON-representation of the file, allowing you to JSON.stringify() the file which is useful for logging and responding to requests.
+
+        //'progress'//Emitted after each incoming chunk of data that has been parsed. Can be used to roll your own progress bar.
+        //form.on('progress', function(bytesReceived, bytesExpected) {});
+        //});
+
+        //'error'
+        //Emitted when there is an error processing the incoming form. A request that experiences an error is automatically paused, you will have to manually call request.resume() if you want the request to continue firing 'data' events.
+        //form.on('error', function(err) {});
+
+        //'aborted'
+        //Emitted when the request was aborted by the user. Right now this can be due to a 'timeout' or 'close' event on the socket. After this event is emitted, an error event will follow. In the future there will be a separate 'timeout' event (needs a change in the node core).
+
+        //form.on('aborted', function() {});
+        //'end'
+
+        //form.on('end', function() {});
+        //Emitted when the entire request has been received, and all contained files have finished flushing to disk. This is a great place for you to send your response.
+    }
+
     start() {
         const port = this.config.port;
         this.server.listen(port);
@@ -119,9 +221,11 @@ class FileUploader {
 
 
     // show a file upload form
-    showFileUploadForm(res) {
+    showFileUploadForm(res, headers) {
 
-        res.writeHead(200, { 'content-type': 'text/html' });
+        headers['content-type'] = 'text/html;charset=utf-8';
+        res.writeHead(200, headers);
+
         res.end(
             '<form action="/upload" enctype="multipart/form-data" method="post">' +
             '<input type="text" name="title"><br>' +
@@ -129,6 +233,17 @@ class FileUploader {
             '<input type="submit" value="Upload">' +
             '</form>'
         );
+    }
+
+    //Context, serviceName:string, apiName:string, parameters:any ) {
+    _callInternalAPI(serviceName, apiName, parameters) {
+        const allowedService = this.config.allowedAPIs[serviceName];
+        if (!allowedService) throw new Exception(Errors.NO_PERMISSION, `call service ${serviceName}`);
+
+        if (!allowedService[apiName]) throw new Exception(Errors.NO_PERMISSION, `call api ${serviceName}/${apiName}`);
+
+        const ctx = new InternalContext();
+        return this.$MsClient.call(ctx, serviceName, apiName, parameters);
     }
 
 }
