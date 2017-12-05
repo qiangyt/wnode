@@ -9,6 +9,7 @@ import * as Log from './Logger';
 const Errors = require('./Errors');
 import CodePath from './util/CodePath';
 const CookieParser = require('restify-cookies');
+const FileUploader = require('./file/FileUploader');
 import JWTAuth from './auth/JWTAuth';
 import SwaggerHelper from './swagger/SwaggerHelper';
 import BlueprintHelper from './blueprint/BlueprintHelper';
@@ -32,6 +33,7 @@ export default class ApiServer {
     public auth:SimpleAuth;
     public restify:Restify.Server;
     public apiDefinitions:any = {};
+    public fileUploader:any;
 
     
     /**
@@ -231,6 +233,8 @@ export default class ApiServer {
         this.logger.info('finish server initialization');
 
         this.validateApi();
+
+        this.buildUploader();
     }
 
     /** blueprint has a swagger spec validator that we could easily reuse */
@@ -278,6 +282,21 @@ export default class ApiServer {
             }
         }
         
+    }
+    
+
+    buildUploader() {
+        let cfg = global.config.file;
+        if( !cfg ) return;
+
+        cfg = cfg.upload;
+        if( !cfg ) return;        
+        if( !cfg.enable ) return;
+
+        global.bearcat.module(FileUploader);
+        this.fileUploader = global.bearcat.getBean('FileUploader');
+        
+        this.fileUploader.start();
     }
 
 

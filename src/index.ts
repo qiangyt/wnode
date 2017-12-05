@@ -123,6 +123,8 @@ module.exports = {
     ErrorType: require('./ErrorType').default,
     Exception: require('./Exception').default,
 
+    file: require('./file'),
+
     //graphql: require('./graphql'),
 
     HackBearcat: require('./HackBearcat'),
