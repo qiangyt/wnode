@@ -2,7 +2,7 @@
 
 const Logger = require('../Logger');
 const Exception = require('../Exception');
-const CodePath = require('../util/CodePath');
+const CodePath = require('../util/CodePath').default;
 const Errors = require('../Errors');
 const ErrorType = require('../ErrorType');
 const FileHelper = require('../file/FileHelper');
