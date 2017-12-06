@@ -52,17 +52,17 @@ export default class MsClient {
         }
     }
 
-    call( ctx:Context, serviceName:string, apiName:string, parameters:any ) {
+    call( ctx:Context, serviceName:string, apiName:string, parameters:any, defaultAuthToken:string ) {
             const me = this;
             return new Promise( function( resolve, reject ) {
-                me._call( ctx, serviceName, apiName, parameters, function( err:any, result:any ) {
+                me._call( ctx, serviceName, apiName, parameters, defaultAuthToken, function( err:any, result:any ) {
                     if( err ) reject(err);
                     else resolve(result);
                 } );
             } );
     }
 
-    _call( ctx:Context, serviceName:string, apiName:string, parameters:any, callback:Function ) {
+    _call( ctx:Context, serviceName:string, apiName:string, parameters:any, defaultAuthToken:string, callback:Function ) {
         let s:any;
         let isLocal:boolean;
         if( !serviceName ) isLocal = true;
@@ -88,8 +88,8 @@ export default class MsClient {
             const lctx = new LocalClientContext( ctx, def, func );
             def.respond( lctx, def.spec.parameters, parameters );
         } else {
-            this.resolveInternalAuthToken(ctx).then( function(internalAuthToken) {
-                parameters.aauth = internalAuthToken;
+            this.resolveAuthToken(ctx, defaultAuthToken).then( function(authToken) {
+                parameters.aauth = authToken;
                 parameters.tid = ctx.traceId;
                 parameters.psid = ctx.spanId;//previous span id
 
@@ -112,7 +112,11 @@ export default class MsClient {
     /**
      *
      */
-    resolveInternalAuthToken( ctx:Context ) {
+    resolveAuthToken( ctx:Context, defaultAuthToken:string ) {
+        if(defaultAuthToken) {
+            return Promise.resolve(defaultAuthToken);
+        }
+
         if( !ctx.$authInternal ) {
             ctx.$authInternal = ( ctx.$auth ) ? ctx.$auth.internalCopy() : new AuthToken( null, null, null, null, true );
         }
