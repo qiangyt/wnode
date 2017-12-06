@@ -34,6 +34,7 @@ export default class SimpleAuth {
         
         return this.decode( ctx, token ).then( function(auth:AuthToken) {
             ctx.$auth = auth;
+            ctx.$authToken = token;
             
             const authResult = auth.hasRoles(def.roles);
             if( authResult.ok ) return;

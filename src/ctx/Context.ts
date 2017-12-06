@@ -18,6 +18,7 @@ declare module global {
 export default class Context {
 
     public $auth:AuthToken = JWTAuth.globalAuthBean().createEmptyToken();
+    public $authToken:string;
     public isTxOwner = false;
     public logger:Log.Logger;
     public req:http.ServerRequest;

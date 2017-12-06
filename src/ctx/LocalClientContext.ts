@@ -9,6 +9,7 @@ export default class LocalClientContext extends Context {
         
         if( parent ) {
             this.$auth = parent.$auth;
+            this.$authToken = parent.$authToken;
             this.req = parent.req;
             this.tx = parent.tx;
             this.spanId = parent.spanId;
