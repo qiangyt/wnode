@@ -71,9 +71,6 @@ class FileUploader {
 
         if (!cfg.port) throw new Error('<file.upload.port> is not configured');
 
-        cfg.allowedAPIs = cfg.allowedAPIs || {};
-
-
         this.server = http.createServer((req, res) => {
             if (req.url !== '/upload') return;
 
@@ -86,8 +83,15 @@ class FileUploader {
                 'Access-Control-Max-Age': '3600'
             };
 
-            if (req.method.toLowerCase() !== 'post') {
-                this.showFileUploadForm(res, headers);
+            const method = req.method.toLowerCase();
+            if (method !== 'post') {
+                if (method === 'get') {
+                    this.showFileUploadForm(res, headers);
+                    return;
+                }
+
+                res.writeHead(204, headers);
+                res.end();
                 return;
             }
 
@@ -95,41 +99,10 @@ class FileUploader {
 
             form.parse(req, (err, fields, files) => {
                 if (err) {
-                    this.logger.error('TODO');
+                    this._responseError(res, headers, err);
                     return; //TODO: error response
                 }
-
-                let serviceName, apiName, apiParameters;
-
-                if (fields) {
-                    apiParameters = {};
-                    for (let fieldName in fields) {
-                        const fieldValue = fields[fieldName];
-                        if ('service' === fieldName) {
-                            serviceName = fieldValue;
-                            continue;
-                        }
-                        if ('api' === fieldName) {
-                            apiName = fieldValue;
-                            continue;
-                        }
-                        apiParameters[fieldName] = fieldValue;
-                    }
-
-                    if (serviceName && apiName) {
-                        this._callInternalAPI(serviceName, apiName, parameters)
-                            .then(data => {
-                                this._responseOk(res, headers, data);
-                            })
-                            .catch(err => {
-                                this._responseError(res, headers, err);
-                            });
-                    } else {
-                        this._echo(res, headers, fields, files);
-                    }
-                }
-
-                return;
+                this._responseOk(res, headers, files);
             });
 
 
@@ -233,17 +206,6 @@ class FileUploader {
             '<input type="submit" value="Upload">' +
             '</form>'
         );
-    }
-
-    //Context, serviceName:string, apiName:string, parameters:any ) {
-    _callInternalAPI(serviceName, apiName, parameters) {
-        const allowedService = this.config.allowedAPIs[serviceName];
-        if (!allowedService) throw new Exception(Errors.NO_PERMISSION, `call service ${serviceName}`);
-
-        if (!allowedService[apiName]) throw new Exception(Errors.NO_PERMISSION, `call api ${serviceName}/${apiName}`);
-
-        const ctx = new InternalContext();
-        return this.$MsClient.call(ctx, serviceName, apiName, parameters);
     }
 
 }
