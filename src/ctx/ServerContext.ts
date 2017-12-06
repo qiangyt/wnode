@@ -3,7 +3,7 @@ import Context from  './Context';
 import LocalClientContext from  './LocalClientContext';
 import * as Util from 'util';
 import CodePath from '../util/CodePath';
-import * as uuid from 'node-uuid';
+import * as Misc from '../util/Misc';
 import * as Log from '../Logger';
 import ApiServer from '../ApiServer';
 import ApiDefinition from '../ApiDefinition';
@@ -27,7 +27,7 @@ export default class ServerContext extends Context {
 
         super(apiDefinition);
 
-        this.spanId = uuid.v4();
+        this.spanId = Misc.uuid();
 
         const params = req.params;
         if( params ) {
@@ -35,7 +35,7 @@ export default class ServerContext extends Context {
             this.previousSpanId = params.psid;
         }
         if( !this.traceId ) {
-            this.traceId = uuid.v4();
+            this.traceId = Misc.uuid();
         }
 
         this.next = null;

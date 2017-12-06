@@ -10,7 +10,7 @@ const InternalContext = require('../ctx/InternalContext');
 const formidable = require('formidable');
 const http = require('http');
 const util = require('util');
-const NodeUuid = require('node-uuid');
+const Misc = require('../util/Misc');
 
 
 //https://github.com/felixge/node-formidable.git
@@ -145,8 +145,8 @@ class FileUploader {
         headers['content-type'] = 'application/json;charset=utf-8';
 
         body.code = body.code || '0';
-        body.sid = body.sid || NodeUuid.v4();
-        body.tid = body.tid || NodeUuid.v4();
+        body.sid = body.sid || Misc.uuid();
+        body.tid = body.tid || Misc.uuid();
         body.time = body.time || new Date().getTime();
 
         res.writeHead(200, headers);

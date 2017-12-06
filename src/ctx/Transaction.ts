@@ -1,7 +1,7 @@
 const Errors = require('../Errors');
 import Exception from '../Exception';
 import * as Log from '../Logger';
-import * as uuid from 'node-uuid';
+import * as Misc from '../util/Misc';
 import Context from './Context';
 const logger = Log.create('Transaction');
 
@@ -17,7 +17,7 @@ declare module global {
 export default class Transaction {
 
     public resources:any[] = [];
-    public id = uuid.v4();
+    public id = Misc.uuid();
 
     public finishing = false;
     public finished = false;

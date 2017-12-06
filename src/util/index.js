@@ -13,6 +13,7 @@ module.exports = {
     Crypt3Des: requireAsBean(module, './Crypt3Des').default,
     Hmac: require('./Hmac').default,
     Html: require('./Html').default,
+    Misc: require('./Misc'),
     RequestHelper: require('./RequestHelper').default,
     PasswordHelper: require('./PasswordHelper').default,
     Time: require('./Time').default

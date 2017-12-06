@@ -1,7 +1,7 @@
 import * as Jwt from 'jsonwebtoken';
 import JWToken from './JWToken';
 import * as ApiRole from '../ApiRole';
-import * as uuid from 'node-uuid';
+import * as Misc from '../util/Misc';
 import AuthTokenCodec from './AuthTokenCodec';
 import AuthToken from './AuthToken';
 import Context from '../ctx/Context';
@@ -26,7 +26,7 @@ export default class JWTCodec extends AuthTokenCodec {
         if( !cfg ) cfg = global.config.jwt = {};
 
         if( !cfg.algorithm ) cfg.algorithm = 'HS256';
-        if( !cfg.key ) cfg.key = uuid.v4();
+        if( !cfg.key ) cfg.key = Misc.uuid();
 
         this.config = cfg;
     }
