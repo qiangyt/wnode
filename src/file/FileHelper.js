@@ -20,7 +20,7 @@ function createConfiguredFolderIfNotExists(cfg, configName, defaultPath) {
     let path = cfg[configName];
     if (!path) {
         if (!defaultPath) throw new Error(`<file.${configName}> is not configured`);
-        path = defaultPath;
+        cfg[configName] = path = defaultPath;
     }
 
     createFolderIfNotExists_sync(path);
