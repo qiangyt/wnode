@@ -1,6 +1,6 @@
 const Errors = require('../Errors');
 import * as Log from '../Logger';
-import * as Restify from 'restify';
+const RestifyClients = require('restify-clients');
 import LocalClientContext from '../ctx/LocalClientContext';
 import AuthToken from '../auth/AuthToken';
 import JWTAuth from '../auth/JWTAuth';
@@ -43,10 +43,14 @@ export default class MsClient {
                 const connectTimeout = scfg.connectTimeout;
                 const requestTimeout = scfg.requestTimeout;
 
-                s.client = (<any>Restify).createJsonClient( {
+                s.client = RestifyClients.createJsonClient( {
                     url: sbase,
+                    audit: true,
                     connectTimeout: connectTimeout ? connectTimeout : 3000,
-                    requestTimeout: requestTimeout ? requestTimeout : 2000
+                    requestTimeout: requestTimeout ? requestTimeout : 2000,
+                    retry: false,
+                    safeStringify: true,
+                    followRedirects: false
                 } )
             }
         }

@@ -1,7 +1,6 @@
 {
     "name": "wnode",
-    "version": "0.2.43",
-
+    "version": "0.2.45",
     "description": "node.js framework by suntoe",
     "main": "dist/index.js",
     "typings": "dist/index.d.ts",
@@ -88,6 +87,7 @@
         "redis": "2.7.1",
         "request": "2.74.0",
         "restify": "5.0.1",
+        "restify-clients": "1.5.2",
         "restify-cookies": "0.2.2",
         "sequelize": "3.30.4",
         "sprintf-js": "1.0.3",
