@@ -28,6 +28,8 @@ export default class SimpleAuth {
      * @param req the request object
      */
     auth( ctx:Context, def:ApiDefinition, req:Restify.Request ) {
+        if( def.roles.indexOf(ApiRole.any) >= 0 ) return Promise.resolve();
+
         const me = this;
         const token = this.resolveToken( ctx, req );
         this.logger.debug( {token, ctx}, 'decoding token' );
