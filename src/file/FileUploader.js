@@ -40,7 +40,7 @@ class FileUploader {
         r.encoding = cfg.encoding || 'utf-8';
 
         //Sets the directory for placing file uploads in. You can move them later on using fs.rename(). The default is os.tmpdir().
-        r.uploadDir = cfg.this.config.temp;
+        r.uploadDir = cfg.temp;
 
         //If you want the files written to form.uploadDir to include the extensions of the original files, set this property to true.
         r.keepExtensions = (cfg.keepExtensions === undefined) ? true : cfg.keepExtensions;
