@@ -8,7 +8,7 @@ export default class OrgUserAPI {
         role: [ApiRole.org_user]
     };
 
-    auth( ctx:Context, userId:any /* required:false */, orgId:any /* required:false */) {
+    auth( ctx:Context, userId:number /* type:'integer', required:false */, orgId:number /* type:'integer', required:false */) {
         ctx.$auth.ensureTargetOrgUserAccessible( userId, orgId );
         ctx.ok();
     }

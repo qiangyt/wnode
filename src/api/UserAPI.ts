@@ -8,7 +8,7 @@ export default class UserAPI {
         role: [ApiRole.user]
     };
 
-    auth( ctx:Context, userId:any /* required:false */) {
+    auth( ctx:Context, userId:number /* type:'integer', required:false */) {
         ctx.$auth.ensureTargetUserAccessible( userId );
         ctx.ok();
     }
