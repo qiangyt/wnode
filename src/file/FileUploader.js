@@ -65,6 +65,8 @@ class FileUploader {
     }
 
     _init() {
+        this.path = global.server.path + '/upload';
+
         let cfg = this.config = FileHelper.loadUploadConfig();
 
         FileHelper.createConfiguredFolderIfNotExists(cfg, 'temp');
@@ -72,7 +74,7 @@ class FileUploader {
         if (!cfg.port) throw new Error('<file.upload.port> is not configured');
 
         this.server = http.createServer((req, res) => {
-            if (req.url !== '/upload') return;
+            if (req.url !== this.path) return;
 
             const headers = {
                 '$version': this.Package.version,
@@ -189,7 +191,7 @@ class FileUploader {
     start() {
         const port = this.config.port;
         this.server.listen(port);
-        this.logger.info(`uploader is listening on ${port}`);
+        this.logger.info(`uploader is listening on ${this.path}:${port}.`);
     }
 
 
