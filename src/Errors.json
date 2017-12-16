@@ -255,6 +255,12 @@
         "code": 43,
         "en_US": "parameter '%s' is too long, must be equal or less than %s",
         "zh_CN": "参数'%s'长度必须小于或等于%s"
+    },
+
+    "FILE_NOT_FOUND": {
+        "code": 44,
+        "en_US": "file not found: '%s'",
+        "zh_CN": "文件未找到: %s"
     }
 
 }
