@@ -65,7 +65,7 @@ class FileUploader {
     }
 
     _init() {
-        this.path = global.server.path + '/upload';
+        this.path = global.config.server.path + '/upload';
 
         let cfg = this.config = FileHelper.loadUploadConfig();
 
