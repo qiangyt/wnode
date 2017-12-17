@@ -228,7 +228,8 @@ export default class SequelizeDao {
             attributes:[[Sequelize.literal('distinct `' + fieldName + '`'), fieldName]]
         } );
 
-        return this.findAll( ctx, options );
+        return this.findAll( ctx, options )
+        .then( fieldValues => fieldValues.map( row => row[fieldName] ) );
     }
 
 }
