@@ -202,7 +202,7 @@ class FileUploader {
         res.writeHead(200, headers);
 
         res.end(
-            '<form action="/upload" enctype="multipart/form-data" method="post">' +
+            '<form action="' + this.path + '" enctype="multipart/form-data" method="post">' +
             '<input type="text" name="title"><br>' +
             '<input type="file" name="upload" multiple="multiple"><br>' +
             '<input type="submit" value="Upload">' +
