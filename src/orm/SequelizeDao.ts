@@ -95,10 +95,13 @@ export default class SequelizeDao {
 
     /** 用id数组获取对应的数据对象，返回Promise<{id->entity}> */
     map( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ) {
+        const idField = this.idFields()[0];
+        options.attributes = options.attributes || [];
+        (<any>options.attributes).push(idField);
+
         return this.list( ctx, idArray, options )
         .then( (entityArray:any[]) => {
             const r:any = {};
-            const idField = this.idFields()[0];
             entityArray.forEach( function(entity) {
                 const id = entity.get(idField);
                 r[id] = entity;
