@@ -96,6 +96,9 @@ export default class SequelizeDao {
     /** 用id数组获取对应的数据对象，返回Promise<{id->entity}> */
     map( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ) {
         const idField = this.idFields()[0];
+
+        options = options || {};
+
         options.attributes = options.attributes || [];
         (<any>options.attributes).push(idField);
 
@@ -113,6 +116,8 @@ export default class SequelizeDao {
     /** 用id数组获取对应的field，返回Promise<{id->field}> */
     fieldMap( ctx:Context, idArray:Array<string|number>, fieldName:string, options:Sequelize.FindOptions<any> ) {
         const idField = this.idFields()[0];
+
+        options = options || {};
 
         options.attributes = options.attributes || [];
         (<any>options.attributes).push(idField);
@@ -245,13 +250,18 @@ export default class SequelizeDao {
     }
 
     distinctFields( ctx:Context, fieldName:string, options?:Sequelize.FindOptions<any> ) {
-        if( !options ) options = {};
-        
+        options = this._where(options );
+
         const attribs:any = (<any>this.model).attributes;
         const columnName = (<any>attribs)[fieldName].field;
         _.merge( options, {
             attributes:[[Sequelize.literal('distinct `' + columnName + '`'), fieldName]]
         } );
+
+        const nullable:boolean = (<any>options).nullable || false;
+        if( nullable === false ) {
+            (<any>options.where)[fieldName] = <Sequelize.WhereOptions<any>>{$ne: null};
+        }
 
         return this.findAll( ctx, options )
         .then( fieldValues => fieldValues.map( row => row[fieldName] ) );
