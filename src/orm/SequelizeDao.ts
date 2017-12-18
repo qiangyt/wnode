@@ -110,6 +110,25 @@ export default class SequelizeDao {
         } );
     }
 
+    /** 用id数组获取对应的field，返回Promise<{id->field}> */
+    fieldMap( ctx:Context, idArray:Array<string|number>, fieldName:string, options:Sequelize.FindOptions<any> ) {
+        const idField = this.idFields()[0];
+
+        options.attributes = options.attributes || [];
+        (<any>options.attributes).push(idField);
+        (<any>options.attributes).push(fieldName);
+
+        return this.list( ctx, idArray, options )
+        .then( (entityArray:any[]) => {
+            const r:any = {};
+            entityArray.forEach( function(entity) {
+                const id = entity.get(idField);
+                r[id] = entity.get(fieldName);
+            } );
+            return r;
+        } );
+    }
+
     /** 任意查询，返回多行结果，返回Promise<entity[]> */
     findAll( ctx:Context, options?:Sequelize.FindOptions<any> ) {
         return this._withTx( ctx, options )
@@ -227,8 +246,11 @@ export default class SequelizeDao {
 
     distinctFields( ctx:Context, fieldName:string, options?:Sequelize.FindOptions<any> ) {
         if( !options ) options = {};
+        
+        const attribs:any = (<any>this.model).attributes;
+        const columnName = (<any>attribs)[fieldName].field;
         _.merge( options, {
-            attributes:[[Sequelize.literal('distinct `' + fieldName + '`'), fieldName]]
+            attributes:[[Sequelize.literal('distinct `' + columnName + '`'), fieldName]]
         } );
 
         return this.findAll( ctx, options )
