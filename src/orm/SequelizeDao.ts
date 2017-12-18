@@ -81,6 +81,8 @@ export default class SequelizeDao {
 
     /** 用id数组获取对应的数据对象，返回Promise<entity[]> */
     list( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ):Promise<any> {
+        if( !idArray || !idArray.length ) return Promise.resolve([]);
+        
         options = this._where(options );
         const idField = this.idFields()[0];
         (<any>options.where)[idField] = <Sequelize.WhereOptions<any>>{$in: idArray};//TODO: 尚不支持composite primary key
@@ -89,12 +91,16 @@ export default class SequelizeDao {
 
     /** 用id数组获取对应的数据对象，保持和idArray里一样的顺序，返回Promise<entity[]> */
     orderedList( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ):Promise<any[]> {
+        if( !idArray || !idArray.length ) return Promise.resolve([]);
+        
         return this.map( ctx, idArray, options )
         .then( mapById => idArray.map( id => mapById[id] ) );
     }
 
     /** 用id数组获取对应的数据对象，返回Promise<{id->entity}> */
     map( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ) {
+        if( !idArray || !idArray.length ) return Promise.resolve({});
+        
         const idField = this.idFields()[0];
 
         options = options || {};
@@ -115,6 +121,8 @@ export default class SequelizeDao {
 
     /** 用id数组获取对应的field，返回Promise<{id->field}> */
     fieldMap( ctx:Context, idArray:Array<string|number>, fieldName:string, options:Sequelize.FindOptions<any> ) {
+        if( !idArray || !idArray.length ) return Promise.resolve({});
+
         const idField = this.idFields()[0];
 
         options = options || {};
