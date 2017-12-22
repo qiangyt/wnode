@@ -51,22 +51,31 @@ export default class MsClient {
                     retry: false,
                     safeStringify: true,
                     followRedirects: false
-                } )
+                } );
+
+                s.textClient = RestifyClients.createJsonClient( {
+                    url: sbase,
+                    audit: true,
+                    connectTimeout: connectTimeout ? connectTimeout : 3000,
+                    requestTimeout: requestTimeout ? requestTimeout : 2000,
+                    retry: false,
+                    followRedirects: false
+                } );
             }
         }
     }
 
-    call( ctx:Context, serviceName:string, apiName:string, parameters:any, defaultAuthToken:string ) {
-            const me = this;
-            return new Promise( function( resolve, reject ) {
-                me._call( ctx, serviceName, apiName, parameters, defaultAuthToken, function( err:any, result:any ) {
-                    if( err ) reject(err);
-                    else resolve(result);
-                } );
+    call( ctx:Context, serviceName:string, apiName:string, parameters:any, defaultAuthToken:string, isText:boolean ) {
+        const me = this;
+        return new Promise( function( resolve, reject ) {
+            me._call( ctx, serviceName, apiName, parameters, defaultAuthToken, isText, function( err:any, result:any ) {
+                if( err ) reject(err);
+                else resolve(result);
             } );
+        } );
     }
 
-    _call( ctx:Context, serviceName:string, apiName:string, parameters:any, defaultAuthToken:string, callback:Function ) {
+    _call( ctx:Context, serviceName:string, apiName:string, parameters:any, defaultAuthToken:string, isText:boolean, callback:Function ) {
         let s:any;
         let isLocal:boolean;
         if( !serviceName ) isLocal = true;
@@ -81,6 +90,7 @@ export default class MsClient {
         /* eslint func-style: "off" */
         const func = function func( err:any, result:any ) {
             if( err ) return callback( err );
+            if( isText ) return callback( result, null );//TODO: how to handle errors
             if( result.code === '0' ) return callback( null, result.data );
             return callback( result, null );
         };
@@ -105,9 +115,16 @@ export default class MsClient {
                     let headers = ctx.req.headers;
                     options.headers = headers;
                 }
-                s.client.post( options, parameters, function( err:any, req:any, res:any, result:any ) {
-                    return func( err, result );
-                });
+
+                if( isText ) {
+                    s.textClient.post( options, parameters, function( err:any, req:any, res:any, result:any ) {
+                        return func( err, result );
+                    });
+                } else {
+                    s.client.post( options, parameters, function( err:any, req:any, res:any, result:any ) {
+                        return func( err, result );
+                    });
+                }
             } );
 
         }
