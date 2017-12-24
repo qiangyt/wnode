@@ -288,10 +288,8 @@ export default class ApiParameter {
 
                 let json = raw.comment;
                 if( json ) {
-                    json = json.trim();
-                    if( !json.startsWith('{') ) json = '{\n' + json;
-                    if( !json.endsWith('}') ) json += '\n}';
-
+                    json = '{' + json.trim() + '}';
+                    
                     let attrs;
                     try {
                         attrs = eval('(' + json + ')');
