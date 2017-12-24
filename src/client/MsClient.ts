@@ -53,7 +53,7 @@ export default class MsClient {
                     followRedirects: false
                 } );
 
-                s.textClient = RestifyClients.createJsonClient( {
+                s.textClient = RestifyClients.createStringClient( {
                     url: sbase,
                     audit: true,
                     connectTimeout: connectTimeout ? connectTimeout : 3000,
