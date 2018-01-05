@@ -90,7 +90,7 @@ export default class MsClient {
         /* eslint func-style: "off" */
         const func = function func( err:any, result:any ) {
             if( err ) return callback( err );
-            if( isText ) return callback( result, null );//TODO: how to handle errors
+            if( isText ) return callback( null, result );//TODO: how to handle errors
             if( result.code === '0' ) return callback( null, result.data );
             return callback( result, null );
         };

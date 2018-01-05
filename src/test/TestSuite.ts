@@ -38,6 +38,12 @@ export default class TestSuite {
         return r;
     }
 
+    mock( object:any ) {
+        const r = Sinon.mock( object );
+        this.sinons.push(r);
+        return r;
+    }
+
 
     afterEach() {
         this.sinons.forEach( sinon => sinon.restore() );
