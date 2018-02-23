@@ -110,11 +110,12 @@ export default class MsClient {
                 let options:any = {
                     path: '/' + serviceName + '/' + apiName
                 }
+                /*
                 // 内部传输保留原有的header
                 if (ctx && ctx.req && ctx.req.headers) {
                     let headers = ctx.req.headers;
                     options.headers = headers;
-                }
+                } */
 
                 if( isText ) {
                     s.textClient.post( options, parameters, function( err:any, req:any, res:any, result:any ) {

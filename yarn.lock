@@ -1181,9 +1181,9 @@ ee-first@1.1.1, ee-first@~1.1.1:
   version "1.1.1"
   resolved "http://registry.npm.taobao.org/ee-first/download/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
-ejs@2.5.1:
-  version "2.5.1"
-  resolved "http://registry.npm.taobao.org/ejs/download/ejs-2.5.1.tgz#dbc0ac40812d3b451dad063fcd369e4e47d80287"
+ejs@2.5.5:
+  version "2.5.5"
+  resolved "http://registry.npm.taobao.org/ejs/download/ejs-2.5.5.tgz#6ef4e954ea7dcf54f66aad2fe7aa421932d9ed77"
 
 encodeurl@~1.0.1:
   version "1.0.1"
@@ -2845,9 +2845,9 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "http://registry.npm.taobao.org/map-obj/download/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
 
-marked@0.3.6:
-  version "0.3.6"
-  resolved "http://registry.npm.taobao.org/marked/download/marked-0.3.6.tgz#b2c6c618fccece4ef86c4fc6cb8a7cbf5aeda8d7"
+marked@0.3.16:
+  version "0.3.16"
+  resolved "http://registry.npm.taobao.org/marked/download/marked-0.3.16.tgz#2f188b7dfcfa6540fe9940adaf0f3b791c9a5cba"
 
 md5@2.1.0:
   version "2.1.0"
