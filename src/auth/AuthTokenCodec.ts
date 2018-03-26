@@ -33,9 +33,14 @@ export default class AuthTokenCodec {
      */
     decode( ctx:Context, tokenText:string ) {
         const me = this;
-        return new Promise( function( resolve ) {
+        return new Promise( function( resolve, reject ) {
             const json = me.$Aes128.decrypt(tokenText, 'base64');
-            const raw = JSON.parse(json);
+            let raw;
+            try {
+                raw = JSON.parse(json);
+            } catch(e) {
+                return reject(e);
+            }
             resolve( new AuthToken( raw.i, raw.o, raw.e, raw.r, raw.d, raw.x ) );
         } );
     }
