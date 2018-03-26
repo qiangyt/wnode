@@ -40,11 +40,13 @@ export default class ServerContext extends Context {
 
         this.next = null;
 
-        this.logger.info( {
-            ctx: this,
-            req: Log.config.req ? req : undefined,
-            requestTime: (<any>(req))._time
-        }, 'new Context' );
+        if( global.config.server.logContext ) {
+            this.logger.info( {
+                ctx: this,
+                req: Log.config.req ? req : undefined,
+                requestTime: (<any>(req))._time
+            }, 'new Context' );
+        }
     }
 
     /**
@@ -152,7 +154,9 @@ export default class ServerContext extends Context {
             logObj.res = res;
         }
 
-        this.logger.info( logObj, 'end Context' );
+        if( global.config.server.logContext ) {
+            this.logger.info( logObj, 'end Context' );
+        }
     }
 
     resolveCharset( isBinary:boolean ):string {
