@@ -135,8 +135,6 @@ class FileUploader {
 
 
     _responseError(res, headers, err) {
-        this._respondJson(res, headers, data);
-
         let body;
 
         if (!err instanceof Exception) {
