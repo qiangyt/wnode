@@ -5,7 +5,6 @@ import * as path from 'path';
 import * as bunyan from 'bunyan';
 import Time from './util/Time';
 import * as _ from 'lodash';
-import Context from './ctx/Context';
 
 
 const launchTime = new Date();
@@ -52,8 +51,8 @@ function loadConfiguration() {
     if( !r.name ) r.name = 'wnode';
     if( !r.level ) r.level = isProd ? 'info' : 'debug';
     if( !r.src ) r.src = !isProd;
-    if( !r.rotationPeriod ) r.rotationPeriod = '1d';// daily rotation
-    if( !r.rotationCount ) r.rotationCount = 365;   // keep 1 year back copies
+    if( !r.rotationPeriod ) r.rotationPeriod = '1';// daily rotation
+    if( !r.rotationCount ) r.rotationCount = 30;   // keep 30-days back copies
 
     return r;
 }
@@ -64,7 +63,7 @@ const pid = process.pid; // pid is used to append to log file path to survive cl
 const logFilePrefix = cfg.name + '_' + Time.formatDate(launchTime) + (isLocal ? '': ('_' + pid));
 
 
-function contextSerializer(ctx:Context) {
+function contextSerializer(ctx:any) {
     const r = {
         apiName: ctx.apiDefinition ? ctx.apiDefinition.name : undefined,
         spanId: ctx.spanId,
@@ -95,7 +94,12 @@ const rootLoggerOptions = {
     },
     streams: [
         {
+            level: cfg.level,
             stream: process.stdout
+        },
+        {
+            level: 'error',
+            stream: process.stderr
         },
         {
             type: 'rotating-file',

@@ -29,14 +29,24 @@ function createConfiguredFolderIfNotExists(cfg, configName, defaultPath) {
 
 function loadFileConfig() {
     let r = global.config.file;
-    if (!r) throw new Error('<file> section is not configured');
+    if (!r) {
+        r = global.config.file = {
+            workFolder: global.workFolder
+        };
+    }
     return r;
 }
 
 
 function loadUploadConfig() {
     let r = loadFileConfig();
-    if (!r.upload) throw new Error('<file.upload> section is not configured');
+    if (!r.upload) {
+        r.upload = {
+            enable: true,
+            port: global.config.server.httpPort + 1,
+            temp: `${global.workFolder}/upload`
+        };
+    }
     return r.upload;
 }
 

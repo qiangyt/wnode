@@ -27,7 +27,15 @@ export default class MsClient {
     init() {
         this.authCodec = JWTAuth.globalAuthBean().codec();
 
-        const cfg = global.config.service;
+        let cfg = global.config.service;
+        if(!cfg) cfg = global.config.service = {};
+        
+        const serverCfg = global.config.server;
+        if( !cfg[serverCfg.name] ) {
+            cfg[serverCfg.name] = {
+                base: 'http://localhost:' + serverCfg.httpPort             
+            };
+        }
 
         for( let sname in cfg ) {
             const scfg = cfg[sname];

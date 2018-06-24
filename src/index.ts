@@ -35,14 +35,17 @@ function startApp(appJsonPath:string, startCallback:Function) {
         global.bearcat.getBean('ApiServer').start(true);
 
         if (startCallback) startCallback();
+
+        global.config.dump('global configuration after starting...');
     });
 }
 
 
-function startFunc(starter:Function, configDir = '../config', appJsonPath = './app.json', configCallback?:Function, startCallback?:Function) {
+function startFunc(appName:string, starter:Function, configDir = '../config', appJsonPath = './app.json', configCallback?:Function, startCallback?:Function) {
 
-    module.exports.config = global.config = new Config(CodePath.resolve(configDir));
-
+    module.exports.config = global.config = new Config(appName, CodePath.resolve(configDir));
+    global.config.dump('global configuration before starting...');
+    
     if (configCallback) {
         configCallback(function() {
             starter(appJsonPath, startCallback);
@@ -56,7 +59,7 @@ function startFunc(starter:Function, configDir = '../config', appJsonPath = './a
 
 let _mochaLaunched = false;
 
-export function mocha(before?:Function, done?:Function, srcDir = '../../../src', configDir = '../config', appJsonPath = './app.json') {
+export function mocha(appName:string, before?:Function, done?:Function, srcDir = '../../../src', configDir = '../config', appJsonPath = './app.json') {
     if (_mochaLaunched) {
         if (done) done();
         return;
@@ -66,7 +69,8 @@ export function mocha(before?:Function, done?:Function, srcDir = '../../../src',
 
     CodePath.baseDir = Path.join(Path.parse(require.main.filename).dir, srcDir);
 
-    global.config = new Config(CodePath.resolve(configDir));
+    global.config = new Config(appName, CodePath.resolve(configDir));
+    global.config.dump('global configuration before starting...');
 
     // make bearcat global, for `bearcat.module()`
     global.bearcat = Bearcat;
@@ -95,8 +99,8 @@ export function schemaRef(name:string) {
     return SwaggerHelper.schemaRef(name);
 }
 
-export function start(configDir:string, appJsonPath:string, configCallback?:Function, startCallback?:Function) {
-    startFunc(startApp, configDir, appJsonPath, configCallback, startCallback);
+export function start(appName:string, configDir:string, appJsonPath:string, configCallback?:Function, startCallback?:Function) {
+    startFunc(appName, startApp, configDir, appJsonPath, configCallback, startCallback);
 }
 
 module.exports = {

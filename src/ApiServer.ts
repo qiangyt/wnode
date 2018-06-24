@@ -43,17 +43,20 @@ export default class ApiServer {
         const cfg = global.config;
 
         if( !cfg.server.name ) throw new Error( '<server.name> not configured' );
+        if( !cfg.server.path ) cfg.server.path = cfg.server.name;
         if( !cfg.server.httpPort ) throw new Error( '<server.httpPort> not configured' );
+        if( cfg.server.cors === undefined ) cfg.server.cors = true;
+        if( !cfg.server.apiDir ) cfg.server.apiDir = './api';
 
-        const errs = cfg.errors;
-        if( errs ) {
-            if( !errs.codeStart ) throw new Error( '<errors.codeStart> not configured' );
-            if( !errs.codeEnd ) throw new Error( '<errors.codeStart> not configured' );
-            if( errs.paths ) {
-                errs.paths.forEach( (p:string) => Errors.register( errs.codeStart, errs.codeEnd, CodePath.resolve(p) ) );
-            }
-        }
+        let errs = cfg.errors;
+        if( !errs ) errs = cfg.errors = {};
 
+        if( !errs.codeStart ) errs.codeStart = 1001;
+        if( !errs.codeEnd ) errs.codeEnd = 2000;
+
+        if( errs.paths === undefined ) errs.paths = ['./Errors.json'];
+        errs.paths.forEach( (p:string) => Errors.register( errs.codeStart, errs.codeEnd, CodePath.resolve(p) ) );
+        
         this.auth = JWTAuth.globalAuthBean();
     }
 
@@ -83,7 +86,7 @@ export default class ApiServer {
         restify.use( Restify.plugins.queryParser({mapParams: true}) );
         restify.pre( Restify.pre.userAgentConnection() );
         restify.use( Restify.plugins.bodyParser({
-            maxBodySize: cfg_server.maxBodySize ? cfg_server.maxBodySize : 1048576,
+            maxBodySize: cfg_server.maxBodySize ? cfg_server.maxBodySize : 8 * 1024,
             mapParams: true,
             mapFiles: false,
             overrideParams: true
@@ -129,7 +132,7 @@ export default class ApiServer {
 
 
     buildApis() {
-        const apiDir = CodePath.resolve( global.config.server.apiDir ? global.config.server.apiDir : './api' );
+        const apiDir = CodePath.resolve( global.config.server.apiDir );
         this.logger.info( 'service api directory: ' + apiDir );
         this.buildApi(apiDir);
 

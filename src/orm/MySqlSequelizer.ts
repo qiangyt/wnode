@@ -3,6 +3,11 @@ import * as Sequelize from 'sequelize';
 import BaseSequelizer from './BaseSequelizer';
 
 
+declare module global {
+    const isProd:boolean;
+}
+
+
 export default class MySqlSequelizer extends BaseSequelizer {
 
     /**
@@ -11,21 +16,29 @@ export default class MySqlSequelizer extends BaseSequelizer {
     createInstance() {
         let cfg = this.config;
         
+        const host = cfg.host = cfg.host || 'mysql';
+        const port = cfg.port = cfg.port || 3306;
+        const maxConnections = cfg.maxConnections = (cfg.maxConnections !== undefined) ? cfg.maxConnections : (global.isProd ? 1000 : 1);
+        const minConnections = cfg.minConnections = (cfg.minConnections !== undefined) ? cfg.minConnections : 0;
+        const maxIdleTime = cfg.maxIdleTime = (cfg.maxIdleTime !== undefined) ? cfg.maxIdleTime : 60000;
+        const timezone = cfg.timezone = (cfg.timezone !== undefined) ? cfg.timezone : '+08:00';
+        const benchmark = cfg.benchmark = (cfg.benchmark !== undefined) ? cfg.benchmark : (global.isProd ? false : true);
+        const define = cfg.define = cfg.define || {};
+        define.timestamps = define.timestamps = (define.timestamps !== undefined) ? define.timestamps : true;
+        define.freezeTableName = define.timestamps = (define.timestamps !== undefined) ? define.freezeTableName : true;
+        
         const options:any = {
-            host: cfg.host,
-            port: cfg.port,
+            host,
+            port,
             dialect: 'mysql',
             pool: {
-                maxConnections: (cfg.maxConnections !== undefined) ? cfg.maxConnections : 10,
-                minConnections: (cfg.minConnections !== undefined) ? cfg.minConnections : 0,
-                maxIdleTime: (cfg.maxIdleTime !== undefined) ? cfg.maxIdleTime : 60000
+                maxConnections,
+                minConnections,
+                maxIdleTime
             },
-            timezone: (cfg.timezone !== undefined) ? cfg.timezone : '+08:00',
-            benchmark: (cfg.benchmark !== undefined) ? cfg.benchmark : true,
-            define: {
-                timestamps: false,
-                freezeTableName: true
-            }
+            timezone,
+            benchmark,
+            define
         };
 
         _.merge( options, cfg.sequelize );

@@ -1,11 +1,12 @@
 {
   "name": "wnode",
-  "version": "0.2.71",
+  "version": "0.3.3",
   "description": "node.js framework by suntoe",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "coverage": "node ./node_modules/istanbul/lib/cli.js cover -color ./node_modules/jasmine/bin/jasmine.js",
+    "test": "node ./node_modules/jasmine/bin/jasmine.js",
     "clean": "node_modules/.bin/gulp clean",
     "dist": "node_modules/.bin/gulp clean | node_modules/.bin/gulp clean default"
   },
