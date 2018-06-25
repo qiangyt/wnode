@@ -2,10 +2,14 @@
 import * as Internal from './Internal';
 
 const Path = require('path');
+const Log = require('./Logger');
+
+const logger = Log.create('wnode');
 
 declare module global {
     let bearcat:any;
     let config:any;
+    let pkg:any;
 }
 
 const Path_parse_old = Path.parse;
@@ -36,15 +40,17 @@ function startApp(appJsonPath:string, startCallback:Function) {
 
         if (startCallback) startCallback();
 
-        global.config.dump('global configuration after starting...');
+        logger.info('global configuration after starting...\n\n' + global.config.dump());
     });
 }
 
 
 function startFunc(appName:string, starter:Function, configDir = '../config', appJsonPath = './app.json', configCallback?:Function, startCallback?:Function) {
 
+    appName = appName || global.pkg.name;
+    
     module.exports.config = global.config = new Config(appName, CodePath.resolve(configDir));
-    global.config.dump('global configuration before starting...');
+    logger.info('global configuration before starting...\n\n' + global.config.dump());
     
     if (configCallback) {
         configCallback(function() {
@@ -67,10 +73,12 @@ export function mocha(appName:string, before?:Function, done?:Function, srcDir =
 
     _mochaLaunched = true;
 
+    appName = appName || global.pkg.name;
+
     CodePath.baseDir = Path.join(Path.parse(require.main.filename).dir, srcDir);
 
     global.config = new Config(appName, CodePath.resolve(configDir));
-    global.config.dump('global configuration before starting...');
+    logger.info('global configuration before starting...\n\n' + global.config.dump());
 
     // make bearcat global, for `bearcat.module()`
     global.bearcat = Bearcat;
@@ -135,7 +143,7 @@ module.exports = {
 
     job: require('./job'),
 
-    Logger: require('./Logger'),
+    Logger: Log,
 
     mocha: mocha,
     module: module,

@@ -4,7 +4,9 @@ import * as mkdirp from 'mkdirp';
 import * as path from 'path';
 import * as bunyan from 'bunyan';
 import Time from './util/Time';
-import * as _ from 'lodash';
+import Config from './Config';
+import CodePath from './util/CodePath';
+const BunyanConsoleStream = require('./BunyanConsoleStream');
 
 
 const launchTime = new Date();
@@ -26,32 +28,12 @@ const isLocal = (env === 'local');
 
 
 function loadConfiguration() {
-    const dir = path.join( process.cwd(), 'config' );
-
-    const basePath = path.join( dir, 'logger.json' );
-    console.log( 'base logger config file: ' + basePath );
-    const r = require(basePath);
-
-    const envPath = path.join( dir, 'logger.' + env + '.json' );
-    console.log( 'env logger config file: ' + envPath );
-
-    let envStat;
-    try {
-        /*eslint no-sync: "off"*/
-        envStat = fs.statSync(envPath);
-    } catch( e ) {
-        return r;
-    }
-
-    if( envStat.isDirectory() ) throw new Error( envPath + ' should be a json file instead a directory' );
-    const envData = require(envPath);
-    _.merge( r, envData );
-    
+    const r:any = new Config('logger', CodePath.resolve('../config'));    
 
     if( !r.name ) r.name = 'wnode';
     if( !r.level ) r.level = isProd ? 'info' : 'debug';
     if( !r.src ) r.src = !isProd;
-    if( !r.rotationPeriod ) r.rotationPeriod = '1';// daily rotation
+    if( !r.rotationPeriod ) r.rotationPeriod = '1d';// daily rotation
     if( !r.rotationCount ) r.rotationCount = 30;   // keep 30-days back copies
 
     return r;
@@ -81,7 +63,10 @@ function contextSerializer(ctx:any) {
     return r;
 }
 
+///////////////////////////////////////////////////////////////
 
+
+//////////////////////////////////////////////////////////////
 const rootLoggerOptions = {
     name: cfg.name,
     level: cfg.level,
@@ -95,7 +80,8 @@ const rootLoggerOptions = {
     streams: [
         {
             level: cfg.level,
-            stream: process.stdout
+            type: 'raw',
+            stream: new BunyanConsoleStream()//process.stdout
         },
         {
             level: 'error',
@@ -126,7 +112,7 @@ const rootLoggerOptions = {
 };
 
 
-const rootLogger = bunyan.createLogger(rootLoggerOptions);
+const rootLogger = bunyan.createLogger(<bunyan.LoggerOptions>rootLoggerOptions);
 
 
 process.on( 'uncaughtException', (err:Error) => {

@@ -4,15 +4,23 @@ import * as Fs from 'fs';
 import * as Path from 'path';
 import * as Os from 'os';
 import * as _ from 'lodash';
-import * as Log from './Logger';
+import CodePath from './util/CodePath';
+
+const Yaml = require('js-yaml');
 const Mkdirp = require('mkdirp');
 
-const ENV = process.env.NODE_ENV;
+const env = process.env;
+const ENV = env.NODE_ENV;
+
+const YAML_LOAD_OPTIONS = {};
+const YAML_DUMP_OPTIONS = {};
+const FILE_READ_OPTIONS = { encoding: 'utf-8' || env[global.PROJECT_PREFIX + '_CHARSET'] || env.CHARSET };
+
 
 declare module global {
     let isLinux:boolean;
     let isMac:boolean;
-
+    let PROJECT_PREFIX:string;
     let workFolder:string;
 
     let isLocal:boolean;
@@ -20,95 +28,182 @@ declare module global {
     let isTest:boolean;
     let isUat:boolean;
     let isProd:boolean;
+
+    let pkg:any;
 }
+
+
+global.isLocal = ('local' === ENV);
+global.isDev = ('dev' === ENV);
+global.isTest = ('test' === ENV);
+global.isUat = ('uat' === ENV);
+global.isProd = ('prod' === ENV);
+
+
+const pkg = global.pkg = require(CodePath.resolve('../package.json'));
+
+let workFolderBase;
+if (global.isLinux || global.isMac) workFolderBase = '/data';
+else workFolderBase = Os.tmpdir();
+
+global.workFolder = Path.join(workFolderBase, pkg.product, ENV, pkg.name, 'work');
+Mkdirp.sync(global.workFolder);
+
+console.log(JSON.stringify({
+    isLinux: global.isLinux,
+    isMac: global.isMac,
+
+    workFolder: global.workFolder,
+
+    isLocal: global.isLocal,
+    isDev: global.isDev,
+    isTest: global.isTest,
+    isUat: global.isUat,
+    isProd: global.isProd
+}, null, 4));
+
 
 
 export default class Config {
 
-    public logger:Log.Logger;
     public object:any;
-    public envPath:string;
 
-    constructor( public name:string, public dir:string ) {
-        this.logger = Log.create(name);
+    
+    loadSpecificWithProfile(base:string, ext:string, profile:string) {
+        const fullPath = base + (profile ? ('.' + profile) : ext);
 
-        let workFolderBase;
-        if (global.isLinux || global.isMac) workFolderBase = '/data';
-        else workFolderBase = Os.tmpdir();
-
-        global.workFolder = Path.join(workFolderBase, name, ENV, 'server', 'work');
-        Mkdirp.sync(global.workFolder);
-
-        const jsonBasePath = Path.join( dir, 'config.json' );
-        const jsBasePath = Path.join( dir, 'config.js' );
-        let basePath = jsonBasePath;
-
+        let content:string;
         try {
-            Fs.statSync(basePath);
-        } catch( e ) {
-            this.logger.info( {path: basePath}, 'no json configuration file' );
+            content = Fs.readFileSync(fullPath, FILE_READ_OPTIONS);
+        } catch (e) {
+            return undefined;
+        }
 
-            basePath = jsBasePath;
+        const isJavascript = ('.js' === ext);
+        if (isJavascript) {
             try {
-                Fs.statSync(basePath);
-            } catch( err ) {
-                this.logger.fatal( {err, path:basePath}, 'failed to find js configuration file' );
-                throw new Error( `either ${jsonBasePath} or ${jsBasePath} should exist for configuration` );
+                return eval(content);
+            } catch (e) {
+                console.error('error occurred during evaluate js file: ' + fullPath);
+                throw e;
             }
         }
 
-        this.logger.info( {path: basePath}, 'base config file' );
-        const r = this.object = require(basePath);
-            
-        /* eslint no-process-env: "off" */
-        const env = process.env.NODE_ENV;
-
-        const jsonEnvPath = Path.join( dir, env + '.json' );
-        const jsEnvPath = Path.join( dir, env + '.js' );
-        let envPath;
-
         try {
-            /*eslint no-sync: "off"*/
-            Fs.statSync(jsonEnvPath);
-            envPath = jsonEnvPath;
-        } catch( e ) {
-            this.logger.debug( {path: jsonEnvPath}, 'no env-specific configuration file' );
+            return Yaml.load(content, YAML_LOAD_OPTIONS);
+        } catch (e) {
+            console.error('error occurred during parse YAML/JSON file: ' + fullPath);
+            throw e;
+        }
+    }
 
-            try {
-                Fs.statSync(jsEnvPath);
-                envPath = jsEnvPath;
-            } catch( err ) {
-                this.logger.debug( {path: jsEnvPath}, 'no env-specific configuration file' );
-            }
+    
+    
+    loadSpecific(base:string, ext:string, profile:string) {
+        let r = this.loadSpecificWithProfile(base, ext, undefined);
+        let profiled = this.loadSpecificWithProfile(base, ext, profile);
+
+        if (!r && !profiled) return undefined;
+
+        _.merge(r || {}, profiled || {});
+
+        return r;
+    }
+
+    
+    
+    normalize(file:any) {
+        let r;
+
+        if ('string' === typeof file) {
+            const p = Path.parse(file);
+            r = { dir: p.dir, name: p.name, ext: p.ext };
+        } else {
+            r = _.cloneDeep(file);
         }
 
-        this.logger.info( {path: envPath}, 'env config file' );
+        const ext = r.ext;
+        if (ext) r.ext = (ext.indexOf('.') === 0) ? ext : `.${ext}`;
 
-        if( envPath ) {
-            const envData = require(envPath);
-            _.merge( r, envData );
+        const n = r.name;
+        if (!n) throw new Error('file name is required');
+        if (!n.indexOf('.')) throw new Error(`file name "${n}" should NOT contain extension`);
+
+        if (!r.dir) r.dir = process.cwd();
+
+        r.base = Path.normalize(Path.join(r.dir, n));
+
+        r.profile = r.profile || env[global.PROJECT_PREFIX + '_PROFILE'] || ENV;
+
+        return r;
+    }
+
+    
+    
+    is(fullPath:string, name:string) {
+        const p = Path.parse(fullPath);
+        const ext = p.ext;
+
+        if (p.name !== name) return false;
+        if ('.yml' !== ext && '.yaml' !== ext && '.json' !== ext && '.js' !== ext) return false;
+
+        return true;
+    }
+
+
+    /**
+     * Read a configuration file. 
+     * 
+     * Support format: yaml, json, js.
+     * Support extension: .yml, .yaml, .json, .js
+     * 
+     * @param {*} file 1) if it is a string, I will think it a full path
+     *                 2) if it is a object, I will think it is structured as:
+     *                    {
+     *                        dir: '',  // directory name. optional, working dir by default
+     *                        name: '', // file name, without ext. must.
+     *                        ext: '', // force to be with this extension. optional.
+     *                    }
+     * @param defaultConfig default config if file not exists. optional
+     */
+    _load(file:any, defaultConfig:any) {
+
+        const f = this.normalize(file);
+        const b:string = f.base;
+        const p:string = f.profile;
+        const ext = f.ext;
+
+        if (ext) {
+            const p = b + ext;
+            let r = this.loadSpecific(b, '.js', p);
+            if (r) return r;
+
+            if (defaultConfig) return defaultConfig;
+
+            throw new Error('file not found: ' + p);
         }
-        this.envPath = envPath;
 
-        global.isLocal = r.isLocal = ('local' === env);
-        global.isDev = r.isDev = ('dev' === env);
-        global.isTest = r.isTest = ('test' === env);
-        global.isUat = r.isUat = ('uat' === env);
-        global.isProd = r.isProd = ('prod' === env);
-        
-        const toLog = {
-            isLinux: global.isLinux,
-            isMac:global.isMac,
+        let r = this.loadSpecific(b, '.yml', p);
+        if (r) return r;
 
-            workFolder:global.workFolder,
+        r = this.loadSpecific(b, '.yaml', p);
+        if (r) return r;
 
-            isLocal:global.isLocal,
-            isDev:global.isDev,
-            isTest:global.isTest,
-            isUat:global.isUat,
-            isProd:global.isProd
-        }
-        this.logger.info(toLog, 'global configuration');
+        r = this.loadSpecific(b, '.json', p);
+        if (r) return r;
+
+        r = this.loadSpecific(b, '.js', p);
+        if (r) return r;
+
+        if (defaultConfig) return defaultConfig;
+
+        throw new Error(`file not found: ${b}[.profile].yml( or .yaml/.json/.js)`);
+
+    }
+
+
+    constructor( public name:string, public dir:string, defaultConfig:any = undefined ) {
+        const r = this.object = this._load({dir, name}, defaultConfig);
         
         r.dump = this.dump.bind(this);
     
@@ -116,8 +211,15 @@ export default class Config {
     }
 
 
-    dump(msg:string) {
-        this.logger.info({name: this.name, object: this.object, dir:this.dir, envPath:this.envPath}, msg);
+    dump() {
+        
+        const r = {
+            name: this.name, 
+            object: this.object, 
+            dir:this.dir
+        };
+
+        return Yaml.dump(r, YAML_DUMP_OPTIONS);
     }
 
 }

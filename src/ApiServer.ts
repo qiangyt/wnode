@@ -20,6 +20,7 @@ declare let StaticSupport:any;
 declare module global {
     const config:any;
     const bearcat:any;
+    const pkg:any;
 }
 
 
@@ -42,7 +43,7 @@ export default class ApiServer {
     init() {
         const cfg = global.config;
 
-        if( !cfg.server.name ) throw new Error( '<server.name> not configured' );
+        cfg.server.name = cfg.server.name || global.pkg.name;
         if( !cfg.server.path ) cfg.server.path = cfg.server.name;
         if( !cfg.server.httpPort ) throw new Error( '<server.httpPort> not configured' );
         if( cfg.server.cors === undefined ) cfg.server.cors = true;

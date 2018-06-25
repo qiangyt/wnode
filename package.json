@@ -1,6 +1,6 @@
 {
   "name": "wnode",
-  "version": "0.3.3",
+  "version": "0.3.15",
   "description": "node.js framework by suntoe",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -69,6 +69,7 @@
     "fury-adapter-swagger": "0.12.0-beta.1",
     "gm": "1.23.0",
     "graphql": "0.8.2",
+    "js-yaml": "3.9.1",
     "jsonwebtoken": "7.3.0",
     "kue": "0.11.5",
     "lodash": "4.17.4",
