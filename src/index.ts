@@ -36,7 +36,14 @@ function startApp(appJsonPath:string, startCallback:Function) {
     Internal.initBeans();
 
     global.bearcat.start(function() {
-        global.bearcat.getBean('ApiServer').start(true);
+
+        if (global.config.grpc && !global.config.grpc.disabled) {
+            global.bearcat.getBean('GrpcServer').start();
+        }
+
+        if (global.config.server && !global.config.server.disabled) {
+            global.bearcat.getBean('ApiServer').start(true);
+        }
 
         if (startCallback) startCallback();
 
@@ -138,6 +145,7 @@ module.exports = {
     file: require('./file'),
 
     //graphql: require('./graphql'),
+    grpc: require('./grpc'),
 
     HackBearcat: require('./HackBearcat'),
 

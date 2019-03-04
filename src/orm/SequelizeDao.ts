@@ -94,7 +94,7 @@ export default class SequelizeDao {
         if( !idArray || !idArray.length ) return Promise.resolve([]);
         
         return this.map( ctx, idArray, options )
-        .then( mapById => idArray.map( id => mapById[id] ) );
+        .then( (mapById:any) => idArray.map( id => mapById[id] ) );
     }
 
     /** 用id数组获取对应的数据对象，返回Promise<{id->entity}> */

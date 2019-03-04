@@ -1,0 +1,5 @@
+- 把ApiServer等相关js和配置改为可选启动
+- 把ApiServer等相关js和配置重命名为Rest*
+- 支持yaml配置
+- 去掉bearcat
+- grpc和rest统一到同一个API js

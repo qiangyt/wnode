@@ -2,7 +2,7 @@ const Redis = require('redis');
 import * as Log from '../Logger';
 const Errors = require('../Errors');
 import Exception from '../Exception';
-import * as Bluebird from 'bluebird';
+const Bluebird = require('bluebird');
 import * as Util from 'util';
 import Context from '../ctx/Context';
 

@@ -38,7 +38,8 @@ global.isDev = ('dev' === ENV);
 global.isTest = ('test' === ENV);
 global.isUat = ('uat' === ENV);
 global.isProd = ('prod' === ENV);
-
+global.isLinux = (Os.platform() === 'linux');
+global.isMac = (Os.platform() === 'darwin');
 
 const pkg = global.pkg = require(CodePath.resolve('../package.json'));
 
@@ -46,7 +47,7 @@ let workFolderBase;
 if (global.isLinux || global.isMac) workFolderBase = '/data';
 else workFolderBase = Os.tmpdir();
 
-global.workFolder = Path.join(workFolderBase, pkg.product, ENV, pkg.name, 'work');
+global.workFolder = Path.join(workFolderBase, pkg.product || "", ENV, pkg.name, 'work');
 Mkdirp.sync(global.workFolder);
 
 console.log(JSON.stringify({
