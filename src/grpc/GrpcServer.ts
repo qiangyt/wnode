@@ -1,4 +1,4 @@
-const Condor = require('@apyer/condor-framework');
+const Condor = require('apyer-condor-framework');
 import * as Fs from 'fs';
 import * as Path from 'path';
 import CodePath from '../util/CodePath';
