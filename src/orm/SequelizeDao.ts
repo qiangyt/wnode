@@ -106,7 +106,9 @@ export default class SequelizeDao {
         options = options || {};
 
         options.attributes = options.attributes || [];
-        (<any>options.attributes).push(idField);
+        if ((<any>options.attributes).indexOf(idField) < 0) {
+            (<any>options.attributes).push(idField);
+        }
 
         return this.list( ctx, idArray, options )
         .then( (entityArray:any[]) => {
