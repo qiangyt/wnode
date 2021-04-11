@@ -15,7 +15,7 @@ export default class SequelizeDao {
     public sequelizer:Sequelize.Sequelize;
     public model:Sequelize.Model<any,any>;
     public logger:Log.Logger;
-    
+
 
     constructor( public modelName:string, public instanceName:string ) {
         this.logger = Log.create('Sequelizer.' + (instanceName ? instanceName : '<default>') + '.' + modelName);
@@ -55,20 +55,20 @@ export default class SequelizeDao {
 
 
     /** 构造一个带where条件的options */
-    _where( options:Sequelize.FindOptions<any> ) {
+    _where( options:Sequelize.FindOptions ) {
         if( !options ) options = {};
         if( !options.where ) options.where = {};
         return options;
     }
 
     /** 用id获取entity，返回Promise<entity> */
-    get( ctx:Context, id:string|number, options:Sequelize.FindOptions<any> ):Promise<any> {
+    get( ctx:Context, id:string|number, options:Sequelize.FindOptions ):Promise<any> {
         return this._withTx( ctx, options )
-        .then( (options:Sequelize.FindOptions<any>) => this.model.findById( id, options ) );
+        .then( (options:Sequelize.FindOptions) => this.model.findById( id, options ) );
     }
 
     /** 用id获取entity，返回Promise<entity>。如果找不到entity，则报错 */
-    load( ctx:Context, id:string|number, options:Sequelize.FindOptions<any> ) {
+    load( ctx:Context, id:string|number, options:Sequelize.FindOptions ) {
         return this.get( ctx, id, options ).then( (entity:any) => {
             if( !entity ) this.raiseEntityNotFoundError(id);
             return entity;
@@ -80,27 +80,27 @@ export default class SequelizeDao {
     }
 
     /** 用id数组获取对应的数据对象，返回Promise<entity[]> */
-    list( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ):Promise<any> {
+    list( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions ):Promise<any> {
         if( !idArray || !idArray.length ) return Promise.resolve([]);
-        
+
         options = this._where(options );
         const idField = this.idFields()[0];
-        (<any>options.where)[idField] = <Sequelize.WhereOptions<any>>{$in: idArray};//TODO: 尚不支持composite primary key
+        (<any>options.where)[idField] = <Sequelize.WhereOptions>{$in: idArray};//TODO: 尚不支持composite primary key
         return this.findAll( ctx, options );
     }
 
     /** 用id数组获取对应的数据对象，保持和idArray里一样的顺序，返回Promise<entity[]> */
-    orderedList( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ):Promise<any[]> {
+    orderedList( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions ):Promise<any[]> {
         if( !idArray || !idArray.length ) return Promise.resolve([]);
-        
+
         return this.map( ctx, idArray, options )
         .then( mapById => idArray.map( id => mapById[id] ) );
     }
 
     /** 用id数组获取对应的数据对象，返回Promise<{id->entity}> */
-    map( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions<any> ) {
+    map( ctx:Context, idArray:Array<string|number>, options:Sequelize.FindOptions ) {
         if( !idArray || !idArray.length ) return Promise.resolve({});
-        
+
         const idField = this.idFields()[0];
 
         options = options || {};
@@ -120,7 +120,7 @@ export default class SequelizeDao {
     }
 
     /** 用id数组获取对应的field，返回Promise<{id->field}> */
-    fieldMap( ctx:Context, idArray:Array<string|number>, fieldName:string, options:Sequelize.FindOptions<any> ) {
+    fieldMap( ctx:Context, idArray:Array<string|number>, fieldName:string, options:Sequelize.FindOptions ) {
         if( !idArray || !idArray.length ) return Promise.resolve({});
 
         const idField = this.idFields()[0];
@@ -143,20 +143,20 @@ export default class SequelizeDao {
     }
 
     /** 任意查询，返回多行结果，返回Promise<entity[]> */
-    findAll( ctx:Context, options?:Sequelize.FindOptions<any> ) {
+    findAll( ctx:Context, options?:Sequelize.FindOptions ) {
         return this._withTx( ctx, options )
-        .then( (options:Sequelize.FindOptions<any>) => this.model.findAll(options) );
+        .then( (options:Sequelize.FindOptions) => this.model.findAll(options) );
     }
 
     /** 同findAll */
-    find( ctx:Context, options?:Sequelize.FindOptions<any> ) {
+    find( ctx:Context, options?:Sequelize.FindOptions ) {
         return this.findAll( ctx, options );
     }
 
     /** 任意查询，返回1行结果，返回Promise<entity> */
-    findOne( ctx:Context, options?:Sequelize.FindOptions<any> ) {
+    findOne( ctx:Context, options?:Sequelize.FindOptions ) {
         return this._withTx( ctx, options )
-        .then( (options:Sequelize.FindOptions<any>) => {
+        .then( (options:Sequelize.FindOptions) => {
             return this.model.findOne(options);
          } );
     }
@@ -167,14 +167,14 @@ export default class SequelizeDao {
     }
 
     /** 分页查询，返回Promise<entity[] */
-    page( ctx:Context, options?:Sequelize.FindOptions<any>, offset=0, limit=0 ) {
+    page( ctx:Context, options?:Sequelize.FindOptions, offset=0, limit=0 ) {
         if( !options ) options = {};
         _.merge( options, {limit, offset} );
         return this.findAll( ctx, options );
     }
 
     /** 分页查询并返回总行数，返回Promise<{rows:entity[], count:integer}> */
-    pageAndCount( ctx:Context, options?:Sequelize.FindOptions<any>, offset=0, limit=0 ) {
+    pageAndCount( ctx:Context, options?:Sequelize.FindOptions, offset=0, limit=0 ) {
         if( !options ) options = {};
         _.merge( options, {limit, offset} );
 
@@ -183,7 +183,7 @@ export default class SequelizeDao {
     }
 
     /** 判断指定entity是否存在，返回Promise<boolean> */
-    exists( ctx:Context, id:string|number, options?:Sequelize.FindOptions<any> ) {
+    exists( ctx:Context, id:string|number, options?:Sequelize.FindOptions ) {
         options = this._where(options);
         const idField = this.idFields()[0];
         (<any>options.where)[idField] = id;//TODO: 尚不支持composite primary key
@@ -191,7 +191,7 @@ export default class SequelizeDao {
     }
 
     /** 计数，返回Promise<integer> */
-    count( ctx:Context, options?:Sequelize.FindOptions<any> ) {
+    count( ctx:Context, options?:Sequelize.FindOptions ) {
         return this._withTx( ctx, options )
         .then( options => this.model.count(options) );
     }
@@ -201,7 +201,7 @@ export default class SequelizeDao {
         return this._withTx( ctx, options )
         .then( options => this.model.create( values, options ) );
     }
-    
+
     /** 更新一个entity，返回Promise<entity> */
     update( ctx:Context, entity:any, values:any, options?:Sequelize.UpdateOptions ) {
         if( !options ) options = <Sequelize.UpdateOptions>{};
@@ -216,7 +216,7 @@ export default class SequelizeDao {
         return this.load( ctx, id, options )
             .then( (entity:any) => this.update( ctx, entity, values, options ) );
     }
-    
+
     /** 创建或更新一个entity */
     upsert( ctx:Context, values:any, options?:Sequelize.UpsertOptions ) {
         return this._withTx( ctx, options )
@@ -257,7 +257,7 @@ export default class SequelizeDao {
             .then( (entity:any) => this.remove( ctx, entity, options ) );
     }
 
-    distinctFields( ctx:Context, fieldName:string, options?:Sequelize.FindOptions<any> ) {
+    distinctFields( ctx:Context, fieldName:string, options?:Sequelize.FindOptions ) {
         options = this._where(options );
 
         const attribs:any = (<any>this.model).attributes;
@@ -268,7 +268,7 @@ export default class SequelizeDao {
 
         const nullable:boolean = (<any>options).nullable || false;
         if( nullable === false ) {
-            (<any>options.where)[fieldName] = <Sequelize.WhereOptions<any>>{$ne: null};
+            (<any>options.where)[fieldName] = <Sequelize.WhereOptions>{$ne: null};
         }
 
         return this.findAll( ctx, options )
