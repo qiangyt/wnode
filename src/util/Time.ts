@@ -21,25 +21,43 @@ export default class Time {
      * 
      */
     static formatYearMonth( time:Date ) {
-        let result = '' + time.getFullYear();
+        return Time.formatYear(time) + '-' + Time.formatMonth(time);
+    }
 
+    static formatYear( time:Date ) {
+        return '' + time.getFullYear();
+    }
+
+    static formatMonth( time:Date ) {
         const mon = time.getMonth() + 1;
-        result += '-' + (( mon < 10 ) ? '0' : '') + mon;
-
-        return result;
+        return (( mon < 10 ) ? '0' : '') + mon;
     }
 
     /**
      * 
      */
     static formatDate( time:Date ) {
+        return Time.formatYearMonth(time) + '-' + Time.formatDay(time);
+    }
 
-        let result = Time.formatYearMonth( time );
-
+    static formatDay( time:Date ) {
         const date = time.getDate();
-        result += '-' + (( date < 10 ) ? '0' : '') + date;
-    
-        return result;
+        return (( date < 10 ) ? '0' : '') + date;
+    }
+
+    static formatHours( time:Date ) {
+        const hour = time.getHours();
+        return (( hour < 10 ) ? '0' : '') + hour;
+    }
+
+    static formatMinutes( time:Date ) {
+        const min = time.getMinutes();
+        return (( min < 10 ) ? '0' : '') + min;
+    }
+
+    static formatSeconds( time:Date ) {
+        const sec = time.getSeconds();
+        return (( sec < 10 ) ? '0' : '') + sec;
     }
 
     /**
@@ -48,14 +66,9 @@ export default class Time {
     static formatTime( time:Date, includeMilliseconds:boolean ) {
         let result = '';
 
-        const hour = time.getHours();
-        result += (( hour < 10 ) ? '0' : '') + hour;
-
-        const min = time.getMinutes();
-        result += ':' + (( min < 10 ) ? '0' : '') + min;
-
-        const sec = time.getSeconds();
-        result += ':' + (( sec < 10 ) ? '0' : '') + sec;
+        result += Time.formatHours(time);
+        result += ':' + Time.formatMinutes(time);
+        result += ':' + Time.formatSeconds(time);
     
         if( includeMilliseconds ) {
             result += '.' + time.getMilliseconds();
