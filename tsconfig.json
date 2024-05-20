@@ -8,7 +8,7 @@
         "**/*.spec.ts"
     ],
     "compilerOptions": {
-        "charset": "utf8",
+        //"charset": "utf8",
         "declaration": true,
         "declarationDir": "dist",
         "outDir": "dist",
@@ -17,7 +17,7 @@
         "emitDecoratorMetadata": false,
         "experimentalDecorators": false,
         "alwaysStrict": true,
-        "locale": "en-us",
+        //"locale": "en-us",
         "lib": ["es6"],
         "newLine": "LF",
         "noImplicitAny": true,
