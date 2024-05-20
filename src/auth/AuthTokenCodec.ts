@@ -24,7 +24,7 @@ export default class AuthTokenCodec {
                 x: token.internal
             };
             const json = JSON.stringify(raw);
-            resolve( me.$Aes128.encrypt(json, 'base64') );
+            resolve( me.$Aes128.encrypt(json) );
         } );
     }
 
@@ -34,7 +34,7 @@ export default class AuthTokenCodec {
     decode( ctx:Context, tokenText:string ) {
         const me = this;
         return new Promise( function( resolve, reject ) {
-            const json = me.$Aes128.decrypt(tokenText, 'base64');
+            const json = me.$Aes128.decrypt(tokenText);
             let raw;
             try {
                 raw = JSON.parse(json);

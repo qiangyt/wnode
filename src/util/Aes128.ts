@@ -12,15 +12,15 @@ export default class Aes128 {
     public $init = 'init';
     public $lazy = true;
     
-    public key:string;
-    public iv:string;
+    public key:Buffer;
+    public iv:Buffer;
     
 
     init() {
         const cfg = global.config.Aes128;
 
-        this.key = cfg.key;
-        this.iv = cfg.iv;
+        this.key = Buffer.from(cfg.key, "base64");
+        this.iv = Buffer.alloc(0);//cfg.iv;
 
         if( !this.key ) throw new Error( '<Aes128.key> is not configured' );
         if( undefined === this.iv ) throw new Error( '<Aes128.iv> is not configured' );
@@ -29,23 +29,19 @@ export default class Aes128 {
     /**
      * 
      */
-    encrypt( input:string, encode:string ) {
-        if( !encode ) encode = 'base64';
-
+    encrypt( input:string) {
         const cipher = Crypto.createCipheriv( 'aes-128-ecb', this.key, this.iv );
-        let result = (<any>cipher).update( input, 'utf8', encode );
-        result += cipher.final(encode);
+        let result = cipher.update( input, 'utf8', "base64" );
+        result += cipher.final("base64");
         return result;
     }
 
     /**
      * 
      */
-    decrypt( encrypted:string, encode:string ) {
-        if( !encode ) encode = 'base64';
-        
+    decrypt( encrypted:string) {        
         const decipher = Crypto.createDecipheriv('aes-128-ecb', this.key, this.iv);
-        let result:string = (<any>decipher).update(encrypted, encode, 'utf8');
+        let result:string = (<any>decipher).update(encrypted, "base64", 'utf8');
         result += decipher.final('utf8');
         return result;
     }
