@@ -21,7 +21,7 @@ export default class Context {
     public $authToken:string;
     public isTxOwner = false;
     public logger:Log.Logger;
-    public req:http.ServerRequest;
+    public req:http.IncomingMessage ;
     public next:any;
     public tx:Transaction;
     public isDone = false;
