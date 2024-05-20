@@ -53,7 +53,7 @@ export default class ApiDefinition {
 
         if( modRole === undefined ) return [ApiRole.user];
 
-        if( Util.isArray(modRole) === false ) {
+        if( Array.isArray(modRole) === false ) {
             return [ApiDefinition.validatedApiRole( apiName, modRole )];
         }
 
