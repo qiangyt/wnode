@@ -20,7 +20,7 @@ export default class MongooseManager {
     public static instance = new MongooseManager();
 
 
-    public instances:any = {}; // 保存mongoose实例名字到mongoose实例对象的映射关系
+    public instances:{[key:string]: MongooseInstance} = {}; // 保存mongoose实例名字到mongoose实例对象的映射关系
     public defaultInstance:MongooseInstance = null; // 缺省实例
 
     /**

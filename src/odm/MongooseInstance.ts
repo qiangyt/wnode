@@ -12,8 +12,8 @@ declare module global {
 
 export default class MongooseInstance {
 
-    public schemas:any = {};
-    public models:any = {};
+    public schemas:{[key:string]: Mongoose.Schema} = {};
+    public models:{[key:string]: Mongoose.Model<any>} = {};
     public connection:Mongoose.Connection;
     public schemaDir:string;
     public logger:Log.Logger;
