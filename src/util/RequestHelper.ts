@@ -36,7 +36,7 @@ export default class RequestHelper {
      * Proxy-Client-IP, WL-Proxy-Client-IP, HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR
      */
     /* eslint complexity: ["error", 11] */
-    static resolveClientIp( req:http.ServerRequest ) {
+    static resolveClientIp( req:http.IncomingMessage ) {
         let r;
 
         const headers = req.headers;

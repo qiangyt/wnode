@@ -13,7 +13,7 @@ export default class Html {
      * @param  html:string HTML文本
      * @return string[] img分段的数组
      */
-    static extractImg( html:string ) {
+    static extractImg( html:string ): string[]{
         const result = html.match(/<img\s.*?>/gi);
         return result ? result : [];
     }

@@ -26,11 +26,11 @@ export default class TestSuite {
         return Promise.resolve();
     }
 
-    stubWithMethod( object:any, methodName:string, func:Function ) {
+    /*stubWithMethod( object:any, methodName:string, func:Function ) {
         const r = Sinon.stub( object, methodName, func );
         this.sinons.push(r);
         return r;
-    }
+    }*/
 
     spyWithMethod( object:any, methodName:string ) {
         const r = Sinon.spy( object, methodName );
