@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import * as Sequelize from 'sequelize';
+import {Sequelize} from 'sequelize';
 import BaseSequelizer from './BaseSequelizer';
 
 

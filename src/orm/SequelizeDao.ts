@@ -13,7 +13,7 @@ export default class SequelizeDao {
 
     public $init = 'init';
     public sequelizer:Sequelize.Sequelize;
-    public model:Sequelize.Model<any,any>;
+    public model:Sequelize.ModelStatic<any>;
     public logger:Log.Logger;
 
 
@@ -26,7 +26,7 @@ export default class SequelizeDao {
      */
     init() {
         const s = this.sequelizer = SequelizerManager.instance.get(this.instanceName).instance;
-        const m = this.model = s.models[this.modelName];
+        const m = this.model = s.model(this.modelName);
         if( !m ) throw new Error('model ' + this.modelName + ' not found');
     }
 
@@ -64,7 +64,7 @@ export default class SequelizeDao {
     /** 用id获取entity，返回Promise<entity> */
     get( ctx:Context, id:string|number, options:Sequelize.FindOptions ):Promise<any> {
         return this._withTx( ctx, options )
-        .then( (options:Sequelize.FindOptions) => this.model.findById( id, options ) );
+        .then( (options:Sequelize.FindOptions) => this.model.findByPk( id, options ) );
     }
 
     /** 用id获取entity，返回Promise<entity>。如果找不到entity，则报错 */
@@ -189,7 +189,7 @@ export default class SequelizeDao {
         options = this._where(options);
         const idField = this.idFields()[0];
         (<any>options.where)[idField] = id;//TODO: 尚不支持composite primary key
-        return this.count( ctx, options ).then( amount => amount > 0 );
+        return this.count( ctx, options ).then( amount => amount[idField].count > 0 );
     }
 
     /** 计数，返回Promise<integer> */

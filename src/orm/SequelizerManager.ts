@@ -16,7 +16,7 @@ export default class SequelizerManager {
 
     public static instance = new SequelizerManager();
 
-    public sequelizers:any = {}; // 保存sequelize实例名字到sequelize实例对象的映射关系
+    public sequelizers:{[key:string]: BaseSequelizer} = {}; // 保存sequelize实例名字到sequelize实例对象的映射关系
     public defaultSequelizer:BaseSequelizer; // 缺省实例
 
 

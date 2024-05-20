@@ -76,7 +76,8 @@ export default class BaseSequelizer {
             const stat = Fs.statSync(full);
             if( stat.isDirectory() ) continue; // 跳过子目录
             
-            this.instance.import(full);
+            const modelModule = require(full);
+            modelModule.init(this.instance);
         }
     }
 
