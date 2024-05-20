@@ -13,13 +13,6 @@ class ComponentBuilder {
         this.engine = engine;
     }
 
-
-    buildJobQueue() {
-        //return global.bearcat.getBean('ToyJobQueue');
-        return global.bearcat.getBean('GraphQLAliSearchJobQueue');
-    }
-
-
     buildSearchHelper( manifest ) {
         const r = new AliSearchHelper(); 
         r.engine = this.engine;

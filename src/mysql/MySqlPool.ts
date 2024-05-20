@@ -15,7 +15,7 @@ export default class MySqlPool {
     public $proxy = false;
     public $SqlBuilder:SqlBuilder = null;
     public $lazy = true;
-    public pool:Mysql.IPool;
+    public pool:Mysql.Pool;
 
     /**
      * 

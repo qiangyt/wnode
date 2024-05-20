@@ -7,8 +7,6 @@ module.exports = {
 
     AliSearchHelper:            require('./AliSearchHelper'),
 
-    GraphQLAliSearchJobQueue:   requireAsBean( module, './GraphQLAliSearchJobQueue' ),
-
     BaseAPI:                    require('./BaseAPI'),
 
     ComponentBuilder:           require('./ComponentBuilder'),

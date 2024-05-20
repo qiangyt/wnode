@@ -16,7 +16,6 @@ class GraphQLEngine {
         this.$id = id;
         this.logger = Logger.create(id);
         this.inited = false;
-        this.$GraphQLAliSearchJobQueue = null;
 
         this.$lazy = true;
         this.$init = 'init';
