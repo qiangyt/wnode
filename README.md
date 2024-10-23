@@ -1,2 +1,2 @@
 # wnode
-node.js framework by suntoe
+node.js framework by qiangyt
